@@ -1,0 +1,184 @@
+fileFormatVersion: 2
+guid: 913d786923a7f964d8f1d2e52dc071b1
+timeCreated: 1443325754
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: shieldPiece1
+    100004: shieldPiece10
+    100006: shieldPiece11
+    100008: shieldPiece12
+    100010: shieldPiece13
+    100012: shieldPiece14
+    100014: shieldPiece15
+    100016: shieldPiece16
+    100018: shieldPiece17
+    100020: shieldPiece18
+    100022: shieldPiece19
+    100024: shieldPiece2
+    100026: shieldPiece20
+    100028: shieldPiece21
+    100030: shieldPiece22
+    100032: shieldPiece3
+    100034: shieldPiece4
+    100036: shieldPiece5
+    100038: shieldPiece6
+    100040: shieldPiece7
+    100042: shieldPiece8
+    100044: shieldPiece9
+    400000: //RootNode
+    400002: shieldPiece1
+    400004: shieldPiece10
+    400006: shieldPiece11
+    400008: shieldPiece12
+    400010: shieldPiece13
+    400012: shieldPiece14
+    400014: shieldPiece15
+    400016: shieldPiece16
+    400018: shieldPiece17
+    400020: shieldPiece18
+    400022: shieldPiece19
+    400024: shieldPiece2
+    400026: shieldPiece20
+    400028: shieldPiece21
+    400030: shieldPiece22
+    400032: shieldPiece3
+    400034: shieldPiece4
+    400036: shieldPiece5
+    400038: shieldPiece6
+    400040: shieldPiece7
+    400042: shieldPiece8
+    400044: shieldPiece9
+    2300000: shieldPiece1
+    2300002: shieldPiece10
+    2300004: shieldPiece11
+    2300006: shieldPiece12
+    2300008: shieldPiece13
+    2300010: shieldPiece14
+    2300012: shieldPiece15
+    2300014: shieldPiece16
+    2300016: shieldPiece17
+    2300018: shieldPiece18
+    2300020: shieldPiece19
+    2300022: shieldPiece2
+    2300024: shieldPiece20
+    2300026: shieldPiece21
+    2300028: shieldPiece22
+    2300030: shieldPiece3
+    2300032: shieldPiece4
+    2300034: shieldPiece5
+    2300036: shieldPiece6
+    2300038: shieldPiece7
+    2300040: shieldPiece8
+    2300042: shieldPiece9
+    3300000: shieldPiece1
+    3300002: shieldPiece10
+    3300004: shieldPiece11
+    3300006: shieldPiece12
+    3300008: shieldPiece13
+    3300010: shieldPiece14
+    3300012: shieldPiece15
+    3300014: shieldPiece16
+    3300016: shieldPiece17
+    3300018: shieldPiece18
+    3300020: shieldPiece19
+    3300022: shieldPiece2
+    3300024: shieldPiece20
+    3300026: shieldPiece21
+    3300028: shieldPiece22
+    3300030: shieldPiece3
+    3300032: shieldPiece4
+    3300034: shieldPiece5
+    3300036: shieldPiece6
+    3300038: shieldPiece7
+    3300040: shieldPiece8
+    3300042: shieldPiece9
+    4300000: shieldPiece1
+    4300002: shieldPiece2
+    4300004: shieldPiece3
+    4300006: shieldPiece4
+    4300008: shieldPiece5
+    4300010: shieldPiece6
+    4300012: shieldPiece7
+    4300014: shieldPiece8
+    4300016: shieldPiece9
+    4300018: shieldPiece10
+    4300020: shieldPiece11
+    4300022: shieldPiece12
+    4300024: shieldPiece13
+    4300026: shieldPiece14
+    4300028: shieldPiece15
+    4300030: shieldPiece16
+    4300032: shieldPiece17
+    4300034: shieldPiece18
+    4300036: shieldPiece19
+    4300038: shieldPiece20
+    4300040: shieldPiece21
+    4300042: shieldPiece22
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 20
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
