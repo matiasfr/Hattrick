@@ -57,10 +57,16 @@ public class PlayerController : MonoBehaviour {
     private Vector3 aimDirection = Vector3.forward;
     private Vector3 startPos;
 
+    public float aimSlerpValue = .3f;
+
 
     private float castChargeTime = 0;
     private float chargePercent;
     private bool chargingCast = false;
+
+    private bool shielding = false;
+    public GameObject Shield;
+
 
     public float minStunTime = .5f;
     public float maxStunTime = 1f;
@@ -95,7 +101,6 @@ public class PlayerController : MonoBehaviour {
         playerInput.MoveRight.AddDefaultBinding(InputControlType.LeftStickRight);
         playerInput.MoveUp.AddDefaultBinding(InputControlType.LeftStickUp);
         playerInput.MoveDown.AddDefaultBinding(InputControlType.LeftStickDown);
-
         playerInput.AimLeft.AddDefaultBinding(InputControlType.RightStickLeft);
         playerInput.AimRight.AddDefaultBinding(InputControlType.RightStickRight);
         playerInput.AimUp.AddDefaultBinding(InputControlType.RightStickUp);
@@ -141,7 +146,7 @@ public class PlayerController : MonoBehaviour {
                     chargePercent = castChargeTime / MaxChargeTime;
                     float projectileScale = Mathf.Lerp(minProjectileScale, maxProjectileScale, chargePercent);
                     projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
-                    projectile.transform.position = transform.position + aimDirection.normalized;
+                    projectile.transform.position = transform.position + aimDirection.normalized + new Vector3(0f, -.8f, 0f);
 
                 }
                 if (projectile != null && playerInput.Cast.WasReleased) {
@@ -150,9 +155,23 @@ public class PlayerController : MonoBehaviour {
 
                 }
 
+
+                if (playerInput.Shield.WasPressed) {
+                    if (!shielding) {
+                        //Start shielding
+                        shielding = true;
+                        Shield.SetActive(true);
+                        
+                    }
+                }
+                if(playerInput.Shield.WasReleased) {
+                    shielding = false;
+                    Shield.SetActive(false);
+                }
                 //Movement and aiming
                 transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed / 100);
-                transform.rotation = Quaternion.LookRotation(aimDirection) * Quaternion.identity;
+
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime) ;
             }
             else {
                 stunnedTime += Time.deltaTime;
