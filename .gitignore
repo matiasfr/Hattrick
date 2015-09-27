@@ -19,3 +19,9 @@
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+#system files
+.DS_Store
+
+#ignore library folder
+Library
