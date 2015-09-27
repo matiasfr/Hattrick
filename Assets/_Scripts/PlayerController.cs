@@ -72,7 +72,8 @@ public class PlayerController : MonoBehaviour {
     private float maxProjectileScale = 1f;
     public float MaxChargeTime = 2f; //Time to charge to reach full power
 
-    private float Damage = 0;
+    private float damage = 0;
+	private float energy = 0;
 
     public Projectile projectilePrefab;
     private Projectile projectile = null;
