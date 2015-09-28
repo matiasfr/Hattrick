@@ -65,7 +65,9 @@ public class PlayerController : MonoBehaviour {
     private bool chargingCast = false;
 
     private bool shielding = false;
-    public GameObject Shield;
+    private Shield shield;
+    private Vector3 shieldOffset = new Vector3(0f, -.9f, 0.07f);
+    public Shield ShieldPrefab;
 
 
     public float minStunTime = .5f;
@@ -79,7 +81,7 @@ public class PlayerController : MonoBehaviour {
     public float MaxChargeTime = 2f; //Time to charge to reach full power
 
     private float damage = 0;
-	private float energy = 0;
+    private float energy = 0;
 
     public Projectile projectilePrefab;
     private Projectile projectile = null;
@@ -132,11 +134,12 @@ public class PlayerController : MonoBehaviour {
 
             }
             if (!stunned) {
-                if (playerInput.Cast.WasPressed) {
-                    if (!chargingCast) {
+                if ( playerInput.Cast.WasPressed) {
+                    if (!chargingCast && !shielding) {
                         castChargeTime = 0;
                         chargingCast = true;
                         projectile = Instantiate<Projectile>(projectilePrefab);
+
                     }
 
                 }
@@ -146,13 +149,12 @@ public class PlayerController : MonoBehaviour {
                     chargePercent = castChargeTime / MaxChargeTime;
                     float projectileScale = Mathf.Lerp(minProjectileScale, maxProjectileScale, chargePercent);
                     projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
-                    projectile.transform.position = transform.position + aimDirection.normalized + new Vector3(0f, -.8f, 0f);
+                    projectile.transform.position = transform.position + transform.forward + new Vector3(0f, -.8f, 0f);
 
                 }
-                if (projectile != null && playerInput.Cast.WasReleased) {
-                    chargingCast = false;
+                if (chargingCast && playerInput.Cast.WasReleased) {
                     CastProjectile(chargePercent);
-
+                    chargingCast = false;
                 }
 
 
@@ -160,18 +162,24 @@ public class PlayerController : MonoBehaviour {
                     if (!shielding) {
                         //Start shielding
                         shielding = true;
-                        Shield.SetActive(true);
-                        
+                        shield = Instantiate<Shield>(ShieldPrefab);
+                        shield.transform.parent = transform;
+                        shield.transform.localPosition = shieldOffset;
+                        shield.transform.rotation = transform.rotation;
+
+                        if (chargingCast) {
+                            projectile.Dissipate();
+                            chargingCast = false;
+                        }
+
                     }
                 }
-                if(playerInput.Shield.WasReleased) {
-                    shielding = false;
-                    Shield.SetActive(false);
-                }
-                //Movement and aiming
-                transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed / 100);
 
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime) ;
+                if (shielding && playerInput.Shield.WasReleased) {
+                    shielding = false;
+                    shield.Despawn();
+                }
+
             }
             else {
                 stunnedTime += Time.deltaTime;
@@ -184,7 +192,7 @@ public class PlayerController : MonoBehaviour {
     }
     RaycastHit hit;
     void FixedUpdate() {
-        if(Physics.Raycast(transform.position, Vector3.down, out hit)) {
+        if (Physics.Raycast(transform.position, Vector3.down, out hit)) {
             if (!stunned) {
                 if (hit.collider.gameObject.name == "DeathTrigger") {
                     rb.isKinematic = false;
@@ -193,6 +201,11 @@ public class PlayerController : MonoBehaviour {
                 else if (!rb.isKinematic) {
                     Recover();
                 }
+                //Movement and aiming
+                transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed / 100);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
+
+
             }
             else {
                 if (stunnedTime >= stunLength && playerInput.Jump.WasPressed) {
@@ -211,9 +224,13 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void Stun(float chargePercent) {
-        if (projectile != null && !projectile.isCast) {
+        if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
             chargingCast = false;
+        }
+        if (shielding) {
+            shield.Collapse();
+            shielding = false;
         }
         if (!stunned) {
             rb.isKinematic = false;

@@ -15,6 +15,7 @@ public class Projectile : MonoBehaviour {
     private Collider col;
     private float chargePercent;
     private int casterPlayerNum;
+    private Element element;
 
     void Start() {
         col = GetComponent<Collider>();
@@ -48,16 +49,31 @@ public class Projectile : MonoBehaviour {
         GameObject other = collision.collider.gameObject;
         Dissipate();
 
-        if (other.tag == "Player") {
-            PlayerController pc = other.GetComponent<PlayerController>();
+        PlayerController pc = other.GetComponent<PlayerController>(); //Check if projectile hit a player
+        if (pc != null) {
             if (pc.playerNum != casterPlayerNum) {
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 pc.Stun(chargePercent);
                 rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
+                Destroy(gameObject, 1f);
+
             }
         }
+        else {
+            ShieldPiece sp = other.GetComponent<ShieldPiece>();
+            if (sp != null) { //Check if projectile hit a shield piece
 
-        Destroy(gameObject, 1f);
+                
+             
+
+                if(chargePercent > sp.shield.Power) {
+                    sp.Collapse();
+                    Rigidbody rb = other.GetComponent<Rigidbody>();
+                    rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
+                }
+
+            }
+        }
     }
 
     public void Dissipate() {
