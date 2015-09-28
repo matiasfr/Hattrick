@@ -7,6 +7,10 @@ public class PlayerActions : PlayerActionSet {
     public PlayerAction Shield;
     public PlayerAction Jump;
 
+    public PlayerAction Fire;
+    public PlayerAction Water;
+    public PlayerAction Earth;
+
     public PlayerAction MoveLeft;
     public PlayerAction MoveRight;
     public PlayerAction MoveUp;
@@ -23,6 +27,9 @@ public class PlayerActions : PlayerActionSet {
         Shield = CreatePlayerAction("Shield");
         Jump = CreatePlayerAction("Jump");
 
+        Earth = CreatePlayerAction("Earth");
+        Fire = CreatePlayerAction("Fire");
+        Water = CreatePlayerAction("Water");
 
         MoveLeft = CreatePlayerAction("Move Left");
         MoveRight = CreatePlayerAction("Move Right");
@@ -50,6 +57,12 @@ public class PlayerController : MonoBehaviour {
     public InputControlType CastButton;
     public InputControlType ShieldButton;
     public InputControlType JumpButton;
+    public InputControlType EarthButton;
+    public InputControlType FireButton;
+    public InputControlType WaterButton;
+
+
+
 
     private Vector3 forward = Vector3.zero;
     private Vector3 right = Vector3.zero;
@@ -66,7 +79,7 @@ public class PlayerController : MonoBehaviour {
 
     private bool shielding = false;
     private Shield shield;
-    private Vector3 shieldOffset = new Vector3(0f, -.9f, 0.07f);
+    private Vector3 shieldOffset = new Vector3(0f, -.9f, 0f);
     public Shield ShieldPrefab;
 
 
@@ -87,10 +100,12 @@ public class PlayerController : MonoBehaviour {
     private Projectile projectile = null;
 
     private Rigidbody rb;
+    public Element element;
 
     void Start() {
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
+        ChangeElement(Element.FIRE);
     }
 
     void OnEnable() {
@@ -98,6 +113,10 @@ public class PlayerController : MonoBehaviour {
         playerInput.Cast.AddDefaultBinding(CastButton);
         playerInput.Shield.AddDefaultBinding(ShieldButton);
         playerInput.Jump.AddDefaultBinding(JumpButton);
+
+        playerInput.Earth.AddDefaultBinding(EarthButton);
+        playerInput.Fire.AddDefaultBinding(FireButton);
+        playerInput.Water.AddDefaultBinding(WaterButton);
 
         playerInput.MoveLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
         playerInput.MoveRight.AddDefaultBinding(InputControlType.LeftStickRight);
@@ -139,6 +158,7 @@ public class PlayerController : MonoBehaviour {
                         castChargeTime = 0;
                         chargingCast = true;
                         projectile = Instantiate<Projectile>(projectilePrefab);
+                        projectile.SetElement(element);
 
                     }
 
@@ -163,6 +183,7 @@ public class PlayerController : MonoBehaviour {
                         //Start shielding
                         shielding = true;
                         shield = Instantiate<Shield>(ShieldPrefab);
+                        shield.SetElement(element);
                         shield.transform.parent = transform;
                         shield.transform.localPosition = shieldOffset;
                         shield.transform.rotation = transform.rotation;
@@ -187,6 +208,8 @@ public class PlayerController : MonoBehaviour {
             }
 
         }
+
+        CheckElement();
 
 
     }
@@ -240,6 +263,17 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    void CheckElement() {
+        if (playerInput.Earth.WasPressed) {
+            ChangeElement(Element.EARTH);
+        }
+        else if (playerInput.Fire.WasPressed) {
+            ChangeElement(Element.FIRE);
+        }
+        else if (playerInput.Water.WasPressed) {
+            ChangeElement(Element.WATER);
+        }
+    }
 
     void CastProjectile(float charge) {
         projectile.Cast(aimDirection.normalized, charge, playerNum);
@@ -258,5 +292,9 @@ public class PlayerController : MonoBehaviour {
     void Respawn() {
         transform.position = startPos;
         Recover();
+    }
+
+    void ChangeElement(Element e) {
+        element = e;
     }
 }

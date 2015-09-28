@@ -15,11 +15,18 @@ public class Projectile : MonoBehaviour {
     private Collider col;
     private float chargePercent;
     private int casterPlayerNum;
-    private Element element;
+    public Element element;
+    private Renderer ren;
 
     void Start() {
         col = GetComponent<Collider>();
         col.enabled = false;
+    }
+    public void SetElement(Element e) {
+        element = e;
+        ren = GetComponent<Renderer>();
+        ren.material = element.projectileMaterial;
+
     }
 
 

@@ -5,12 +5,21 @@ public class Shield : MonoBehaviour {
     private float shieldTime = 0f;
     public float maxShieldTime = 3f;
     public bool CollapseOnDespawn = false;
+    public Element element;
     public float Power {
         get {
             return Mathf.Clamp01(1f - (shieldTime / maxShieldTime));
         }
     }
 
+    public void SetElement(Element e) {
+        element = e;
+        foreach(Renderer ren in GetComponentsInChildren<Renderer>()) {
+            ren.material = element.shieldMaterial;
+
+        }
+
+    }
     void Start () {
 
 	}
