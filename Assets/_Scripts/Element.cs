@@ -11,8 +11,10 @@ public class Element : MonoBehaviour {
     public static Element WATER;
 
     public string ElementName;
-    public Material projectileMaterial;
-    public Material shieldMaterial;
+    public Projectile projectilePrefab;
+    public Shield shieldPrefab;
+    //public Material projectileMaterial;
+    //public Material shieldMaterial;
     public Material indicatorMaterial;
 
     void Awake() {

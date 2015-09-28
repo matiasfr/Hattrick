@@ -71,15 +71,13 @@ public class PlayerController : MonoBehaviour {
     private Vector3 startPos;
 
     public float aimSlerpValue = .3f;
-
-
     private float castChargeTime = 0;
     private float chargePercent;
     private bool chargingCast = false;
 
     private bool shielding = false;
     private Shield shield;
-    private Vector3 shieldOffset = new Vector3(0f, -.9f, 0f);
+    private Vector3 shieldOffset = new Vector3(0f, -1f, 0f);
     public Shield ShieldPrefab;
 
 
@@ -157,8 +155,7 @@ public class PlayerController : MonoBehaviour {
                     if (!chargingCast && !shielding) {
                         castChargeTime = 0;
                         chargingCast = true;
-                        projectile = Instantiate<Projectile>(projectilePrefab);
-                        projectile.SetElement(element);
+                        projectile = Instantiate<Projectile>(element.projectilePrefab);
 
                     }
 
@@ -182,8 +179,7 @@ public class PlayerController : MonoBehaviour {
                     if (!shielding) {
                         //Start shielding
                         shielding = true;
-                        shield = Instantiate<Shield>(ShieldPrefab);
-                        shield.SetElement(element);
+                        shield = Instantiate<Shield>(element.shieldPrefab);
                         shield.transform.parent = transform;
                         shield.transform.localPosition = shieldOffset;
                         shield.transform.rotation = transform.rotation;

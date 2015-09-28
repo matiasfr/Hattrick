@@ -12,14 +12,6 @@ public class Shield : MonoBehaviour {
         }
     }
 
-    public void SetElement(Element e) {
-        element = e;
-        foreach(Renderer ren in GetComponentsInChildren<Renderer>()) {
-            ren.material = element.shieldMaterial;
-
-        }
-
-    }
     void Start () {
 
 	}

@@ -22,12 +22,6 @@ public class Projectile : MonoBehaviour {
         col = GetComponent<Collider>();
         col.enabled = false;
     }
-    public void SetElement(Element e) {
-        element = e;
-        ren = GetComponent<Renderer>();
-        ren.material = element.projectileMaterial;
-
-    }
 
 
     void Update() {
