@@ -13,6 +13,15 @@ public class Element : MonoBehaviour {
     public string ElementName;
     public Projectile projectilePrefab;
     public Shield shieldPrefab;
+
+    public Element weakness {
+        get {
+            if (this == Element.EARTH) return Element.WATER;
+            else if (this == Element.FIRE) return Element.EARTH;
+            else return Element.FIRE;
+        }
+    }
+
     //public Material projectileMaterial;
     //public Material shieldMaterial;
     public Material indicatorMaterial;
@@ -29,6 +38,9 @@ public class Element : MonoBehaviour {
                 Element.WATER = this;
                 break;
         }
+    }
+
+    void Start() {
     }
 
 

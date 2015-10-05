@@ -48,7 +48,6 @@ public class Projectile : MonoBehaviour {
 
     void OnCollisionEnter(Collision collision) {
         GameObject other = collision.collider.gameObject;
-        Dissipate();
 
         PlayerController pc = other.GetComponent<PlayerController>(); //Check if projectile hit a player
         if (pc != null) {
@@ -56,22 +55,34 @@ public class Projectile : MonoBehaviour {
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 pc.Stun(chargePercent);
                 rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
-                Destroy(gameObject, 1f);
-
+                Impact();
             }
         }
         else {
             ShieldPiece sp = other.GetComponent<ShieldPiece>();
             if (sp != null) { //Check if projectile hit a shield piece
 
-                
-             
-
-                if(chargePercent > sp.shield.Power) {
+                if(sp.shield.element.weakness == element) { //If the shield is weak to this projectile type
                     sp.Collapse();
                     Rigidbody rb = other.GetComponent<Rigidbody>();
                     rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
+
                 }
+                else if(sp.shield.element == element) { //If the shield is the same as this projectile type
+                    if (chargePercent > sp.shield.Power) {
+                        sp.Collapse();
+                        Rigidbody rb = other.GetComponent<Rigidbody>();
+                        rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
+                        Impact();
+
+                    }
+
+                }
+                else { // If the shield is strong against and blocks this projectile type
+                    Impact();
+
+                }
+
 
             }
         }
@@ -79,6 +90,11 @@ public class Projectile : MonoBehaviour {
 
     public void Dissipate() {
         Destroy(gameObject);
-        //TODO Add dissapate effect
+        //TODO Add dissapate VFX + SFX
+    }
+
+    public void Impact() {
+        Destroy(gameObject);
+        //TODO Add impact VFX + SFX
     }
 }
