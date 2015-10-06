@@ -1,0 +1,169 @@
+fileFormatVersion: 2
+guid: 90f67d47121373e40ada2259b0346e9a
+timeCreated: 1444089600
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: pPrism10
+    100002: pPrism11
+    100004: pPrism12
+    100006: pPrism13
+    100008: pPrism14
+    100010: pPrism15
+    100012: pPrism16
+    100014: pPrism17
+    100016: pPrism18
+    100018: pPrism19
+    100020: pPrism2
+    100022: pPrism3
+    100024: pPrism4
+    100026: pPrism5
+    100028: pPrism6
+    100030: pPrism7
+    100032: pPrism8
+    100034: pPrism9
+    100036: //RootNode
+    100038: shieldPiece
+    400000: pPrism10
+    400002: pPrism11
+    400004: pPrism12
+    400006: pPrism13
+    400008: pPrism14
+    400010: pPrism15
+    400012: pPrism16
+    400014: pPrism17
+    400016: pPrism18
+    400018: pPrism19
+    400020: pPrism2
+    400022: pPrism3
+    400024: pPrism4
+    400026: pPrism5
+    400028: pPrism6
+    400030: pPrism7
+    400032: pPrism8
+    400034: pPrism9
+    400036: //RootNode
+    400038: shieldPiece
+    2300000: pPrism10
+    2300002: pPrism11
+    2300004: pPrism12
+    2300006: pPrism13
+    2300008: pPrism14
+    2300010: pPrism15
+    2300012: pPrism16
+    2300014: pPrism17
+    2300016: pPrism18
+    2300018: pPrism19
+    2300020: pPrism2
+    2300022: pPrism3
+    2300024: pPrism4
+    2300026: pPrism5
+    2300028: pPrism6
+    2300030: pPrism7
+    2300032: pPrism8
+    2300034: pPrism9
+    2300036: shieldPiece
+    3300000: pPrism10
+    3300002: pPrism11
+    3300004: pPrism12
+    3300006: pPrism13
+    3300008: pPrism14
+    3300010: pPrism15
+    3300012: pPrism16
+    3300014: pPrism17
+    3300016: pPrism18
+    3300018: pPrism19
+    3300020: pPrism2
+    3300022: pPrism3
+    3300024: pPrism4
+    3300026: pPrism5
+    3300028: pPrism6
+    3300030: pPrism7
+    3300032: pPrism8
+    3300034: pPrism9
+    3300036: shieldPiece
+    4300000: pPrism2
+    4300002: pPrism3
+    4300004: pPrism4
+    4300006: pPrism5
+    4300008: pPrism6
+    4300010: pPrism7
+    4300012: pPrism8
+    4300014: pPrism9
+    4300016: pPrism10
+    4300018: pPrism11
+    4300020: pPrism12
+    4300022: pPrism13
+    4300024: pPrism14
+    4300026: pPrism15
+    4300028: pPrism16
+    4300030: pPrism17
+    4300032: pPrism18
+    4300034: pPrism19
+    4300036: shieldPiece
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 50
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour {
 
     private bool shielding = false;
     private Shield shield;
-    private Vector3 shieldOffset = new Vector3(0f, -1f, 0f);
+    private Vector3 shieldOffset = new Vector3(0f, -1.4f, 0f);
 
     public float minStunTime = .5f;
     public float maxStunTime = 1f;
@@ -159,6 +159,7 @@ public class PlayerController : MonoBehaviour {
                 else if (!rb.isKinematic) {
                     StartCoroutine(Recover());
                 }
+
                 //Movement and aiming
                 transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed / 100);
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
@@ -191,7 +192,6 @@ public class PlayerController : MonoBehaviour {
             shielding = false;
         }
         if (!stunned) {
-            controller.Vibrate(500f, 500f);
             rb.isKinematic = false;
             stunned = true;
             stunLength = Mathf.Lerp(minStunTime, maxStunTime, chargePercent);
