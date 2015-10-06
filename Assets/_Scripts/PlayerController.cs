@@ -211,6 +211,13 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    void OnCollisionEnter(Collision collision) {
+        if (collision.collider.gameObject.tag == "Player") {
+            Stun(.1f);
+            rb.AddExplosionForce(1f, collision.contacts[0].point, 1f);
+        }
+    }
+
     void ProjectileControl() {
         if (playerInput.Cast.WasPressed) {
             if (!chargingCast && !shielding) {

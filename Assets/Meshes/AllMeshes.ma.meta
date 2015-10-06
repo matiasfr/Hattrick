@@ -77,6 +77,7 @@ ModelImporter:
     100138: shieldPiece7
     100140: shieldPiece8
     100142: shieldPiece9
+    100144: pSolid1
     400000: //RootNode
     400002: BasicStage
     400004: body
@@ -149,6 +150,7 @@ ModelImporter:
     400138: shieldPiece7
     400140: shieldPiece8
     400142: shieldPiece9
+    400144: pSolid1
     2300000: BasicStage
     2300002: body
     2300004: cape
@@ -216,6 +218,7 @@ ModelImporter:
     2300128: shieldPiece7
     2300130: shieldPiece8
     2300132: shieldPiece9
+    2300134: pSolid1
     3300000: BasicStage
     3300002: body
     3300004: cape
@@ -283,6 +286,7 @@ ModelImporter:
     3300128: shieldPiece7
     3300130: shieldPiece8
     3300132: shieldPiece9
+    3300134: pSolid1
     4300000: BasicStage
     4300002: shieldPiece1
     4300004: shieldPiece2
@@ -350,6 +354,7 @@ ModelImporter:
     4300128: pCube21
     4300130: pCube22
     4300132: pCube23
+    4300134: pSolid1
     9500000: //RootNode
   materials:
     importMaterials: 1

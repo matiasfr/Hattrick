@@ -1,4 +1,4 @@
-﻿#if UNITY_4_6 || UNITY_5_0
+﻿
 using UnityEngine;
 using UnityEngine.EventSystems;
 using InControl;
@@ -184,7 +184,7 @@ namespace InControl
 		{
 			var mouseData = GetMousePointerEventData();
 
-			var pressed = mouseData.AnyPressesThisFrame();
+            var pressed = mouseData.AnyPressesThisFrame();
 			var released = mouseData.AnyReleasesThisFrame();
 
 			var leftButtonData = mouseData.GetButtonState( PointerEventData.InputButton.Left ).eventData;
@@ -525,5 +525,4 @@ namespace InControl
 		}
 	}
 }
-#endif
 
