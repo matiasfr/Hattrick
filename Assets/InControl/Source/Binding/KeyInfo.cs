@@ -149,7 +149,7 @@ namespace InControl
 
 			new KeyInfo( Key.Backquote, "Backquote", KeyCode.BackQuote ),
 			new KeyInfo( Key.Minus, "Minus", KeyCode.Minus ),
-			new KeyInfo( Key.Plus, "Plus", KeyCode.Plus ),
+			new KeyInfo( Key.Equals, "Equals", KeyCode.Equals ),
 			new KeyInfo( Key.Backspace, "Backspace", "Delete", KeyCode.Backspace ),
 
 			new KeyInfo( Key.Tab, "Tab", KeyCode.Tab ),
@@ -161,9 +161,9 @@ namespace InControl
 			new KeyInfo( Key.Quote, "Quote", KeyCode.Quote ),
 			new KeyInfo( Key.Return, "Return", KeyCode.Return ),
 
-			new KeyInfo( Key.LessThan, "Less Than", KeyCode.Less ),
-			new KeyInfo( Key.GreaterThan, "Greater Than", KeyCode.Greater ),
-			new KeyInfo( Key.QuestionMark, "Question Mark", KeyCode.Question ),
+			new KeyInfo( Key.Comma, "Comma", KeyCode.Comma ),
+			new KeyInfo( Key.Period, "Period", KeyCode.Period ),
+			new KeyInfo( Key.Slash, "Slash", KeyCode.Slash ),
 
 			new KeyInfo( Key.Space, "Space", KeyCode.Space ),
 

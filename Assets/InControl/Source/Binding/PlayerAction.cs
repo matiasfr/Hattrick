@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 
@@ -27,6 +28,11 @@ namespace InControl
 		public string Name { get; private set; }
 
 		/// <summary>
+		/// Gets the owning action set containing this action.
+		/// </summary>
+		public PlayerActionSet Owner { get; private set; }
+
+		/// <summary>
 		/// Configures how this action listens for new bindings.
 		/// When <c>null</c> (default) the owner's <see cref="PlayerActionSet.ListenOptions"/> will be used.
 		/// <seealso cref="PlayerAction.ListenForBinding()"/>
@@ -44,10 +50,9 @@ namespace InControl
 
 		readonly ReadOnlyCollection<BindingSource> bindings;
 
-		PlayerActionSet owner;
-
 		readonly static BindingSourceListener[] bindingSourceListeners = new BindingSourceListener[] {
 			new DeviceBindingSourceListener(),
+			new UnknownDeviceBindingSourceListener(),
 			new KeyBindingSourceListener(),
 			new MouseBindingSourceListener()
 		};
@@ -62,7 +67,7 @@ namespace InControl
 		{
 			Raw = true;
 			Name = name;
-			this.owner = owner;
+			Owner = owner;
 			bindings = new ReadOnlyCollection<BindingSource>( visibleBindings );
 		}
 
@@ -147,7 +152,8 @@ namespace InControl
 
 			if (binding.BoundTo != null)
 			{
-				throw new InControlException( "Binding source is already bound to action " + binding.BoundTo.Name );
+				Debug.LogWarning( "Binding source is already bound to action " + binding.BoundTo.Name );
+				return false;
 			}
 
 			if (regularBindings.Contains( binding ))
@@ -167,14 +173,154 @@ namespace InControl
 		}
 
 
-		bool HasBinding( BindingSource binding )
+		/// <summary>
+		/// Insert a regular binding to the action at the specified index. A binding cannot be 
+		/// inserted if it matches an existing binding on the action, or if it is already bound to 
+		/// another action.
+		/// </summary>
+		/// <returns><c>true</c>, if binding was inserted, <c>false</c> otherwise.</returns>
+		/// <param name="binding">The index at which to insert.</param>
+		/// <param name="binding">The BindingSource to insert.</param>
+		public bool InsertBindingAt( int index, BindingSource binding )
+		{
+			if (index < 0 || index > visibleBindings.Count)
+			{
+				throw new InControlException( "Index is out of range for bindings on this action." );
+			}
+
+			if (index == visibleBindings.Count)
+			{
+				return AddBinding( binding );
+			}
+
+			if (binding == null)
+			{
+				return false;
+			}
+
+			if (binding.BoundTo != null)
+			{
+				Debug.LogWarning( "Binding source is already bound to action " + binding.BoundTo.Name );
+				return false;
+			}
+
+			if (regularBindings.Contains( binding ))
+			{
+				return false;
+			}
+
+			var regularIndex = (index == 0) ? 0 : regularBindings.IndexOf( visibleBindings[index] );
+			regularBindings.Insert( regularIndex, binding );
+			binding.BoundTo = this;
+
+			if (binding.IsValid)
+			{
+				visibleBindings.Insert( index, binding );
+			}
+
+			return true;
+		}
+
+
+		internal bool HasBinding( BindingSource binding )
 		{
 			if (binding == null)
 			{
 				return false;
 			}
 
-			return regularBindings.Contains( binding );
+			var foundBinding = FindBinding( binding );
+			if (foundBinding == null)
+			{
+				return false;
+			}
+
+			return foundBinding.BoundTo == this;
+		}
+
+
+		internal BindingSource FindBinding( BindingSource binding )
+		{
+			if (binding == null)
+			{
+				return null;
+			}
+
+			var index = regularBindings.IndexOf( binding );
+			if (index >= 0)
+			{
+				return regularBindings[index];
+			}
+
+			return null;
+		}
+
+
+		internal void FindAndRemoveBinding( BindingSource binding )
+		{
+			if (binding == null)
+			{
+				return;
+			}
+
+			var bindingIndex = regularBindings.IndexOf( binding );
+			if (bindingIndex >= 0)
+			{
+				var foundBinding = regularBindings[bindingIndex];
+				if (foundBinding.BoundTo == this)
+				{
+					foundBinding.BoundTo = null;
+					regularBindings.RemoveAt( bindingIndex );
+					UpdateVisibleBindings();
+				}
+			}
+		}
+
+
+		internal int CountBindingsOfType( BindingSourceType bindingSourceType )
+		{
+			int count = 0;
+			var bindingCount = regularBindings.Count;
+			for (int i = 0; i < bindingCount; i++)
+			{
+				var binding = regularBindings[i];
+				if (binding.BoundTo == this && binding.BindingSourceType == bindingSourceType)
+				{
+					count += 1;
+				}
+			}
+			return count;
+		}
+
+
+		internal void RemoveFirstBindingOfType( BindingSourceType bindingSourceType )
+		{
+			var bindingCount = regularBindings.Count;
+			for (int i = 0; i < bindingCount; i++)
+			{
+				var binding = regularBindings[i];
+				if (binding.BoundTo == this && binding.BindingSourceType == bindingSourceType)
+				{
+					binding.BoundTo = null;
+					regularBindings.RemoveAt( i );
+					return;
+				}
+			}
+		}
+
+
+		internal int IndexOfFirstInvalidBinding()
+		{
+			var bindingCount = regularBindings.Count;
+			for (int i = 0; i < bindingCount; i++)
+			{
+				if (!regularBindings[i].IsValid)
+				{
+					return i;
+				}
+			}
+
+			return -1;
 		}
 
 
@@ -197,6 +343,23 @@ namespace InControl
 			}
 
 			binding.BoundTo = null;
+		}
+
+
+		/// <summary>
+		/// Removes the binding at the specified index from the action.
+		/// Note: the action is only marked for removal, and is not immediately removed. This is
+		/// to allow for safe removal during iteration over the Bindings collection.
+		/// </summary>
+		/// <param name="index">The index of the BindingSource in the Bindings collection to remove.</param>
+		public void RemoveBindingAt( int index )
+		{
+			if (index < 0 || index >= regularBindings.Count)
+			{
+				throw new InControlException( "Index is out of range for bindings on this action." );
+			}
+
+			regularBindings[index].BoundTo = null;
 		}
 
 
@@ -246,7 +409,7 @@ namespace InControl
 		/// </summary>
 		public void ListenForBinding()
 		{
-			owner.listenWithAction = this;
+			Owner.listenWithAction = this;
 
 			var bindingSourceListenerCount = bindingSourceListeners.Length;
 			for (int i = 0; i < bindingSourceListenerCount; i++)
@@ -263,7 +426,7 @@ namespace InControl
 		{
 			if (IsListeningForBinding)
 			{
-				owner.listenWithAction = null;
+				Owner.listenWithAction = null;
 			}
 		}
 
@@ -275,7 +438,7 @@ namespace InControl
 		{
 			get
 			{
-				return owner.listenWithAction == this;
+				return Owner.listenWithAction == this;
 			}
 		}
 
@@ -319,6 +482,7 @@ namespace InControl
 			for (int i = bindingCount - 1; i >= 0; i--)
 			{
 				var binding = regularBindings[i];
+
 				if (binding.BoundTo != this)
 				{
 					regularBindings.RemoveAt( i );
@@ -335,6 +499,8 @@ namespace InControl
 			}
 
 			Commit();
+
+			Enabled = Owner.Enabled;
 		}
 
 
@@ -343,7 +509,7 @@ namespace InControl
 			if (IsListeningForBinding)
 			{
 				BindingSource binding = null;
-				var listenOptions = ListenOptions ?? owner.ListenOptions;
+				var listenOptions = ListenOptions ?? Owner.ListenOptions;
 
 				var bindingSourceListenerCount = bindingSourceListeners.Length;
 				for (int i = 0; i < bindingSourceListenerCount; i++)
@@ -357,27 +523,60 @@ namespace InControl
 
 				if (binding == null)
 				{
-					return;
-				}
-
-				if (HasBinding( binding ))
-				{
+					// No binding found.
 					return;
 				}
 
 				var onBindingFound = listenOptions.OnBindingFound;
 				if (onBindingFound != null && !onBindingFound( this, binding ))
 				{
+					// Binding rejected by user.
+					return;
+				}
+
+				if (HasBinding( binding ))
+				{
+					var onBindingRejected = listenOptions.OnBindingRejected;
+					if (onBindingRejected != null)
+					{
+						onBindingRejected( this, binding, BindingSourceRejectionType.DuplicateBindingOnAction );
+					}
+					return;
+				}
+
+				if (listenOptions.UnsetDuplicateBindingsOnSet)
+				{
+					Owner.RemoveBinding( binding );
+				}
+
+				if (!listenOptions.AllowDuplicateBindingsPerSet && Owner.HasBinding( binding ))
+				{					
+					var onBindingRejected = listenOptions.OnBindingRejected;
+					if (onBindingRejected != null)
+					{
+						onBindingRejected( this, binding, BindingSourceRejectionType.DuplicateBindingOnActionSet );
+					}
 					return;
 				}
 
 				StopListeningForBinding();
 
-				if (listenOptions.MaxAllowedBindings > 0)
+				if (listenOptions.MaxAllowedBindingsPerType > 0)
 				{
-					while (regularBindings.Count >= listenOptions.MaxAllowedBindings)
+					while (CountBindingsOfType( binding.BindingSourceType ) >= listenOptions.MaxAllowedBindingsPerType)
 					{
-						regularBindings.RemoveAt( 0 );
+						RemoveFirstBindingOfType( binding.BindingSourceType );
+					}
+				}
+				else
+				{
+					if (listenOptions.MaxAllowedBindings > 0)
+					{
+						while (regularBindings.Count >= listenOptions.MaxAllowedBindings)
+						{
+							var removeIndex = Mathf.Max( 0, IndexOfFirstInvalidBinding() );
+							regularBindings.RemoveAt( removeIndex );
+						}
 					}
 				}
 
@@ -415,7 +614,7 @@ namespace InControl
 			{
 				if (device == null)
 				{
-					device = owner.Device;
+					device = Owner.Device;
 					UpdateVisibleBindings();
 				}
 
@@ -442,27 +641,32 @@ namespace InControl
 			for (int i = 0; i < bindingCount; i++)
 			{
 				var bindingSourceType = (BindingSourceType) reader.ReadInt32();
+				BindingSource bindingSource;
 
-				if (bindingSourceType == BindingSourceType.DeviceBindingSource)
+				switch (bindingSourceType)
 				{
-					var binding = new DeviceBindingSource();
-					binding.Load( reader );
-					AddBinding( binding );
+					case BindingSourceType.DeviceBindingSource:
+						bindingSource = new DeviceBindingSource();
+						break;
+
+					case BindingSourceType.KeyBindingSource:
+						bindingSource = new KeyBindingSource();
+						break;
+
+					case BindingSourceType.MouseBindingSource:
+						bindingSource = new MouseBindingSource();
+						break;
+					
+					case BindingSourceType.UnknownDeviceBindingSource:
+						bindingSource = new UnknownDeviceBindingSource();
+						break;
+
+					default:
+						throw new InControlException( "Don't know how to load BindingSourceType: " + bindingSourceType );
 				}
 
-				if (bindingSourceType == BindingSourceType.KeyBindingSource)
-				{
-					var binding = new KeyBindingSource();
-					binding.Load( reader );
-					AddBinding( binding );
-				}
-
-				if (bindingSourceType == BindingSourceType.MouseBindingSource)
-				{
-					var binding = new MouseBindingSource();
-					binding.Load( reader );
-					AddBinding( binding );
-				}
+				bindingSource.Load( reader );
+				AddBinding( bindingSource );
 			}
 		}
 

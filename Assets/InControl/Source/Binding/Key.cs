@@ -78,7 +78,7 @@ namespace InControl
 
 		Backquote,
 		Minus,
-		Plus,
+		Equals,
 		Backspace,
 
 		Tab,
@@ -90,9 +90,9 @@ namespace InControl
 		Quote,
 		Return,
 
-		LessThan,
-		GreaterThan,
-		QuestionMark,
+		Comma,
+		Period,
+		Slash,
 
 		Space,
 

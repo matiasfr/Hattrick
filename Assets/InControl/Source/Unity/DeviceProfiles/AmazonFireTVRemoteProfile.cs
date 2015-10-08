@@ -13,8 +13,7 @@ namespace InControl
 			Meta = "Amazon Fire TV Remote on Amazon Fire TV";
 
 			SupportedPlatforms = new[] {
-				"Amazon AFTB",
-				"Amazon AFTM"
+				"Amazon AFT",
 			};
 
 			JoystickNames = new[] {
@@ -30,8 +29,13 @@ namespace InControl
 				},
 				new InputControlMapping {
 					Handle = "Back",
-					Target = InputControlType.Select,
+					Target = InputControlType.Back,
 					Source = EscapeKey
+				},
+				new InputControlMapping {
+					Handle = "Menu",
+					Target = InputControlType.Menu,
+					Source = MenuKey
 				}
 			};
 

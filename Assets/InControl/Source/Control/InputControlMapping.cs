@@ -5,7 +5,7 @@ namespace InControl
 {
 	public class InputControlMapping
 	{
-		[TinyJSON.TypeHint]
+		// [TinyJSON.TypeHint]
 		public InputControlSource Source;
 
 		public InputControlType Target;
@@ -49,7 +49,7 @@ namespace InControl
 				value = InputRange.Remap( value, SourceRange, TargetRange );
 			}
 
-			if (Invert ^ InputManager.InvertYAxis)
+			if (Invert)
 			{
 				value = -value;
 			}

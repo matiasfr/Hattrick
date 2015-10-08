@@ -5,12 +5,16 @@ namespace InControl
 {
 	// @cond nodoc
 	[AutoDiscover]
-	public class NVidiaShieldTabletProfile : UnityInputDeviceProfile
+	public class NVidiaShieldWinProfile : UnityInputDeviceProfile
 	{
-		public NVidiaShieldTabletProfile()
+		public NVidiaShieldWinProfile()
 		{
 			Name = "NVIDIA Shield Controller";
-			Meta = "NVIDIA Shield Controller on Windows";
+			Meta = "NVIDIA Shield Controller on Windows 8+";
+
+            ExcludePlatforms = new[] {
+                "Windows 7"
+            };
 
 			SupportedPlatforms = new[] {
 				"Windows"
@@ -24,63 +28,63 @@ namespace InControl
 				new InputControlMapping {
 					Handle = "A",
 					Target = InputControlType.Action1,
-					Source = Button0
+					Source = Button9
 				},
 				new InputControlMapping {
 					Handle = "B",
 					Target = InputControlType.Action2,
-					Source = Button1
+					Source = Button8
 				},
 				new InputControlMapping {
 					Handle = "X",
 					Target = InputControlType.Action3,
-					Source = Button2
+					Source = Button7
 				},
 				new InputControlMapping {
 					Handle = "Y",
 					Target = InputControlType.Action4,
-					Source = Button3
+					Source = Button6
 				},
 				new InputControlMapping {
 					Handle = "Left Bumper",
 					Target = InputControlType.LeftBumper,
-					Source = Button4
+					Source = Button5
 				},
 				new InputControlMapping {
 					Handle = "Right Bumper",
 					Target = InputControlType.RightBumper,
-					Source = Button5
+					Source = Button4
 				},
 				new InputControlMapping {
 					Handle = "Left Stick Button",
 					Target = InputControlType.LeftStickButton,
-					Source = Button8
+					Source = Button3
 				},
 				new InputControlMapping {
 					Handle = "Right Stick Button",
 					Target = InputControlType.RightStickButton,
-					Source = Button9
+					Source = Button2
 				},
 				new InputControlMapping {
 					Handle = "Back",
 					Target = InputControlType.Back,
-					Source = Button6
+					Source = Button11
 				},
 				new InputControlMapping {
 					Handle = "Start",
 					Target = InputControlType.Start,
-					Source = Button7
+					Source = Button0
 				},
-//				new InputControlMapping {
-//					Handle = "System",
-//					Target = InputControlType.System,
-//					Source = Button12
-//				},
-//				new InputControlMapping {
-//					Handle = "Home",
-//					Target = InputControlType.Home,
-//					Source = Button10
-//				}
+				new InputControlMapping {
+					Handle = "System",
+					Target = InputControlType.System,
+					Source = Button12
+				},
+				new InputControlMapping {
+					Handle = "Home",
+					Target = InputControlType.Home,
+					Source = Button10
+				}
 			};
 
 			AnalogMappings = new[] {
@@ -89,40 +93,25 @@ namespace InControl
 				LeftStickUpMapping( Analog1 ),
 				LeftStickDownMapping( Analog1 ),
 
-				RightStickLeftMapping( Analog3 ),
-				RightStickRightMapping( Analog3 ),
-				RightStickUpMapping( Analog4 ),
-				RightStickDownMapping( Analog4 ),
+				RightStickLeftMapping( Analog2 ),
+				RightStickRightMapping( Analog2 ),
+				RightStickUpMapping( Analog3 ),
+				RightStickDownMapping( Analog3 ),
 
-				DPadLeftMapping( Analog5 ),
-				DPadRightMapping( Analog5 ),
-				DPadUpMapping2( Analog6 ),
-				DPadDownMapping2( Analog6 ),
+				DPadLeftMapping( Analog4 ),
+				DPadRightMapping( Analog4 ),
+				DPadUpMapping2( Analog5 ),
+				DPadDownMapping2( Analog5 ),
 
 				new InputControlMapping {
 					Handle = "Left Trigger",
 					Target = InputControlType.LeftTrigger,
-					Source = Analog2,
-					SourceRange = InputRange.ZeroToOne,
-					TargetRange = InputRange.ZeroToOne,
+					Source = Analog6
 				},
 				new InputControlMapping {
 					Handle = "Right Trigger",
 					Target = InputControlType.RightTrigger,
-					Source = Analog2,
-					SourceRange = InputRange.ZeroToMinusOne,
-					TargetRange = InputRange.ZeroToOne,
-				},
-				
-				new InputControlMapping {
-					Handle = "Left Trigger",
-					Target = InputControlType.LeftTrigger,
-					Source = Analog8
-				},
-				new InputControlMapping {
-					Handle = "Right Trigger",
-					Target = InputControlType.RightTrigger,
-					Source = Analog9
+					Source = Analog7
 				}
 			};
 		}

@@ -41,7 +41,7 @@ namespace InControl
 				var analogMapping = Profile.AnalogMappings[i];
 				var analogControl = AddControl( analogMapping.Target, analogMapping.Handle );
 
-				analogControl.Sensitivity = Mathf.Max( Profile.Sensitivity, analogMapping.Sensitivity );
+				analogControl.Sensitivity = Mathf.Min( Profile.Sensitivity, analogMapping.Sensitivity );
 				analogControl.LowerDeadZone = Mathf.Max( Profile.LowerDeadZone, analogMapping.LowerDeadZone );
 				analogControl.UpperDeadZone = Mathf.Min( Profile.UpperDeadZone, analogMapping.UpperDeadZone );
 				analogControl.Raw = analogMapping.Raw;
@@ -58,7 +58,6 @@ namespace InControl
 			if (joystickId != 0)
 			{
 				SortOrder = 100 + joystickId;
-				Meta += " [id: " + joystickId + "]";
 			}
 		}
 
@@ -77,7 +76,7 @@ namespace InControl
 				var analogValue = analogMapping.Source.GetValue( this );
 				var targetControl = GetControl( analogMapping.Target );
 
-				if (!(analogMapping.IgnoreInitialZeroValue && targetControl.IsOnZeroTick && Mathf.Abs( analogValue ) < Mathf.Epsilon))
+				if (!(analogMapping.IgnoreInitialZeroValue && targetControl.IsOnZeroTick && Utility.IsZero( analogValue )))
 				{
 					var mappedValue = analogMapping.MapValue( analogValue );
 					targetControl.UpdateWithValue( mappedValue, updateTick, deltaTime );

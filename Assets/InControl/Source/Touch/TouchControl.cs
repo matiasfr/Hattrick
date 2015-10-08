@@ -88,6 +88,11 @@ namespace InControl
 
 		void Setup()
 		{
+			if (!enabled)
+			{
+				return;
+			}
+
 			CreateControl();
 			ConfigureControl();
 		}
@@ -175,14 +180,12 @@ namespace InControl
 
 			if (target == AnalogTarget.LeftStick || target == AnalogTarget.Both)
 			{
-				TouchManager.Device.LeftStickX.Commit();
-				TouchManager.Device.LeftStickY.Commit();
+				TouchManager.Device.CommitLeftStick();
 			}
 
 			if (target == AnalogTarget.RightStick || target == AnalogTarget.Both)
 			{
-				TouchManager.Device.RightStickX.Commit();
-				TouchManager.Device.RightStickY.Commit();
+				TouchManager.Device.CommitRightStick();
 			}
 		}
 
@@ -196,14 +199,12 @@ namespace InControl
 
 			if (target == AnalogTarget.LeftStick || target == AnalogTarget.Both)
 			{
-				TouchManager.Device.LeftStickX.UpdateWithValue( rawValue.x, updateTick, deltaTime );
-				TouchManager.Device.LeftStickY.UpdateWithValue( rawValue.y, updateTick, deltaTime );
+				TouchManager.Device.UpdateLeftStickWithValue( rawValue, updateTick, deltaTime );
 			}
 
 			if (target == AnalogTarget.RightStick || target == AnalogTarget.Both)
 			{
-				TouchManager.Device.RightStickX.UpdateWithValue( rawValue.x, updateTick, deltaTime );
-				TouchManager.Device.RightStickY.UpdateWithValue( rawValue.y, updateTick, deltaTime );
+				TouchManager.Device.UpdateRightStickWithValue( rawValue, updateTick, deltaTime );
 			}
 		}
 

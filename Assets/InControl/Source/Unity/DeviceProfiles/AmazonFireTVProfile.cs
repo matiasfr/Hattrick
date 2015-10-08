@@ -13,7 +13,7 @@ namespace InControl
 			Meta = "Amazon Fire Controller on Amazon Fire TV";
 
 			SupportedPlatforms = new[] {
-				"Amazon AFTB",
+				"Amazon AFT",
 				"Android"
 			};
 
@@ -64,8 +64,13 @@ namespace InControl
 				},
 				new InputControlMapping {
 					Handle = "Back",
-					Target = InputControlType.Select,
+					Target = InputControlType.Back,
 					Source = EscapeKey
+				},
+				new InputControlMapping {
+					Handle = "Menu",
+					Target = InputControlType.Menu,
+					Source = MenuKey
 				}
 			};
 

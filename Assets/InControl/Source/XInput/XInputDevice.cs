@@ -10,57 +10,62 @@ namespace InControl
 {
 	public class XInputDevice : InputDevice
 	{
-		public int DeviceIndex { get; private set; }
+		const float LowerDeadZone = 0.2f;
+		const float UpperDeadZone = 0.9f;
+
+		XInputDeviceManager owner;
 		GamePadState state;
 
+		public int DeviceIndex { get; private set; }
 
-		public XInputDevice( int deviceIndex )
-			: base( "Xbox 360 Controller (XInput)" )
+
+		public XInputDevice( int deviceIndex, XInputDeviceManager owner )
+			: base( "XInput Controller" )
 		{
+			this.owner = owner;
+
 			DeviceIndex = deviceIndex;
 			SortOrder = deviceIndex;
 
 			Meta = "XInput Device #" + deviceIndex;
 
-			AddControl( InputControlType.LeftStickLeft, "LeftStickLeft" );
-			AddControl( InputControlType.LeftStickRight, "LeftStickRight" );
-			AddControl( InputControlType.LeftStickUp, "LeftStickUp" );
-			AddControl( InputControlType.LeftStickDown, "LeftStickDown" );
+			AddControl( InputControlType.LeftStickLeft, "Left Stick Left", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.LeftStickRight, "Left Stick Right", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.LeftStickUp, "Left Stick Up", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.LeftStickDown, "Left Stick Down", LowerDeadZone, UpperDeadZone );
 
-			AddControl( InputControlType.RightStickLeft, "RightStickLeft" );
-			AddControl( InputControlType.RightStickRight, "RightStickRight" );
-			AddControl( InputControlType.RightStickUp, "RightStickUp" );
-			AddControl( InputControlType.RightStickDown, "RightStickDown" );
+			AddControl( InputControlType.RightStickLeft, "Right Stick Left", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.RightStickRight, "Right Stick Right", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.RightStickUp, "Right Stick Up", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.RightStickDown, "Right Stick Down", LowerDeadZone, UpperDeadZone );
 
-			AddControl( InputControlType.LeftTrigger, "LeftTrigger" );
-			AddControl( InputControlType.RightTrigger, "RightTrigger" );
+			AddControl( InputControlType.LeftTrigger, "Left Trigger", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.RightTrigger, "Right Trigger", LowerDeadZone, UpperDeadZone );
 
-			AddControl( InputControlType.DPadUp, "DPadUp" );
-			AddControl( InputControlType.DPadDown, "DPadDown" );
-			AddControl( InputControlType.DPadLeft, "DPadLeft" );
-			AddControl( InputControlType.DPadRight, "DPadRight" );
+			AddControl( InputControlType.DPadUp, "DPad Up", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.DPadDown, "DPad Down", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.DPadLeft, "DPad Left", LowerDeadZone, UpperDeadZone );
+			AddControl( InputControlType.DPadRight, "DPad Right", LowerDeadZone, UpperDeadZone );
 
-			AddControl( InputControlType.Action1, "Action1" );
-			AddControl( InputControlType.Action2, "Action2" );
-			AddControl( InputControlType.Action3, "Action3" );
-			AddControl( InputControlType.Action4, "Action4" );
+			AddControl( InputControlType.Action1, "A" );
+			AddControl( InputControlType.Action2, "B" );
+			AddControl( InputControlType.Action3, "X" );
+			AddControl( InputControlType.Action4, "Y" );
 
-			AddControl( InputControlType.LeftBumper, "LeftBumper" );
-			AddControl( InputControlType.RightBumper, "RightBumper" );
+			AddControl( InputControlType.LeftBumper, "Left Bumper" );
+			AddControl( InputControlType.RightBumper, "Right Bumper" );
 
-			AddControl( InputControlType.LeftStickButton, "LeftStickButton" );
-			AddControl( InputControlType.RightStickButton, "RightStickButton" );
+			AddControl( InputControlType.LeftStickButton, "Left Stick Button" );
+			AddControl( InputControlType.RightStickButton, "Right Stick Button" );
 
 			AddControl( InputControlType.Start, "Start" );
 			AddControl( InputControlType.Back, "Back" );
-
-			QueryState();
 		}
 
 
 		public override void Update( ulong updateTick, float deltaTime )
 		{
-			QueryState();
+			GetState();
 
 			UpdateLeftStickWithValue( state.ThumbSticks.Left.Vector, updateTick, deltaTime );
 			UpdateRightStickWithValue( state.ThumbSticks.Right.Vector, updateTick, deltaTime );
@@ -97,9 +102,9 @@ namespace InControl
 		}
 
 
-		void QueryState()
+		internal void GetState()
 		{
-			state = GamePad.GetState( (PlayerIndex) DeviceIndex, GamePadDeadZone.Circular );
+			state = owner.GetState( DeviceIndex );
 		}
 
 

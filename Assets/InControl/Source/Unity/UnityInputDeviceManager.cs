@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using InControl.TinyJSON;
 using UnityEngine;
 
 
@@ -114,6 +113,14 @@ namespace InControl
 
 		void DetectJoystickDevice( int unityJoystickId, string unityJoystickName )
 		{
+			#if UNITY_PS4
+			if (unityJoystickName == "Empty")
+			{
+				// On PS4 console, disconnected controllers may have this name.
+				return;
+			}
+			#endif
+
 			if (unityJoystickName == "WIRED CONTROLLER" ||
 			    unityJoystickName == " WIRED CONTROLLER")
 			{
@@ -128,7 +135,7 @@ namespace InControl
 			}
 
 			// PS4 controller only works properly as of Unity 4.5
-			if (InputManager.UnityVersion < new VersionInfo( 4, 5 ))
+			if (InputManager.UnityVersion < new VersionInfo( 4, 5, 0, 0 ))
 			{
 				if (Application.platform == RuntimePlatform.OSXEditor ||
 				    Application.platform == RuntimePlatform.OSXPlayer ||
@@ -143,7 +150,7 @@ namespace InControl
 			}
 
 			// As of Unity 4.6.3p1, empty strings on windows represent disconnected devices.
-			if (InputManager.UnityVersion >= new VersionInfo( 4, 6, 3 ))
+			if (InputManager.UnityVersion >= new VersionInfo( 4, 6, 3, 0 ))
 			{
 				if (Application.platform == RuntimePlatform.WindowsEditor ||
 				    Application.platform == RuntimePlatform.WindowsPlayer ||
@@ -156,53 +163,42 @@ namespace InControl
 				}
 			}
 
-			InputDeviceProfile matchedDeviceProfile = null;
-
-			if (matchedDeviceProfile == null)
-			{
-				matchedDeviceProfile = customDeviceProfiles.Find( config => config.HasJoystickName( unityJoystickName ) );
-			}
-
-			if (matchedDeviceProfile == null)
-			{
-				matchedDeviceProfile = systemDeviceProfiles.Find( config => config.HasJoystickName( unityJoystickName ) );
-			}
-
-			if (matchedDeviceProfile == null)
-			{
-				matchedDeviceProfile = customDeviceProfiles.Find( config => config.HasLastResortRegex( unityJoystickName ) );
-			}
-
-			if (matchedDeviceProfile == null)
-			{
-				matchedDeviceProfile = systemDeviceProfiles.Find( config => config.HasLastResortRegex( unityJoystickName ) );
-			}
-
 			InputDeviceProfile deviceProfile = null;
 
-			if (matchedDeviceProfile == null)
+			if (deviceProfile == null)
 			{
-				deviceProfile = new UnknownUnityDeviceProfile( unityJoystickName );
-				systemDeviceProfiles.Add( deviceProfile );
+				deviceProfile = customDeviceProfiles.Find( config => config.HasJoystickName( unityJoystickName ) );
 			}
-			else
+
+			if (deviceProfile == null)
 			{
-				deviceProfile = matchedDeviceProfile;
+				deviceProfile = systemDeviceProfiles.Find( config => config.HasJoystickName( unityJoystickName ) );
+			}
+
+			if (deviceProfile == null)
+			{
+				deviceProfile = customDeviceProfiles.Find( config => config.HasLastResortRegex( unityJoystickName ) );
+			}
+
+			if (deviceProfile == null)
+			{
+				deviceProfile = systemDeviceProfiles.Find( config => config.HasLastResortRegex( unityJoystickName ) );
+			}
+
+			if (deviceProfile == null)
+			{
+				Logger.LogWarning( "Device " + unityJoystickId + " with name \"" + unityJoystickName + "\" does not match any supported profiles and will be considered an unknown controller." );
+				var unknownDeviceProfile = new UnknownUnityDeviceProfile( unityJoystickName );
+				var joystickDevice = new UnknownUnityInputDevice( unknownDeviceProfile, unityJoystickId );
+				AttachDevice( joystickDevice );
+				return;
 			}
 
 			if (!deviceProfile.IsHidden)
 			{
 				var joystickDevice = new UnityInputDevice( deviceProfile, unityJoystickId );
 				AttachDevice( joystickDevice );
-
-				if (matchedDeviceProfile == null)
-				{
-					Logger.LogWarning( "Device " + unityJoystickId + " with name \"" + unityJoystickName + "\" does not match any known profiles." );
-				}
-				else
-				{
-					Logger.LogInfo( "Device " + unityJoystickId + " matched profile " + deviceProfile.GetType().Name + " (" + deviceProfile.Name + ")" );
-				}
+				Logger.LogInfo( "Device " + unityJoystickId + " matched profile " + deviceProfile.GetType().Name + " (" + deviceProfile.Name + ")" );
 			}
 			else
 			{
@@ -239,7 +235,7 @@ namespace InControl
 		void AddSystemDeviceProfiles()
 		{
 			foreach (var typeName in UnityInputDeviceProfileList.Profiles)
-			{				
+			{
 				var deviceProfile = (UnityInputDeviceProfile) Activator.CreateInstance( Type.GetType( typeName ) );
 				AddSystemDeviceProfile( deviceProfile );
 			}

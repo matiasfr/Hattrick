@@ -39,9 +39,14 @@ namespace InControl
 		public ulong UpdateTick { get; protected set; }
 
 		/// <summary>
-		/// The binding source type that provided input to this action st.
+		/// The binding source type that provided input to this action set.
 		/// </summary>
 		public BindingSourceType LastInputType = BindingSourceType.None;
+
+		/// <summary>
+		/// Whether this action set should produce input. Default: <c>true</c>
+		/// </summary>
+		public bool Enabled { get; set; }
 
 		List<PlayerAction> actions = new List<PlayerAction>();
 		List<PlayerOneAxisAction> oneAxisActions = new List<PlayerOneAxisAction>();
@@ -53,11 +58,16 @@ namespace InControl
 		protected PlayerActionSet()
 		{
 			Actions = new ReadOnlyCollection<PlayerAction>( actions );
+			Enabled = true;
 			InputManager.OnUpdate -= Update;
 			InputManager.OnUpdate += Update;
 		}
 
 
+		/// <summary>
+		/// Properly dispose of this action set. You should make sure to call this when the action set
+		/// will no longer be used or it will result in unnecessary internal processing every frame.
+		/// </summary>
 		public void Destroy()
 		{
 			InputManager.OnUpdate -= Update;
@@ -170,6 +180,41 @@ namespace InControl
 		}
 
 
+		internal bool HasBinding( BindingSource binding )
+		{
+			if (binding == null)
+			{
+				return false;
+			}
+
+			var actionsCount = actions.Count;
+			for (int i = 0; i < actionsCount; i++)
+			{
+				if (actions[i].HasBinding( binding ))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+
+		internal void RemoveBinding( BindingSource binding )
+		{
+			if (binding == null)
+			{
+				return;
+			}
+
+			var actionsCount = actions.Count;
+			for (int i = 0; i < actionsCount; i++)
+			{
+				actions[i].FindAndRemoveBinding( binding );
+			}
+		}
+
+
 		/// <summary>
 		/// Returns the state of this action set and all bindings encoded into a string 
 		/// that you can save somewhere.
@@ -190,12 +235,12 @@ namespace InControl
 					// Write version.
 					writer.Write( (UInt16) 1 );
 
+					// Write actions.
 					var actionCount = actions.Count;
 					writer.Write( actionCount );
 					for (int i = 0; i < actionCount; i++)
 					{
-						var action = actions[i];
-						action.Save( writer );
+						actions[i].Save( writer );
 					}
 				}
 

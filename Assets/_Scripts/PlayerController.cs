@@ -137,35 +137,34 @@ public class PlayerController : MonoBehaviour {
 
 
     void Update() {
-        if (controller == null) {
-            controller = (InputManager.Devices.Count > playerNum) ? InputManager.Devices[playerNum] : null;
-            playerInput.Device = controller;
+        if (playerInput.Device == null || !playerInput.Device.IsAttached) {
+            playerInput.Device = PlayersManager.PlayerDevices[playerNum];
+            HoverAnimation();
+            return;
         }
-        else {
-            CheckCamera();
-            if (!stunned) {
-                ProjectileControl();
-                ShieldControl();
-                HoverAnimation();
-    
-            }
-            else {
-                stunnedTime += Time.deltaTime;
-            }
-
-            //Movement and aiming
-            transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed *Time.deltaTime);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
-
-        }
-
-        CheckElement();
 
         CheckGround();
+        CheckCamera();
+
+        if (!stunned) {
+            ProjectileControl();
+            ShieldControl();
+            HoverAnimation();
+
+        }
+        else {
+            stunnedTime += Time.deltaTime;
+        }
+
+        //Movement and aiming
+        transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
+        CheckElement();
+
     }
 
     void HoverAnimation() {
-        body.transform.localPosition = new Vector3(0f, hoverAmplitude * Mathf.Sin(hoverTimer*hoverSpeed), 0f);
+        body.transform.localPosition = new Vector3(0f, hoverAmplitude * Mathf.Sin(hoverTimer * hoverSpeed), 0f);
         hoverTimer += Time.deltaTime;
     }
     RaycastHit hit;
@@ -180,7 +179,7 @@ public class PlayerController : MonoBehaviour {
                     StartCoroutine(Recover());
                 }
 
-             
+
             }
             else {
                 if (stunnedTime >= stunLength && playerInput.Jump.WasPressed) {
@@ -199,7 +198,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void Stun(float chargePercent) {
-        
+
         if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
             chargingCast = false;
@@ -318,7 +317,7 @@ public class PlayerController : MonoBehaviour {
         Quaternion initRot = transform.rotation;
         while (t < recoverLength) {
             targetRot = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
-            transform.position = Vector3.Lerp(initPos, newPos, t/ recoverLength);
+            transform.position = Vector3.Lerp(initPos, newPos, t / recoverLength);
             transform.rotation = Quaternion.Lerp(initRot, targetRot, t / recoverLength);
             t += Time.deltaTime;
             yield return null;

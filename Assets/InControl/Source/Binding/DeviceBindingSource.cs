@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 
@@ -8,17 +9,18 @@ namespace InControl
 
 	public class DeviceBindingSource : BindingSource
 	{
-		InputControlType control;
+		public InputControlType Control { get; protected set; }
 
 
 		internal DeviceBindingSource()
 		{
+			Control = InputControlType.None;
 		}
 
 
 		public DeviceBindingSource( InputControlType control )
 		{
-			this.control = control;
+			Control = control;
 		}
 
 
@@ -29,7 +31,7 @@ namespace InControl
 				return 0.0f;
 			}
 
-			return inputDevice.GetControl( control ).Value;
+			return inputDevice.GetControl( Control ).Value;
 		}
 
 
@@ -40,7 +42,7 @@ namespace InControl
 				return false;
 			}
 
-			return inputDevice.GetControl( control ).State;
+			return inputDevice.GetControl( Control ).State;
 		}
 
 
@@ -50,18 +52,18 @@ namespace InControl
 			{
 				if (BoundTo == null)
 				{
-					Debug.LogError( "Cannot query property 'Name' for unbound BindingSource." );
-					return null;
+//					Debug.LogWarning( "Cannot query property 'Name' for unbound BindingSource." );
+					return "";
 				}
 				else
 				{
 					var inputDevice = BoundTo.Device;
-					var inputControl = inputDevice.GetControl( control );
+					var inputControl = inputDevice.GetControl( Control );
 					if (inputControl == InputControl.Null)
 					{
-						return control.ToString();
+						return Control.ToString();
 					}
-					return inputDevice.GetControl( control ).Handle;
+					return inputDevice.GetControl( Control ).Handle;
 				}
 			}
 		}
@@ -73,8 +75,8 @@ namespace InControl
 			{
 				if (BoundTo == null)
 				{
-					Debug.LogError( "Cannot query property 'DeviceName' for unbound BindingSource." );
-					return null;
+//					Debug.LogWarning( "Cannot query property 'DeviceName' for unbound BindingSource." );
+					return "";
 				}
 				else
 				{
@@ -99,7 +101,7 @@ namespace InControl
 			var bindingSource = other as DeviceBindingSource;
 			if (bindingSource != null)
 			{
-				return control == bindingSource.control;
+				return Control == bindingSource.Control;
 			}
 
 			return false;
@@ -116,7 +118,7 @@ namespace InControl
 			var bindingSource = other as DeviceBindingSource;
 			if (bindingSource != null)
 			{
-				return control == bindingSource.control;
+				return Control == bindingSource.Control;
 			}
 
 			return false;
@@ -125,7 +127,7 @@ namespace InControl
 
 		public override int GetHashCode()
 		{
-			return control.GetHashCode();
+			return Control.GetHashCode();
 		}
 
 
@@ -140,13 +142,13 @@ namespace InControl
 
 		internal override void Save( BinaryWriter writer )
 		{
-			writer.Write( (int) control );
+			writer.Write( (int) Control );
 		}
 
 
 		internal override void Load( BinaryReader reader )
 		{
-			control = (InputControlType) reader.ReadInt32();
+			Control = (InputControlType) reader.ReadInt32();
 		}
 
 
@@ -161,7 +163,7 @@ namespace InControl
 				}
 				else
 				{
-					return BoundTo.Device.HasControl( control );
+					return BoundTo.Device.HasControl( Control ) || Utility.TargetIsStandard( Control );
 				}
 			}
 		}
