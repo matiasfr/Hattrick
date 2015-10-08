@@ -78,6 +78,9 @@ ModelImporter:
     100140: shieldPiece8
     100142: shieldPiece9
     100144: pSolid1
+    100146: bubble
+    100148: icosahedron
+    100150: rock
     400000: //RootNode
     400002: BasicStage
     400004: body
@@ -151,6 +154,9 @@ ModelImporter:
     400140: shieldPiece8
     400142: shieldPiece9
     400144: pSolid1
+    400146: bubble
+    400148: icosahedron
+    400150: rock
     2300000: BasicStage
     2300002: body
     2300004: cape
@@ -219,6 +225,9 @@ ModelImporter:
     2300130: shieldPiece8
     2300132: shieldPiece9
     2300134: pSolid1
+    2300136: bubble
+    2300138: icosahedron
+    2300140: rock
     3300000: BasicStage
     3300002: body
     3300004: cape
@@ -287,6 +296,9 @@ ModelImporter:
     3300130: shieldPiece8
     3300132: shieldPiece9
     3300134: pSolid1
+    3300136: bubble
+    3300138: icosahedron
+    3300140: rock
     4300000: BasicStage
     4300002: shieldPiece1
     4300004: shieldPiece2
@@ -355,6 +367,9 @@ ModelImporter:
     4300130: pCube22
     4300132: pCube23
     4300134: pSolid1
+    4300136: rock
+    4300138: icosahedron
+    4300140: bubble
     9500000: //RootNode
   materials:
     importMaterials: 1

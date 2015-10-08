@@ -72,10 +72,12 @@ public class PlayerController : MonoBehaviour {
     private float castChargeTime = 0;
     private float chargePercent;
     private bool chargingCast = false;
+    private Vector3 projectileOffset = new Vector3(0f, -.6f, 0f);
 
     private bool shielding = false;
     private Shield shield;
     private Vector3 shieldOffset = new Vector3(0f, -1.4f, 0f);
+
 
     public float minStunTime = .5f;
     public float maxStunTime = 1f;
@@ -85,9 +87,13 @@ public class PlayerController : MonoBehaviour {
     public float recoverLength = .25f;
 
 
-    private float minProjectileScale = .2f;
-    private float maxProjectileScale = 1f;
+
     public float MaxChargeTime = 2f; //Time to charge to reach full power
+
+    public float hoverAmplitude = .5f;
+    private float hoverTimer = 0f;
+    public float hoverSpeed = 1.5f;
+    public GameObject body;
 
     private float damage = 0;
     private float energy = 0;
@@ -101,6 +107,7 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
         ChangeElement(Element.FIRE);
+        hoverTimer = Random.Range(0f, 1.5f);
     }
 
     void OnEnable() {
@@ -139,17 +146,30 @@ public class PlayerController : MonoBehaviour {
             if (!stunned) {
                 ProjectileControl();
                 ShieldControl();
+                HoverAnimation();
+    
             }
             else {
                 stunnedTime += Time.deltaTime;
             }
+
+            //Movement and aiming
+            transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed *Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
+
         }
 
         CheckElement();
+
+        CheckGround();
     }
 
+    void HoverAnimation() {
+        body.transform.localPosition = new Vector3(0f, hoverAmplitude * Mathf.Sin(hoverTimer*hoverSpeed), 0f);
+        hoverTimer += Time.deltaTime;
+    }
     RaycastHit hit;
-    void FixedUpdate() {
+    void CheckGround() {
         if (Physics.Raycast(transform.position, Vector3.down, out hit)) {
             if (!stunned) {
                 if (hit.collider.gameObject.name == "DeathTrigger") { // FALL OFF
@@ -160,10 +180,7 @@ public class PlayerController : MonoBehaviour {
                     StartCoroutine(Recover());
                 }
 
-                //Movement and aiming
-                transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed / 100);
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
-
+             
             }
             else {
                 if (stunnedTime >= stunLength && playerInput.Jump.WasPressed) {
@@ -232,9 +249,9 @@ public class PlayerController : MonoBehaviour {
             castChargeTime += Time.deltaTime;
             if (castChargeTime > MaxChargeTime) castChargeTime = MaxChargeTime;
             chargePercent = castChargeTime / MaxChargeTime;
-            float projectileScale = Mathf.Lerp(minProjectileScale, maxProjectileScale, chargePercent);
+            float projectileScale = Mathf.Lerp(projectile.minProjectileScale, projectile.maxProjectileScale, chargePercent);
             projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
-            projectile.transform.position = transform.position + transform.forward + new Vector3(0f, -.8f, 0f);
+            projectile.transform.position = transform.position + transform.forward + projectileOffset;
 
         }
         if (chargingCast && playerInput.Cast.WasReleased) {
@@ -259,6 +276,7 @@ public class PlayerController : MonoBehaviour {
 
                 shield.transform.parent = transform;
                 shield.transform.localPosition = shieldOffset;
+                //shield.transform.position = transform.position + shieldOffset;
                 shield.transform.rotation = transform.rotation;
 
                 if (chargingCast) {

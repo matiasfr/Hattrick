@@ -11,6 +11,8 @@ public class Projectile : MonoBehaviour {
     private float projectileRange = 10f;
     public float projectileMaxRange = 40f;
     public float projectileMinRange = 4f;
+    public float minProjectileScale = .5f;
+    public float maxProjectileScale = 1.5f;
     private Vector3 startPos;
     private Collider col;
     private float chargePercent;
