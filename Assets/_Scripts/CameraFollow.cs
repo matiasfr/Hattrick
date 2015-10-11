@@ -8,8 +8,9 @@ public class CameraFollow : MonoBehaviour {
 	public Vector3 anchor;
 
 	public float FOV_MAX = 70;
-	public float FOV_MIN = 40; //range for zoom
-
+	public float FOV_MIN = 40; //range for fov
+	public float DISTANCE_MAX = 20;//distance values that fov scales on
+	public float DISTANCE_MIN = 0;
 
 	void Start () {
 		cam = Camera.main;
@@ -26,8 +27,8 @@ public class CameraFollow : MonoBehaviour {
 	
 	void Update () {
 		if(playerPositions.Count > 0) {
-		adjustFOV ();
-		panCamera ();
+			adjustFOV ();
+			panCamera ();
 		}
 	}
 
@@ -47,8 +48,8 @@ public class CameraFollow : MonoBehaviour {
 			}
 		}
 		//should now have max distance between players
-		Mathf.Clamp (0, 20, maxDistance); //temp clamp
-		float percent = maxDistance / 20;
+		Mathf.Clamp (DISTANCE_MIN, DISTANCE_MAX, maxDistance); //temp clamp
+		float percent = maxDistance / DISTANCE_MAX;
 		cam.fieldOfView = Mathf.Lerp (FOV_MIN,FOV_MAX, percent);
 		//print ("FOV: " + cam.fieldOfView);
 		//print ("percent: "+percent);
@@ -62,10 +63,18 @@ public class CameraFollow : MonoBehaviour {
 		}
 		Vector3 mean = sum / playerPositions.Count;
 		mean.y = 0;
-		print("center point: " + mean);
+		//print("center point: " + mean);
 		Vector3 des = mean+anchor;
-		//des.x += 45.0f;des.y += 212.0f;*/
-
 		transform.position = Vector3.Lerp(transform.position, des, 0.5F * Time.deltaTime);
+	}
+
+	void updatePlayerList() {
+		playerPositions.Clear();
+		//Find all references to player transforms and store in list
+		GameObject[] players;
+		players = GameObject.FindGameObjectsWithTag ("Player");
+		foreach (GameObject n in players) {
+				playerPositions.Add(n.transform);
+		}
 	}
 }
