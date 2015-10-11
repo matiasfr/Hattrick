@@ -71,11 +71,11 @@ public class Projectile : MonoBehaviour {
 
                 }
                 else if(sp.shield.element == element) { //If the shield is the same as this projectile type
+                    Impact();
                     if (chargePercent > sp.shield.Power) {
                         sp.Collapse();
                         Rigidbody rb = other.GetComponent<Rigidbody>();
                         rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
-                        Impact();
 
                     }
 

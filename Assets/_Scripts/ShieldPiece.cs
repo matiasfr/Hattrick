@@ -15,7 +15,6 @@ public class ShieldPiece : MonoBehaviour {
     // Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody>();
-        shield = transform.parent.GetComponent<Shield>();
 	}
 	
 	// Update is called once per frame

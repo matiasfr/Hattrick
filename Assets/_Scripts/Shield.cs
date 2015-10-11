@@ -33,7 +33,7 @@ public class Shield : MonoBehaviour {
 
     public void Collapse() {
 
-        foreach (ShieldPiece sp in pieces) {
+        foreach (ShieldPiece sp in GetComponentsInChildren<ShieldPiece>()) {
             sp.Collapse();
             sp.rigidbody.AddExplosionForce(5f, transform.position, 6f, 1f, ForceMode.Impulse);
         }

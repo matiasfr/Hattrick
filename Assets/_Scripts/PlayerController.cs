@@ -134,14 +134,11 @@ public class PlayerController : MonoBehaviour {
         playerInput.Destroy();
     }
 
-
+    public void SetInputDevice(InputDevice device) {
+        playerInput.Device = device;
+    }
 
     void Update() {
-        if (playerInput.Device == null || !playerInput.Device.IsAttached) {
-            playerInput.Device = PlayersManager.PlayerDevices[playerNum];
-            HoverAnimation();
-            return;
-        }
 
         CheckGround();
         CheckCamera();
@@ -151,15 +148,17 @@ public class PlayerController : MonoBehaviour {
             ShieldControl();
             HoverAnimation();
 
+            //Movement and aiming
+            transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
+
+
         }
         else {
             stunnedTime += Time.deltaTime;
         }
 
-        //Movement and aiming
-        transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
-        CheckElement();
+            CheckElement();
 
     }
 
