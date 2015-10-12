@@ -40,7 +40,9 @@ public class CameraFollow : MonoBehaviour {
 		//lerp fov based on most distant pair of players
 		foreach(Transform t in playerPositions) { //n^2 but only 4 players so its not bad
 			foreach(Transform n in playerPositions) { //inefficient because im checking double
-				if(n != t) {
+                if (n == null) continue;
+
+                if (n != t) {
 					Vector3 diff = n.position - t.position;
                     diff.y = 0;
 					float distance = diff.magnitude;
@@ -63,8 +65,8 @@ public class CameraFollow : MonoBehaviour {
 
 	void panCamera() {
 		Vector3 sum = new Vector3(0.0f, 0.0f, 0.0f);
-		foreach(Transform n in playerPositions) { 
-            
+		foreach(Transform n in playerPositions) {
+            if (n == null) continue;
 			sum = sum +n.position;
 		}
 		Vector3 mean = sum / (playerPositions.Count);
