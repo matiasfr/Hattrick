@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour {
 	private float PROJECTILE_COST_MIN = 0.2f;
 	private float DASH_COST = 0.10f;
 	private float CHANGE_ELEMENT_COST = 0.30f;
+	ParticleSystem idleParticleFX;
 
 	public GameObject energyIndicator;
 	
@@ -381,6 +382,12 @@ public class PlayerController : MonoBehaviour {
 
     void ChangeElement(Element e) {
         element = e;
+		if (idleParticleFX != null) {
+			Destroy(idleParticleFX.gameObject);
+		}
+		idleParticleFX = Instantiate<ParticleSystem>(element.idleParticleFX);
+		idleParticleFX.transform.parent = transform;
+		idleParticleFX.transform.localPosition = new Vector3(0,-1.5f,0);
     }
 
 	public void takeDamage(float d) {

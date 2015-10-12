@@ -14,6 +14,8 @@ public class Element : MonoBehaviour {
     public Projectile projectilePrefab;
     public Shield shieldPrefab;
 
+	public ParticleSystem idleParticleFX;
+
     public Element weakness {
         get {
             if (this == Element.EARTH) return Element.WATER;
