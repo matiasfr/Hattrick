@@ -7,9 +7,10 @@ using InControl;
 public class Player {
     public PlayerController character;
     public InputDevice device;
-    public Player(InputDevice d, PlayerController pc) {
-        character = pc;
+    public int lives;
+    public Player(InputDevice d) {
         device = d;
+        lives = 3;
     }
 
 }
@@ -46,7 +47,7 @@ public class PlayersManager : MonoBehaviour {
             foreach (Player p in Players) {
                 if (p.device == null) {
                     p.device = device;
-                    if (p.character != null) p.character.SetInputDevice(device);
+                    //if (p.character != null) p.character.SetInputDevice(device);
                     return;
                 }
             }
@@ -62,11 +63,11 @@ public class PlayersManager : MonoBehaviour {
         Player p = Players.Find(x => x.device == device);
         if (p != null) {
             if (setupMode) {
-                Debug.Log(p);
-
                 //Remove player
                 Destroy(p.character.gameObject);
                 Players.Remove(p);
+                Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+
 
             }
             else {
@@ -80,41 +81,72 @@ public class PlayersManager : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (setupMode) {
-            for(int i = 0; i < devicesUnassigned.Count; i++) { 
+            for (int i = 0; i < devicesUnassigned.Count; i++) {
                 CheckToAdd(devicesUnassigned[i]);
             }
-
-            if (InputManager.ActiveDevice.MenuWasPressed) {
-                DontDestroyOnLoad(gameObject);
-                Application.LoadLevel("StageSelect");
-                Debug.Log("NOW IN STAGE SELECT SCENE");
-
+            foreach (Player player in Players) {
+                if (player.device.LeftBumper.WasPressed) {
+                    DontDestroyOnLoad(gameObject);
+                    Application.LoadLevel("StageSelect");
+                    break;
+                }
             }
         }
     }
 
     public void StartGame() {
-        //Spawn in new players
-        setupMode = false;
-        //foreach(player)
-
-
-        Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+        StartCoroutine(StartSequence());
 
     }
+
+    private IEnumerator StartSequence() {
+        yield return null;
+        //GameHUD.DisplayLargeText("Ready");
+        Debug.Log("Ready...");
+
+        //Spawn in new players
+        setupMode = false;
+        foreach (Player player in Players) {
+            CreatePlayerCharacter(player);
+            player.character.transform.position = SpawnPoint.GetSpawnPoint();
+        }
+        Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+        yield return new WaitForSeconds(2);
+        Debug.Log("Fight!");
+
+
+        //GameHUD.DisplayLargeText("Fight!");
+
+
+
+
+
+    }
+
 
     private void CheckToAdd(InputDevice d) {
         if (d.Action1.WasPressed) {
             //Create new player character for device
             devicesUnassigned.Remove(d);
-            PlayerController newPC = Instantiate<PlayerController>(playerCharacterPrefab);
-            newPC.SetInputDevice(d);
-            Camera.main.GetComponent<CameraFollow>().updatePlayerList();
-            //TODO SPAWNING IN CORRECT PLACE
-            newPC.transform.position = new Vector3(0, 1.5f, 0);
-            newPC.playerNum = Players.Count;
-            Player p = new Player(d, newPC);
+            Player p = new Player(d);
             Players.Add(p);
+            CreatePlayerCharacter(p);
+
+
+
         }
+    }
+
+    private void CreatePlayerCharacter(Player p) {
+        //Create new player character
+        PlayerController newPC = Instantiate<PlayerController>(playerCharacterPrefab);
+        newPC.transform.position = SpawnPoint.GetSpawnPoint();
+        newPC.playerNum = Players.IndexOf(p);
+        p.character = newPC;
+
+       // newPC.SetInputDevice(p.device);
+        Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+
+
     }
 }
