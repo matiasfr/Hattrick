@@ -8,9 +8,26 @@ public class Player {
     public PlayerController character;
     public InputDevice device;
     public int lives;
-    public Player(InputDevice d) {
+    public int playerNum;
+    public bool defeated = false;
+    public Player(int num, InputDevice d) {
+        playerNum = num;
         device = d;
-        lives = 3;
+    }
+    public void OnDeath() {
+        if (PlayersManager.Instance.setupMode) {
+            Debug.Log("Player " + playerNum + " died during setup mode");
+
+            return;
+        }
+        Debug.Log("Player " + playerNum + " lost a life");
+        lives--;
+        if (lives <= 0) {
+            defeated = true;
+            PlayersManager.Instance.PlayerDefeated(playerNum);
+
+        }
+
     }
 
 }
@@ -25,9 +42,15 @@ public class PlayersManager : MonoBehaviour {
 
     public PlayerController playerCharacterPrefab;
 
+    public int numLives = 3;
     public bool setupMode = true;
 
-    void Awake() { Instance = this; }
+    public Player winner = null;
+
+    void Awake() {
+        if (Instance == null) Instance = this;
+        else Destroy(this);
+    }
 
     // Use this for initialization
     void Start() {
@@ -84,17 +107,21 @@ public class PlayersManager : MonoBehaviour {
             for (int i = 0; i < devicesUnassigned.Count; i++) {
                 CheckToAdd(devicesUnassigned[i]);
             }
-            foreach (Player player in Players) {
-                if (player.device.LeftBumper.WasPressed) {
-                    DontDestroyOnLoad(gameObject);
-                    Application.LoadLevel("StageSelect");
-                    break;
-                }
+            if (InputManager.MenuWasPressed) {
+                DontDestroyOnLoad(gameObject);
+                Application.LoadLevel("StageSelect");
             }
+
         }
     }
 
     public void StartGame() {
+        setupMode = false;
+
+        foreach (Player p in Players) {
+            p.lives = numLives;
+            p.defeated = false;
+        }
         StartCoroutine(StartSequence());
 
     }
@@ -105,7 +132,6 @@ public class PlayersManager : MonoBehaviour {
         Debug.Log("Ready...");
 
         //Spawn in new players
-        setupMode = false;
         foreach (Player player in Players) {
             CreatePlayerCharacter(player);
             player.character.transform.position = SpawnPoint.GetSpawnPoint();
@@ -124,11 +150,11 @@ public class PlayersManager : MonoBehaviour {
     }
 
 
-    private void CheckToAdd(InputDevice d) {
-        if (d.Action1.WasPressed) {
+    private void CheckToAdd(InputDevice device) {
+        if (device.Action1.WasPressed) {
             //Create new player character for device
-            devicesUnassigned.Remove(d);
-            Player p = new Player(d);
+            devicesUnassigned.Remove(device);
+            Player p = new Player(Players.Count, device);
             Players.Add(p);
             CreatePlayerCharacter(p);
 
@@ -144,9 +170,26 @@ public class PlayersManager : MonoBehaviour {
         newPC.playerNum = Players.IndexOf(p);
         p.character = newPC;
 
-       // newPC.SetInputDevice(p.device);
+        // newPC.SetInputDevice(p.device);
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
 
 
+    }
+
+    public void PlayerDefeated(int playerNum) {
+        Debug.Log("Player " + playerNum + " defeated!");
+        int numLeft = 0;
+        Player possibleWinner = null;
+        foreach (Player p in Players) {
+            if (!p.defeated) {
+                possibleWinner = p;
+                numLeft++;
+            }
+        }
+        if (numLeft <= 1) {
+            winner = possibleWinner;
+            Application.LoadLevel("EndGame");
+            Debug.Log("GAME OVER");
+        }
     }
 }

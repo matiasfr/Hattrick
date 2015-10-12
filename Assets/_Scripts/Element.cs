@@ -20,6 +20,7 @@ public class Element : MonoBehaviour {
         get {
             if (this == Element.EARTH) return Element.WATER;
             else if (this == Element.FIRE) return Element.EARTH;
+            else if (this == Element.WATER) return Element.FIRE;
             else return Element.FIRE;
         }
     }

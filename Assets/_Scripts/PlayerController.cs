@@ -180,8 +180,7 @@ public class PlayerController : MonoBehaviour {
 			currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
 		}
 		energyIndicator.transform.localScale = new Vector3(0.1f,currentEnergy,0.1f);
-		Debug.Log ("current energy: "+currentEnergy);//DEBUG
-
+    
 
         CheckElement();
 
@@ -358,11 +357,6 @@ public class PlayerController : MonoBehaviour {
 
 
     void Respawn() {
-
-
-        transform.position = SpawnPoint.GetSpawnPoint();
-        transform.rotation = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
-
         stunned = false;
         rb.isKinematic = true;
         if (chargingCast && !projectile.isCast) {
@@ -374,8 +368,19 @@ public class PlayerController : MonoBehaviour {
             Destroy(shield.gameObject);
             shielding = false;
         }
-		//reset damage/energy
+        //reset damage/energy
+        currentEnergy = MAX_ENERGY;
 		currentDamage = 0;
+        Player p = PlayersManager.Players[playerNum];
+        p.OnDeath();
+        if (!p.defeated) {
+            transform.position = SpawnPoint.GetSpawnPoint();
+            transform.rotation = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
+        }
+        else {
+            gameObject.SetActive(false);
+        }
+
     }
 
     void ChangeElement(Element e) {
