@@ -19,6 +19,8 @@ public class Projectile : MonoBehaviour {
     private int casterPlayerNum;
     public Element element;
     private Renderer ren;
+	public float MIN_DAMAGE = 3.0f;
+	public float MAX_DAMAGE = 15.0f;
 
     void Start() {
         col = GetComponent<Collider>();
@@ -56,6 +58,7 @@ public class Projectile : MonoBehaviour {
             if (pc.playerNum != casterPlayerNum) {
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 pc.Stun(chargePercent);
+				pc.takeDamage(Mathf.Lerp(MIN_DAMAGE,MAX_DAMAGE,chargePercent));
                 rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
                 Impact();
             }
