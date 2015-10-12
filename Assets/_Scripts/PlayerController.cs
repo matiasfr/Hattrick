@@ -289,6 +289,13 @@ public class PlayerController : MonoBehaviour {
     void CastProjectile(float charge) {
         projectile.Cast(aimDirection.normalized, charge, playerNum);
         projectile = null;
+		if (element == Element.FIRE) {
+			AudioSource.PlayClipAtPoint (AudioManager.Instance.ShootFireSFX, transform.position);
+		} else if (element == Element.WATER) {
+			AudioSource.PlayClipAtPoint (AudioManager.Instance.ShootWaterSFX, transform.position);
+		} else {
+			AudioSource.PlayClipAtPoint (AudioManager.Instance.ShootEarthSFX, transform.position);
+		}
     }
 
     void ShieldControl() {

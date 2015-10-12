@@ -99,7 +99,15 @@ public class Projectile : MonoBehaviour {
     }
 
     public void Impact() {
+		if (element == Element.FIRE) {
+			AudioSource.PlayClipAtPoint (AudioManager.Instance.ImpactFireSFX, transform.position);
+		} else if (element == Element.WATER) {
+			AudioSource.PlayClipAtPoint (AudioManager.Instance.ImpactWaterSFX, transform.position);
+		} else {
+			AudioSource.PlayClipAtPoint (AudioManager.Instance.ImpactEarthSFX, transform.position);
+		}
         Destroy(gameObject);
         //TODO Add impact VFX + SFX
     }
+
 }
