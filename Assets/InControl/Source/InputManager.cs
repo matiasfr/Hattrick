@@ -154,7 +154,8 @@ namespace InControl
 
 		internal static void ResetInternal()
 		{
-			if (OnReset != null)
+
+            if (OnReset != null)
 			{
 				OnReset.Invoke();
 			}

@@ -151,12 +151,12 @@ public class PlayerController : MonoBehaviour {
         playerInput.Destroy();
     }
 
-    public void SetInputDevice(InputDevice device) {
-        playerInput.Device = device;
+    private void SetInputDevice() {
+        playerInput.Device = PlayersManager.Players[playerNum].device;
     }
 
     void Update() {
-
+        if (playerInput.Device == null) playerInput.Device = PlayersManager.Players[playerNum].device;
         CheckGround();
         CheckCamera();
 
@@ -217,6 +217,7 @@ public class PlayerController : MonoBehaviour {
 
 
         if (transform.position.y < -30f) {
+
             Respawn();
         }
     }
@@ -254,12 +255,7 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    void OnCollisionEnter(Collision collision) {
-        if (collision.collider.gameObject.tag == "Player") {
-            Stun(.1f);
-            rb.AddExplosionForce(1f, collision.contacts[0].point, 1f);
-        }
-    }
+
 
     void ProjectileControl() {
         if (playerInput.Cast.WasPressed) {
@@ -363,8 +359,10 @@ public class PlayerController : MonoBehaviour {
 
     void Respawn() {
 
-        transform.position = startPos;
+
+        transform.position = SpawnPoint.GetSpawnPoint();
         transform.rotation = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
+
         stunned = false;
         rb.isKinematic = true;
         if (chargingCast && !projectile.isCast) {
