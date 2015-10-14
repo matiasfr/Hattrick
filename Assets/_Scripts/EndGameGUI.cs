@@ -4,25 +4,38 @@ using System.Collections;
 
 public class EndGameGUI : MonoBehaviour {
 
+    public static EndGameGUI Instance;
     public Text WinnerText;
+    public Canvas canvas;
     private PlayersManager pm;
 
-    // Use this for initialization
-    void Start () {
-        pm = PlayersManager.Instance;
-        if (pm == null ) return;
+    void Start() {
+        Instance = this;
+    }
 
-        if(pm.winner == null)
+    public void DisplayResults() {
+        
+        pm = PlayersManager.Instance;
+        if (pm == null) return;
+
+        if (pm.winner == null)
             WinnerText.text = "No Contest!";
         else
             WinnerText.text = "Player " + pm.winner.playerNum + " wins!";
-
+        canvas.gameObject.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update () {
-	    
-	}
+    public void Rematch() {
+        PlayersManager.Instance.StartGame();
+        canvas.gameObject.SetActive(false);
+    }
 
+    public void StageSelect() {
+        SceneManager.Instance.GoToScene("StageSelect");
+    }
 
+    public void BackToMenu() {
+        SceneManager.Instance.QuitToMenu();
+
+    }
 }

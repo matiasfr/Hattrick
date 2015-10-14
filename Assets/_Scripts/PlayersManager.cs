@@ -20,6 +20,11 @@ public class Player {
 
             return;
         }
+
+        if (PlayersManager.Instance.gameOver) {
+            return;
+        }
+
         Debug.Log("Player " + playerNum + " lost a life");
         lives--;
         if (lives <= 0) {
@@ -38,18 +43,25 @@ public class PlayersManager : MonoBehaviour {
     public static PlayersManager Instance;
 
     public static List<Player> Players = new List<Player>(8);
-    public static List<InputDevice> devicesUnassigned = new List<InputDevice>(8);
+    public List<InputDevice> devicesUnassigned = new List<InputDevice>(8);
 
     public PlayerController playerCharacterPrefab;
 
     public int numLives = 3;
-    public bool setupMode = true;
+    public bool setupMode = false;
+    public bool gameOver = false;
 
     public Player winner = null;
 
+    public List<Material> defaultPlayerMaterials = new List<Material>();
+
     void Awake() {
         if (Instance == null) Instance = this;
-        else Destroy(this);
+        else {
+            Destroy(this.gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
+
     }
 
     // Use this for initialization
@@ -107,8 +119,8 @@ public class PlayersManager : MonoBehaviour {
             for (int i = 0; i < devicesUnassigned.Count; i++) {
                 CheckToAdd(devicesUnassigned[i]);
             }
+
             if (InputManager.MenuWasPressed) {
-                DontDestroyOnLoad(gameObject);
                 Application.LoadLevel("StageSelect");
             }
 
@@ -117,13 +129,21 @@ public class PlayersManager : MonoBehaviour {
 
     public void StartGame() {
         setupMode = false;
-
+        gameOver = false;
         foreach (Player p in Players) {
             p.lives = numLives;
             p.defeated = false;
         }
         StartCoroutine(StartSequence());
 
+    }
+
+    public void ClearPlayers() {
+        foreach (Player p in Players) {
+            devicesUnassigned.Add(p.device);
+
+        }
+        Players.Clear();
     }
 
     private IEnumerator StartSequence() {
@@ -133,7 +153,8 @@ public class PlayersManager : MonoBehaviour {
 
         //Spawn in new players
         foreach (Player player in Players) {
-            CreatePlayerCharacter(player);
+            if(player.character == null) CreatePlayerCharacter(player);
+            player.character.gameObject.SetActive(true);
             player.character.transform.position = SpawnPoint.GetSpawnPoint();
         }
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
@@ -169,6 +190,7 @@ public class PlayersManager : MonoBehaviour {
         newPC.transform.position = SpawnPoint.GetSpawnPoint();
         newPC.playerNum = Players.IndexOf(p);
         p.character = newPC;
+        p.character.SetMaterial(defaultPlayerMaterials[p.playerNum]);
 
         // newPC.SetInputDevice(p.device);
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
@@ -188,8 +210,9 @@ public class PlayersManager : MonoBehaviour {
         }
         if (numLeft <= 1) {
             winner = possibleWinner;
-            Application.LoadLevel("EndGame");
+            gameOver = true;
             Debug.Log("GAME OVER");
+            EndGameGUI.Instance.DisplayResults();
         }
     }
 }

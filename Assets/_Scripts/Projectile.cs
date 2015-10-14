@@ -7,7 +7,8 @@ public class Projectile : MonoBehaviour {
     public bool isCast = false;
     private Vector3 velocity = Vector3.zero;
     public float projectileSpeed = 1f;
-    public float projectileForce = 10f;
+    public float minForce = 1f;
+    public float maxForce = 8f;
     private float projectileRange = 10f;
     public float projectileMaxRange = 40f;
     public float projectileMinRange = 4f;
@@ -22,14 +23,18 @@ public class Projectile : MonoBehaviour {
 	public float MIN_DAMAGE = 3.0f;
 	public float MAX_DAMAGE = 15.0f;
 
+    public ParticleSystem ChargingEffectPrefab;
+    private ParticleSystem chargingEffect = null;
+
     void Start() {
         col = GetComponent<Collider>();
         col.enabled = false;
+        chargingEffect = (ParticleSystem)Instantiate(ChargingEffectPrefab, transform.position, transform.localRotation);
+        chargingEffect.transform.parent = transform;
     }
 
 
     void Update() {
-        transform.Translate(velocity);
 
         float distanceTraveled = Vector3.Distance(startPos, transform.position);
         if(isCast && distanceTraveled > projectileRange) {
@@ -37,7 +42,13 @@ public class Projectile : MonoBehaviour {
         }
     }
 
+    void FixedUpdate() {
+        transform.Translate(velocity * Time.deltaTime);
+
+    }
+
     public void Cast(Vector3 direction, float charge, int playerNum) {
+        Destroy(chargingEffect.gameObject);
         startPos = transform.position;
         casterPlayerNum = playerNum;
         chargePercent = charge;
@@ -46,6 +57,7 @@ public class Projectile : MonoBehaviour {
         projectileRange = Mathf.Lerp(projectileMinRange, projectileMaxRange, charge);
         col.enabled = true;
         isCast = true;
+
 
         //TODO keep track of player who cast
     }
@@ -59,7 +71,7 @@ public class Projectile : MonoBehaviour {
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 pc.Stun(chargePercent);
 				pc.takeDamage(Mathf.Lerp(MIN_DAMAGE,MAX_DAMAGE,chargePercent));
-                rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
+                rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
                 Impact();
             }
         }
@@ -70,7 +82,7 @@ public class Projectile : MonoBehaviour {
                 if(sp.shield.element.weakness == element) { //If the shield is weak to this projectile type
                     sp.Collapse();
                     Rigidbody rb = other.GetComponent<Rigidbody>();
-                    rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
+                    rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
 
                 }
                 else if(sp.shield.element == element) { //If the shield is the same as this projectile type
@@ -78,7 +90,7 @@ public class Projectile : MonoBehaviour {
                     if (chargePercent > sp.shield.Power) {
                         sp.Collapse();
                         Rigidbody rb = other.GetComponent<Rigidbody>();
-                        rb.AddForceAtPosition(velocity * chargePercent * projectileForce, collision.contacts[0].point, ForceMode.Impulse);
+                        rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
 
                     }
 

@@ -95,6 +95,8 @@ public class PlayerController : MonoBehaviour {
     public float hoverSpeed = 1.5f;
     public GameObject body;
 
+    public GameObject cape;
+
 	public float damageModifier = 1.0f;
     private float currentDamage = 0;
 	private float MAX_ENERGY = 1;//100 energy
@@ -395,9 +397,8 @@ public class PlayerController : MonoBehaviour {
 		if (idleParticleFX != null) {
 			Destroy(idleParticleFX.gameObject);
 		}
-		idleParticleFX = Instantiate<ParticleSystem>(element.idleParticleFX);
+		idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1.5f, 0), Quaternion.identity);
 		idleParticleFX.transform.parent = transform;
-		idleParticleFX.transform.localPosition = new Vector3(0,-1.5f,0);
     }
 
 	public void takeDamage(float d) {
@@ -411,4 +412,10 @@ public class PlayerController : MonoBehaviour {
 		currentEnergy -= cost;
 		currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
 	}
+
+    public void SetMaterial(Material mat) {
+        body.GetComponent<Renderer>().material = mat;
+        cape.GetComponent<Renderer>().material = mat;
+        
+    }
 }

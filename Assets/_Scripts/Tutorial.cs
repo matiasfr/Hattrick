@@ -8,6 +8,7 @@ public class Tutorial : MonoBehaviour {
 
     public Text instructionText;
 
+    [Multiline]
     public List<string> Instructions = new List<string>();
     private int currentInstruction;
 
@@ -35,6 +36,7 @@ public class Tutorial : MonoBehaviour {
     }
 
     void Update() {
+        Debug.Log(InputManager.IsSetup);
         if (InputManager.ActiveDevice.RightBumper.WasPressed || InputManager.ActiveDevice.DPadRight.WasPressed) {
             NextInstruction();
         }
@@ -42,8 +44,5 @@ public class Tutorial : MonoBehaviour {
             PrevInstruction();
         }
 
-        if (Input.GetKeyUp(KeyCode.Escape)) {
-            SceneManager.Instance.GoToScene("MainMenu");
-        }
     }
 }
