@@ -103,14 +103,15 @@ public class PlayerController : MonoBehaviour {
 	private float MIN_ENERGY = 0;
     private float currentEnergy = 0;
 	private bool recharging = true;
-	private float rechargeAmount = 0.20f; //10 energy/s
+	private float rechargeAmount = 0.20f; // energy/s
+    private float indicatorStartScale;
 
 	//energy cost values
 	private float SHIELD_COST = 0.2f;
 	private float PROJECTILE_COST = 0.40f;
-	private float PROJECTILE_COST_MIN = 0.2f;
+	private float PROJECTILE_COST_MIN = 0.3f;
 	private float DASH_COST = 0.10f;
-	private float CHANGE_ELEMENT_COST = 0.30f;
+	private float CHANGE_ELEMENT_COST = 0.00f;
 	ParticleSystem idleParticleFX;
 
 	public GameObject energyIndicator;
@@ -127,6 +128,7 @@ public class PlayerController : MonoBehaviour {
         startPos = transform.position;
         ChangeElement(Element.FIRE);
         hoverTimer = Random.Range(0f, 1.5f);
+        indicatorStartScale = energyIndicator.transform.localScale.x;
     }
 
     void OnEnable() {
@@ -169,6 +171,9 @@ public class PlayerController : MonoBehaviour {
 
             //Movement and aiming
             transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
+            float targetLean = (moveDirection != Vector3.zero) ? 12f : 0f;
+            Quaternion targetBodyRot = Quaternion.AngleAxis(targetLean, Vector3.Cross(transform.up, body.transform.InverseTransformDirection(moveDirection)));
+            body.transform.localRotation = Quaternion.Slerp(body.transform.localRotation, targetBodyRot, .2f);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
 
 
@@ -181,7 +186,8 @@ public class PlayerController : MonoBehaviour {
 			currentEnergy += rechargeAmount*Time.deltaTime;
 			currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
 		}
-		energyIndicator.transform.localScale = new Vector3(0.1f,currentEnergy,0.1f);
+
+		energyIndicator.transform.localScale = indicatorStartScale * new Vector3(currentEnergy, currentEnergy, currentEnergy);
     
 
         CheckElement();
@@ -225,6 +231,7 @@ public class PlayerController : MonoBehaviour {
 
     public void Stun(float chargePercent) {
 
+        recharging = true;
         if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
             chargingCast = false;
@@ -397,7 +404,7 @@ public class PlayerController : MonoBehaviour {
 		if (idleParticleFX != null) {
 			Destroy(idleParticleFX.gameObject);
 		}
-		idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1.5f, 0), Quaternion.identity);
+		idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.idleParticleFX.transform.localRotation);
 		idleParticleFX.transform.parent = transform;
     }
 

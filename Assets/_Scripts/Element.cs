@@ -15,6 +15,14 @@ public class Element : MonoBehaviour {
     public Shield shieldPrefab;
 
 	public ParticleSystem idleParticleFX;
+    public ParticleSystem switchParticleFX;
+    public ParticleSystem impactParticleFX;
+    public ParticleSystem projectileTrailFX;
+    public ParticleSystem projectileDissapateFX;
+    public ParticleSystem projectileImpactFX;
+
+    public ParticleSystem shieldSpawnFX;
+
 
     public Element weakness {
         get {
