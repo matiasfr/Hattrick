@@ -4,24 +4,36 @@ using System.Collections;
 public class Projectile : MonoBehaviour {
 
 
-    public bool isCast = false;
     private Vector3 velocity = Vector3.zero;
+
     public float projectileSpeed = 1f;
+
     public float minForce = 1f;
     public float maxForce = 8f;
+
     private float projectileRange = 10f;
     public float projectileMaxRange = 40f;
     public float projectileMinRange = 4f;
+
     public float minProjectileScale = .5f;
     public float maxProjectileScale = 1.5f;
+
+    public float MIN_DAMAGE = 3.0f;
+    public float MAX_DAMAGE = 15.0f;
+
     private Vector3 startPos;
     private Collider col;
     private float chargePercent;
     private int casterPlayerNum;
+
+    [HideInInspector]
     public Element element;
+
+    [HideInInspector]
+    public bool isCast = false;
+
     private Renderer ren;
-	public float MIN_DAMAGE = 3.0f;
-	public float MAX_DAMAGE = 15.0f;
+
 
     public ParticleSystem ChargingEffectPrefab;
     private ParticleSystem chargingEffect = null;
@@ -69,8 +81,9 @@ public class Projectile : MonoBehaviour {
         if (pc != null) {
             if (pc.playerNum != casterPlayerNum) {
                 Rigidbody rb = other.GetComponent<Rigidbody>();
+                pc.takeDamage(Mathf.Lerp(MIN_DAMAGE, MAX_DAMAGE, chargePercent));
+
                 pc.Stun(chargePercent);
-				pc.takeDamage(Mathf.Lerp(MIN_DAMAGE,MAX_DAMAGE,chargePercent));
                 rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
                 Impact();
             }

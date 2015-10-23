@@ -36,7 +36,6 @@ public class Tutorial : MonoBehaviour {
     }
 
     void Update() {
-        Debug.Log(InputManager.IsSetup);
         if (InputManager.ActiveDevice.RightBumper.WasPressed || InputManager.ActiveDevice.DPadRight.WasPressed) {
             NextInstruction();
         }

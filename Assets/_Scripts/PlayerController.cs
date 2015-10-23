@@ -23,6 +23,8 @@ public class PlayerActions : PlayerActionSet {
     public PlayerAction AimDown;
     public PlayerTwoAxisAction Aim;
 
+    public PlayerAction Dash;
+
     public PlayerActions() {
         Cast = CreatePlayerAction("Cast");
         Shield = CreatePlayerAction("Shield");
@@ -43,6 +45,9 @@ public class PlayerActions : PlayerActionSet {
         AimUp = CreatePlayerAction("Aim Up");
         AimDown = CreatePlayerAction("Aim Down");
         Aim = CreateTwoAxisPlayerAction(AimLeft, AimRight, AimDown, AimUp);
+
+        Dash = CreatePlayerAction("Dash");
+
     }
 }
 
@@ -50,24 +55,33 @@ public class PlayerActions : PlayerActionSet {
 
 public class PlayerController : MonoBehaviour {
 
-    public int playerNum;
-    private InputDevice controller;
-    private PlayerActions playerInput;
-    public float moveSpeed = 10;
-
     public InputControlType CastButton;
     public InputControlType ShieldButton;
     public InputControlType JumpButton;
     public InputControlType EarthButton;
     public InputControlType FireButton;
     public InputControlType WaterButton;
+    public InputControlType DashButton;
+
+    public int playerNum;
+    private InputDevice controller;
+    private PlayerActions playerInput;
+
+
+    public float normalMoveSpeed = 10;
+    public float shieldingMoveSpeed = 5f;
+    public float chargingMoveSpeed = 5f;
+    private float moveSpeed;
+
+    public float StartMass = 1.5f;
 
     private Vector3 forward = Vector3.zero;
     private Vector3 right = Vector3.zero;
     private Vector3 moveDirection;
-    private Vector3 aimDirection = Vector3.forward;
     private Vector3 startPos;
 
+    public float MaxChargeTime = 2f; //Time to charge to reach full power
+    private Vector3 aimDirection = Vector3.forward;
     public float aimSlerpValue = .3f;
     private float castChargeTime = 0;
     private float chargePercent;
@@ -86,9 +100,15 @@ public class PlayerController : MonoBehaviour {
     private float stunLength = 2f;
     public float recoverLength = .25f;
 
+    private bool dashing = false;
+    public float DashDistance = 4f;
+    public float DashSpeed = 20f;
+    public float DashCooldown = 1.5f;
+    private float dashCooldownTimer = 0f;
 
 
-    public float MaxChargeTime = 2f; //Time to charge to reach full power
+
+
 
     public float hoverAmplitude = .5f;
     private float hoverTimer = 0f;
@@ -115,10 +135,12 @@ public class PlayerController : MonoBehaviour {
 	ParticleSystem idleParticleFX;
 
 	public GameObject energyIndicator;
-	
+    public GameObject aimingIndicator;
     private Projectile projectile = null;
 
     private Rigidbody rb;
+
+    [HideInInspector]
     public Element element;
 
     void Start() {
@@ -149,6 +171,8 @@ public class PlayerController : MonoBehaviour {
         playerInput.AimRight.AddDefaultBinding(InputControlType.RightStickRight);
         playerInput.AimUp.AddDefaultBinding(InputControlType.RightStickUp);
         playerInput.AimDown.AddDefaultBinding(InputControlType.RightStickDown);
+
+        playerInput.Dash.AddDefaultBinding(DashButton);
     }
 
     void onDisable() {
@@ -160,38 +184,77 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Update() {
+        
         if (playerInput.Device == null) playerInput.Device = PlayersManager.Players[playerNum].device;
+
+
         CheckGround();
         CheckCamera();
+        CheckElement();
+        if(energyIndicator != null) energyIndicator.SetActive(!stunned);
+        if(aimingIndicator != null) aimingIndicator.SetActive(!stunned);
 
         if (!stunned) {
             ProjectileControl();
             ShieldControl();
             HoverAnimation();
+            DashControl();
 
             //Movement and aiming
+            if (chargingCast) moveSpeed = chargingMoveSpeed;
+            else if (shielding) moveSpeed = shieldingMoveSpeed;
+            else moveSpeed = normalMoveSpeed;
+
             transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
             float targetLean = (moveDirection != Vector3.zero) ? 12f : 0f;
             Quaternion targetBodyRot = Quaternion.AngleAxis(targetLean, Vector3.Cross(transform.up, body.transform.InverseTransformDirection(moveDirection)));
             body.transform.localRotation = Quaternion.Slerp(body.transform.localRotation, targetBodyRot, .2f);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
 
+            //Resize the energy indicator
+            if (energyIndicator != null) {
+                float displayEnergy = Mathf.Clamp(currentEnergy - PROJECTILE_COST * chargePercent, MIN_ENERGY, MAX_ENERGY);
+                energyIndicator.transform.localScale = indicatorStartScale * new Vector3(displayEnergy, displayEnergy, displayEnergy);
+            }
 
         }
         else {
             stunnedTime += Time.deltaTime;
         }
-		//recharge energy
+
+		//Recharge energy
 		if(recharging) {
 			currentEnergy += rechargeAmount*Time.deltaTime;
 			currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
 		}
+        
 
-		energyIndicator.transform.localScale = indicatorStartScale * new Vector3(currentEnergy, currentEnergy, currentEnergy);
-    
 
-        CheckElement();
+    }
 
+    void DashControl() {
+        if (playerInput.Dash.WasPressed) {
+            if (!dashing && dashCooldownTimer >= DashCooldown)
+                StartCoroutine(DashSequence());
+        }
+        if (!dashing && dashCooldownTimer < DashCooldown) {
+            dashCooldownTimer += Time.deltaTime;
+        }
+    }
+
+    IEnumerator DashSequence() {
+        dashing = true;
+        dashCooldownTimer = 0;
+        Vector3 dir = moveDirection.normalized;
+        if (dir == Vector3.zero) dir = aimDirection.normalized;
+        float dist = 0;
+
+        while(dashing && dist < DashDistance) {
+            transform.Translate(transform.InverseTransformDirection(dir) * DashSpeed * Time.deltaTime);
+            dist += DashSpeed * Time.deltaTime;
+            yield return null;
+        }
+        dashing = false;
     }
 
     void HoverAnimation() {
@@ -232,6 +295,7 @@ public class PlayerController : MonoBehaviour {
     public void Stun(float chargePercent) {
 
         recharging = true;
+        dashing = false;
         if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
             chargingCast = false;
@@ -281,6 +345,7 @@ public class PlayerController : MonoBehaviour {
             if (castChargeTime > MaxChargeTime) castChargeTime = MaxChargeTime;
             chargePercent = castChargeTime / MaxChargeTime;
 			chargePercent = Mathf.Clamp(chargePercent,0, currentEnergy/PROJECTILE_COST);
+
             float projectileScale = Mathf.Lerp(projectile.minProjectileScale, projectile.maxProjectileScale, chargePercent);
             projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
             projectile.transform.position = transform.position + transform.forward + projectileOffset;
@@ -291,6 +356,7 @@ public class PlayerController : MonoBehaviour {
             chargingCast = false;
 			recharging = true;
 			useEnergy(PROJECTILE_COST*chargePercent);
+            chargePercent = 0f;
         }
     }
 
@@ -386,7 +452,8 @@ public class PlayerController : MonoBehaviour {
         }
         //reset damage/energy
         currentEnergy = MAX_ENERGY;
-		currentDamage = 0;
+        setDamage(0);
+        dashCooldownTimer = DashCooldown;
         Player p = PlayersManager.Players[playerNum];
         p.OnDeath();
         if (!p.defeated) {
@@ -410,12 +477,16 @@ public class PlayerController : MonoBehaviour {
 
 	public void takeDamage(float d) {
 		if (!stunned) {
-			currentDamage += d;
+			setDamage(currentDamage + d);
 			//mass =  1/(1+damage* constant modifier)
-			rb.mass = 1.0f / (1.0f + 0.05f * currentDamage);
 		}
 	}
-	void useEnergy(float cost) {
+    public void setDamage(float d) {
+            currentDamage = d;
+            rb.mass = StartMass / (1.0f + 0.05f * currentDamage);
+        
+    }
+    void useEnergy(float cost) {
 		currentEnergy -= cost;
 		currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
 	}

@@ -6,8 +6,11 @@ public class Shield : MonoBehaviour {
     private float shieldTime = 0f;
     public float maxShieldTime = 3f;
     public bool CollapseOnDespawn = false;
-    public Element element;
     public List<ShieldPiece> pieces = new List<ShieldPiece>();
+
+    [HideInInspector]
+    public Element element;
+
 
     public float Power {
         get {

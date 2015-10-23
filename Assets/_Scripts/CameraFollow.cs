@@ -40,7 +40,7 @@ public class CameraFollow : MonoBehaviour {
 		//lerp fov based on most distant pair of players
 		foreach(Transform t in playerPositions) { //n^2 but only 4 players so its not bad
 			foreach(Transform n in playerPositions) { //inefficient because im checking double
-                if (n == null) continue;
+                if (n == null || t == null) continue;
 
                 if (n != t) {
 					Vector3 diff = n.position - t.position;
