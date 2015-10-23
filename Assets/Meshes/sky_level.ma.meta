@@ -127,6 +127,15 @@ ModelImporter:
     100238: transform42
     100240: transform43
     100242: transform44
+    100244: cloud1
+    100246: cloud2
+    100248: cloud3
+    100250: cloud4
+    100252: cloud5
+    100254: cloud6
+    100256: cloud7
+    100258: cloud8
+    100260: mountain
     400000: pCylinder1
     400002: pCylinder10
     400004: pCylinder11
@@ -249,6 +258,15 @@ ModelImporter:
     400238: transform42
     400240: transform43
     400242: transform44
+    400244: cloud1
+    400246: cloud2
+    400248: cloud3
+    400250: cloud4
+    400252: cloud5
+    400254: cloud6
+    400256: cloud7
+    400258: cloud8
+    400260: mountain
     2300000: pCylinder12
     2300002: polySurface10
     2300004: polySurface15
@@ -273,6 +291,15 @@ ModelImporter:
     2300042: polySurface31
     2300044: polySurface34
     2300046: pSolid19
+    2300048: cloud1
+    2300050: cloud2
+    2300052: cloud3
+    2300054: cloud4
+    2300056: cloud5
+    2300058: cloud6
+    2300060: cloud7
+    2300062: cloud8
+    2300064: mountain
     3300000: pCylinder12
     3300002: polySurface10
     3300004: polySurface15
@@ -297,6 +324,15 @@ ModelImporter:
     3300042: polySurface31
     3300044: polySurface34
     3300046: pSolid19
+    3300048: cloud1
+    3300050: cloud2
+    3300052: cloud3
+    3300054: cloud4
+    3300056: cloud5
+    3300058: cloud6
+    3300060: cloud7
+    3300062: cloud8
+    3300064: mountain
     4300000: pCylinder12
     4300002: polySurface10
     4300004: polySurface2
@@ -321,6 +357,15 @@ ModelImporter:
     4300042: polySurface28
     4300044: polySurface31
     4300046: polySurface20
+    4300048: mountain
+    4300050: cloud1
+    4300052: cloud2
+    4300054: cloud3
+    4300056: cloud4
+    4300058: cloud5
+    4300060: cloud6
+    4300062: cloud7
+    4300064: cloud8
     7400000: Take 001
     9500000: //RootNode
   materials:

@@ -264,7 +264,7 @@ public class PlayerController : MonoBehaviour {
     RaycastHit hit;
     void CheckGround() {
         if (Physics.Raycast(transform.position, Vector3.down, out hit)) {
-            if (!stunned) {
+            if (!stunned && !dashing) {
                 if (hit.collider.gameObject.name == "DeathTrigger") { // FALL OFF
                     rb.isKinematic = false;
                     rb.AddForce(Vector3.down * 3f, ForceMode.Impulse);
