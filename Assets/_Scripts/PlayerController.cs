@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour {
     private Vector3 moveDirection;
     private Vector3 startPos;
 
-    public float MaxChargeTime = 2f; //Time to charge to reach full power
+    public float MaxChargeTime = 0.75f; //Time to charge to reach full power
     private Vector3 aimDirection = Vector3.forward;
     public float aimSlerpValue = .3f;
     private float castChargeTime = 0;
@@ -127,10 +127,9 @@ public class PlayerController : MonoBehaviour {
     private float indicatorStartScale;
 
 	//energy cost values
-	private float SHIELD_COST = 0.2f;
-	private float PROJECTILE_COST = 0.40f;
-	private float PROJECTILE_COST_MIN = 0.3f;
-	private float DASH_COST = 0.10f;
+	private float SHIELD_COST = 0.01f;
+	private float PROJECTILE_COST = 0.4f;
+	private float PROJECTILE_COST_MIN = 0.01f;
 	private float CHANGE_ELEMENT_COST = 0.00f;
 	ParticleSystem idleParticleFX;
 
