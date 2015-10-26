@@ -136,6 +136,7 @@ public class PlayerController : MonoBehaviour {
     private float PROJECTILE_COST_MIN = 0.01f;
     private float CHANGE_ELEMENT_COST = 0.00f;
     ParticleSystem idleParticleFX;
+    ParticleSystem switchParticleFX;
 
     public GameObject energyIndicator;
     public GameObject aimingIndicator;
@@ -489,6 +490,12 @@ public class PlayerController : MonoBehaviour {
         if (idleParticleFX != null) {
             Destroy(idleParticleFX.gameObject);
         }
+        if (switchParticleFX != null)
+        {
+            Destroy(switchParticleFX.gameObject);
+        }
+        switchParticleFX = (ParticleSystem)Instantiate(element.switchParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.switchParticleFX.transform.localRotation);
+        switchParticleFX.transform.parent = transform;
         idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.idleParticleFX.transform.localRotation);
         idleParticleFX.transform.parent = transform;
     }
