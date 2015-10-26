@@ -33,6 +33,7 @@ public class Projectile : MonoBehaviour {
     public bool isCast = false;
 
     private Renderer ren;
+	ParticleSystem impactParticleFX;
 
 
     public ParticleSystem ChargingEffectPrefab;
@@ -131,8 +132,14 @@ public class Projectile : MonoBehaviour {
 		} else {
 			AudioSource.PlayClipAtPoint (AudioManager.Instance.ImpactEarthSFX, transform.position);
 		}
+		//clear impact effect
+		if (impactParticleFX != null)
+		{
+			Destroy(impactParticleFX.gameObject);
+		}
+		impactParticleFX = (ParticleSystem)Instantiate(element.impactParticleFX, transform.position, element.impactParticleFX.transform.localRotation);
+		//impactParticleFX.transform.parent = transform;
         Destroy(gameObject);
-        //TODO Add impact VFX + SFX
     }
 
 }
