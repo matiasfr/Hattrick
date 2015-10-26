@@ -86,16 +86,17 @@ public class PlayerController : MonoBehaviour {
     private float castChargeTime = 0;
     private float chargePercent;
     private bool chargingCast = false;
-    private Vector3 projectileOffset = new Vector3(0f, -.6f, 0f);
+    private Vector3 projectileOffset = new Vector3(0f, -.3f, 0f);
 
     private bool shielding = false;
     private Shield shield;
-    private Vector3 shieldOffset = new Vector3(0f, -1.4f, 0f);
+    private Vector3 shieldOffset = new Vector3(0f, -1.1f, 0f);
 
 
     public float minStunTime = .5f;
     public float maxStunTime = 1f;
-    private bool stunned = false;
+    [HideInInspector]
+    public bool stunned = false;
     private float stunnedTime = 0;
     private float stunLength = 2f;
     public float recoverLength = .25f;
@@ -108,7 +109,7 @@ public class PlayerController : MonoBehaviour {
 
 
 
-
+    public PlayerBumper bumper;
 
     public float hoverAmplitude = .5f;
     private float hoverTimer = 0f;
@@ -117,23 +118,26 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject cape;
 
-	public float damageModifier = 1.0f;
-    private float currentDamage = 0;
-	private float MAX_ENERGY = 1;//100 energy
-	private float MIN_ENERGY = 0;
+    public float damageModifier = 1.0f;
+
+    [HideInInspector]
+    public float currentDamage = 0;
+
+    private float MAX_ENERGY = 1;//100 energy
+    private float MIN_ENERGY = 0;
     private float currentEnergy = 0;
-	private bool recharging = true;
-	private float rechargeAmount = 0.20f; // energy/s
+    private bool recharging = true;
+    private float rechargeAmount = 0.20f; // energy/s
     private float indicatorStartScale;
 
-	//energy cost values
-	private float SHIELD_COST = 0.01f;
-	private float PROJECTILE_COST = 0.4f;
-	private float PROJECTILE_COST_MIN = 0.01f;
-	private float CHANGE_ELEMENT_COST = 0.00f;
-	ParticleSystem idleParticleFX;
+    //energy cost values
+    private float SHIELD_COST = 0.01f;
+    private float PROJECTILE_COST = 0.4f;
+    private float PROJECTILE_COST_MIN = 0.01f;
+    private float CHANGE_ELEMENT_COST = 0.00f;
+    ParticleSystem idleParticleFX;
 
-	public GameObject energyIndicator;
+    public GameObject energyIndicator;
     public GameObject aimingIndicator;
     private Projectile projectile = null;
 
@@ -143,8 +147,8 @@ public class PlayerController : MonoBehaviour {
     public Element element;
 
     void Start() {
-		currentEnergy = 100;
-		currentDamage = 0;
+        currentEnergy = 100;
+        currentDamage = 0;
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
         ChangeElement(Element.FIRE);
@@ -174,7 +178,7 @@ public class PlayerController : MonoBehaviour {
         playerInput.Dash.AddDefaultBinding(DashButton);
     }
 
-    void onDisable() {
+    void OnDisable() {
         playerInput.Destroy();
     }
 
@@ -183,15 +187,16 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Update() {
-        
+
         if (playerInput.Device == null) playerInput.Device = PlayersManager.Players[playerNum].device;
 
-
         CheckGround();
+        if (!PlayersManager.Instance.ControlsEnabled) return;
+
         CheckCamera();
         CheckElement();
-        if(energyIndicator != null) energyIndicator.SetActive(!stunned);
-        if(aimingIndicator != null) aimingIndicator.SetActive(!stunned);
+        if (energyIndicator != null) energyIndicator.SetActive(!stunned);
+        if (aimingIndicator != null) aimingIndicator.SetActive(!stunned);
 
         if (!stunned) {
             ProjectileControl();
@@ -221,15 +226,16 @@ public class PlayerController : MonoBehaviour {
             stunnedTime += Time.deltaTime;
         }
 
-		//Recharge energy
-		if(recharging) {
-			currentEnergy += rechargeAmount*Time.deltaTime;
-			currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
-		}
-        
+        //Recharge energy
+        if (recharging) {
+            currentEnergy += rechargeAmount * Time.deltaTime;
+            currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
+        }
+
 
 
     }
+
 
     void DashControl() {
         if (playerInput.Dash.WasPressed) {
@@ -248,7 +254,7 @@ public class PlayerController : MonoBehaviour {
         if (dir == Vector3.zero) dir = aimDirection.normalized;
         float dist = 0;
 
-        while(dashing && dist < DashDistance) {
+        while (dashing && dist < DashDistance) {
             transform.Translate(transform.InverseTransformDirection(dir) * DashSpeed * Time.deltaTime);
             dist += DashSpeed * Time.deltaTime;
             yield return null;
@@ -261,31 +267,39 @@ public class PlayerController : MonoBehaviour {
         hoverTimer += Time.deltaTime;
     }
     RaycastHit hit;
+    float fallSpeed;
+    int layerMask = 1 << 8;
+    float hoverHeight = 1.6f;
     void CheckGround() {
-        if (Physics.Raycast(transform.position, Vector3.down, out hit)) {
-            if (!stunned && !dashing) {
-                if (hit.collider.gameObject.name == "DeathTrigger") { // FALL OFF
-                    rb.isKinematic = false;
-                    rb.AddForce(Vector3.down * 3f, ForceMode.Impulse);
-                }
-                else if (!rb.isKinematic) {
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, hoverHeight+.1f, layerMask)) {
+
+
+            if (stunned) {
+                if (stunnedTime >= stunLength && playerInput.Jump.WasPressed)
                     StartCoroutine(Recover());
-                }
-
-
             }
             else {
-                if (stunnedTime >= stunLength && playerInput.Jump.WasPressed) {
-                    if (hit.collider.gameObject.name != "DeathTrigger") {
-                        StartCoroutine(Recover());
-                    }
+
+                if (transform.position.y - hit.point.y < hoverHeight) {
+                    transform.Translate(0, hit.point.y - transform.position.y + hoverHeight, 0);
+                    rb.isKinematic = true;
+
                 }
             }
 
         }
+        else {
+            if (!stunned && !dashing) {
 
 
-        if (transform.position.y < -30f) {
+                rb.isKinematic = false;
+                rb.AddForce(Vector3.down * .8f, ForceMode.Impulse);
+            }
+        }
+
+
+        if (transform.position.y < -80f) {
 
             Respawn();
         }
@@ -313,15 +327,15 @@ public class PlayerController : MonoBehaviour {
 
     void CheckElement() {
         if (playerInput.Earth.WasPressed) {
-			useEnergy(CHANGE_ELEMENT_COST);
+            useEnergy(CHANGE_ELEMENT_COST);
             ChangeElement(Element.EARTH);
         }
         else if (playerInput.Fire.WasPressed) {
-			useEnergy(CHANGE_ELEMENT_COST);
+            useEnergy(CHANGE_ELEMENT_COST);
             ChangeElement(Element.FIRE);
         }
         else if (playerInput.Water.WasPressed) {
-			useEnergy(CHANGE_ELEMENT_COST);
+            useEnergy(CHANGE_ELEMENT_COST);
             ChangeElement(Element.WATER);
         }
     }
@@ -330,8 +344,8 @@ public class PlayerController : MonoBehaviour {
 
     void ProjectileControl() {
         if (playerInput.Cast.WasPressed) {
-			if (!chargingCast && !shielding && currentEnergy > PROJECTILE_COST_MIN) {
-				recharging = false;
+            if (!chargingCast && !shielding && currentEnergy > PROJECTILE_COST_MIN) {
+                recharging = false;
                 castChargeTime = 0;
                 chargingCast = true;
                 projectile = Instantiate<Projectile>(element.projectilePrefab);
@@ -343,7 +357,7 @@ public class PlayerController : MonoBehaviour {
             castChargeTime += Time.deltaTime;
             if (castChargeTime > MaxChargeTime) castChargeTime = MaxChargeTime;
             chargePercent = castChargeTime / MaxChargeTime;
-			chargePercent = Mathf.Clamp(chargePercent,0, currentEnergy/PROJECTILE_COST);
+            chargePercent = Mathf.Clamp(chargePercent, 0, currentEnergy / PROJECTILE_COST);
 
             float projectileScale = Mathf.Lerp(projectile.minProjectileScale, projectile.maxProjectileScale, chargePercent);
             projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
@@ -353,8 +367,8 @@ public class PlayerController : MonoBehaviour {
         if (chargingCast && playerInput.Cast.WasReleased) {
             CastProjectile(chargePercent);
             chargingCast = false;
-			recharging = true;
-			useEnergy(PROJECTILE_COST*chargePercent);
+            recharging = true;
+            useEnergy(PROJECTILE_COST * chargePercent);
             chargePercent = 0f;
         }
     }
@@ -362,13 +376,15 @@ public class PlayerController : MonoBehaviour {
     void CastProjectile(float charge) {
         projectile.Cast(aimDirection.normalized, charge, playerNum);
         projectile = null;
-		if (element == Element.FIRE) {
-			AudioSource.PlayClipAtPoint (AudioManager.Instance.ShootFireSFX, transform.position);
-		} else if (element == Element.WATER) {
-			AudioSource.PlayClipAtPoint (AudioManager.Instance.ShootWaterSFX, transform.position);
-		} else {
-			AudioSource.PlayClipAtPoint (AudioManager.Instance.ShootEarthSFX, transform.position);
-		}
+        if (element == Element.FIRE) {
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.ShootFireSFX, transform.position);
+        }
+        else if (element == Element.WATER) {
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.ShootWaterSFX, transform.position);
+        }
+        else {
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.ShootEarthSFX, transform.position);
+        }
     }
 
     void ShieldControl() {
@@ -376,7 +392,8 @@ public class PlayerController : MonoBehaviour {
         if (playerInput.Shield.WasPressed) {
             if (!shielding && currentEnergy > SHIELD_COST) {
                 //Start shielding
-				useEnergy(SHIELD_COST);
+                useEnergy(SHIELD_COST);
+                bumper.radius = PlayerBumper.ShieldRadius;
                 shielding = true;
                 shield = Instantiate<Shield>(element.shieldPrefab);
                 shield.element = element;
@@ -389,14 +406,14 @@ public class PlayerController : MonoBehaviour {
                 if (chargingCast) {
                     projectile.Dissipate();
                     chargingCast = false;
-					recharging = true;
+                    recharging = true;
                 }
-
             }
         }
 
         if (shielding && playerInput.Shield.WasReleased) {
             shielding = false;
+            bumper.radius = PlayerBumper.PlayerRadius;
             shield.Despawn();
         }
     }
@@ -420,10 +437,13 @@ public class PlayerController : MonoBehaviour {
 
         Quaternion targetRot = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
         Vector3 newPos = transform.position;
-        newPos.y = startPos.y;
+        newPos.y =  hoverHeight + 0.5f;
         float t = 0;
         Vector3 initPos = transform.position;
         Quaternion initRot = transform.rotation;
+        stunned = false;
+
+
         while (t < recoverLength) {
             targetRot = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
             transform.position = Vector3.Lerp(initPos, newPos, t / recoverLength);
@@ -432,7 +452,6 @@ public class PlayerController : MonoBehaviour {
             yield return null;
 
         }
-        stunned = false;
         rb.isKinematic = true;
     }
 
@@ -467,32 +486,31 @@ public class PlayerController : MonoBehaviour {
 
     void ChangeElement(Element e) {
         element = e;
-		if (idleParticleFX != null) {
-			Destroy(idleParticleFX.gameObject);
-		}
-		idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.idleParticleFX.transform.localRotation);
-		idleParticleFX.transform.parent = transform;
+        if (idleParticleFX != null) {
+            Destroy(idleParticleFX.gameObject);
+        }
+        idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.idleParticleFX.transform.localRotation);
+        idleParticleFX.transform.parent = transform;
     }
 
-	public void takeDamage(float d) {
-		if (!stunned) {
-			setDamage(currentDamage + d);
-			//mass =  1/(1+damage* constant modifier)
-		}
-	}
+    public void takeDamage(float d) {
+        if (!stunned) {
+            setDamage(currentDamage + d);
+        }
+    }
     public void setDamage(float d) {
-            currentDamage = d;
-            rb.mass = StartMass / (1.0f + 0.05f * currentDamage);
-        
+        currentDamage = d;
+        rb.mass = StartMass / (1.0f + 0.05f * currentDamage);
+
     }
     void useEnergy(float cost) {
-		currentEnergy -= cost;
-		currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
-	}
+        currentEnergy -= cost;
+        currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
+    }
 
     public void SetMaterial(Material mat) {
         body.GetComponent<Renderer>().material = mat;
         cape.GetComponent<Renderer>().material = mat;
-        
+
     }
 }

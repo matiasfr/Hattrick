@@ -7,7 +7,7 @@ public class Shield : MonoBehaviour {
     public float maxShieldTime = 3f;
     public bool CollapseOnDespawn = false;
     public List<ShieldPiece> pieces = new List<ShieldPiece>();
-
+    private PlayerBumper pb;
     [HideInInspector]
     public Element element;
 
@@ -19,11 +19,12 @@ public class Shield : MonoBehaviour {
     }
 
     void Start () {
-
+        
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+
+    // Update is called once per frame
+    void Update () {
         shieldTime += Time.deltaTime;
 
     }

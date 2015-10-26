@@ -21,7 +21,8 @@ public class EndGameGUI : MonoBehaviour {
         if (pm.winner == null)
             WinnerText.text = "No Contest!";
         else
-            WinnerText.text = "Player " + pm.winner.playerNum + " wins!";
+            WinnerText.text = ( (pm.winner.name != null && pm.winner.name.Length > 0) ? pm.winner.name : ("Player " + (pm.winner.playerNum+1) ) )
+                + " wins!";
         canvas.gameObject.SetActive(true);
     }
 

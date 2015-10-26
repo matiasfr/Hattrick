@@ -27,8 +27,15 @@ public class CameraFollow : MonoBehaviour {
 		}
 
 	}
-	
-	void Update () {
+
+    public void SetAnchor() {
+        Debug.Log(anchor);
+        anchor = gameObject.transform.position;
+        Debug.Log(anchor);
+
+    }
+
+    void Update () {
 		if(playerPositions.Count > 0) {
 			adjustFOV ();
 			panCamera ();
@@ -54,7 +61,7 @@ public class CameraFollow : MonoBehaviour {
 			}
 		}
 		//should now have max distance between players
-		maxDistance = Mathf.Clamp (maxDistance, DISTANCE_MIN, DISTANCE_MAX); //temp clamp
+		//maxDistance = Mathf.Clamp (maxDistance, DISTANCE_MIN, DISTANCE_MAX); //temp clamp
 		float percent = maxDistance / DISTANCE_MAX;
         float targetFOV = Mathf.Lerp(FOV_MIN, FOV_MAX, percent);
         cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
@@ -71,8 +78,8 @@ public class CameraFollow : MonoBehaviour {
 		}
 		Vector3 mean = sum / (playerPositions.Count);
 		mean.y = 0;
-		//print("center point: " + mean);
-		Vector3 des = mean+anchor;
+        //print("center point: " + mean);
+        Vector3 des = mean + transform.parent.TransformPoint(Vector3.zero);
 		transform.position = Vector3.Lerp(transform.position, des, panSpeed * Time.deltaTime);
 	}
 

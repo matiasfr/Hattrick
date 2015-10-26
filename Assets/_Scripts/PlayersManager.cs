@@ -7,9 +7,13 @@ using InControl;
 public class Player {
     public PlayerController character;
     public InputDevice device;
+    public string name;
     public int lives;
     public int playerNum;
     public bool defeated = false;
+
+    public PlayerHUD HUD;
+
     public Player(int num, InputDevice d) {
         playerNum = num;
         device = d;
@@ -27,6 +31,7 @@ public class Player {
 
         Debug.Log("Player " + playerNum + " lost a life");
         lives--;
+        if(HUD != null) HUD.UpdateLives(lives);
         if (lives <= 0) {
             defeated = true;
             PlayersManager.Instance.PlayerDefeated(playerNum);
@@ -50,6 +55,20 @@ public class PlayersManager : MonoBehaviour {
     public int numLives = 3;
     public bool setupMode = false;
     public bool gameOver = false;
+    public bool ControlsEnabled = true;
+    public bool Paused {
+        set {
+            if(value == true) {
+                Time.timeScale = 0;
+            }
+            else {
+                Time.timeScale = 1;
+            }
+        }
+        get {
+            return Time.timeScale == 0;
+        }
+    }
 
     public Player winner = null;
 
@@ -59,6 +78,7 @@ public class PlayersManager : MonoBehaviour {
         if (Instance == null) Instance = this;
         else {
             Destroy(this.gameObject);
+            return;
         }
         DontDestroyOnLoad(gameObject);
 
@@ -115,6 +135,9 @@ public class PlayersManager : MonoBehaviour {
     }
     // Update is called once per frame
     void Update() {
+
+
+
         if (setupMode) {
             for (int i = 0; i < devicesUnassigned.Count; i++) {
                 CheckToAdd(devicesUnassigned[i]);
@@ -130,6 +153,8 @@ public class PlayersManager : MonoBehaviour {
     public void StartGame() {
         setupMode = false;
         gameOver = false;
+        ControlsEnabled = false;
+
         foreach (Player p in Players) {
             p.lives = numLives;
             p.defeated = false;
@@ -148,21 +173,31 @@ public class PlayersManager : MonoBehaviour {
 
     private IEnumerator StartSequence() {
         yield return null;
-        //GameHUD.DisplayLargeText("Ready");
-        Debug.Log("Ready...");
 
         //Spawn in new players
         foreach (Player player in Players) {
-            if(player.character == null) CreatePlayerCharacter(player);
+            if (player.character == null) CreatePlayerCharacter(player);
             player.character.gameObject.SetActive(true);
-            player.character.transform.position = SpawnPoint.GetSpawnPoint();
+            float theta = 2*Mathf.PI / Players.Count * player.playerNum;
+            player.character.transform.position = new Vector3(Mathf.Cos(theta) * 5f, 10f, Mathf.Sin(theta) * 5f);// SpawnPoint.GetSpawnPoint();
+            player.HUD = GameHUD.Instance.SetPlayerHUD(player);
         }
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
-        yield return new WaitForSeconds(2);
-        Debug.Log("Fight!");
+        yield return new WaitForSeconds(5f);
 
 
-        //GameHUD.DisplayLargeText("Fight!");
+        GameHUD.Instance.DisplayCenterText("Ready", 1f);
+        Camera.main.GetComponent<CameraFollow>().SetAnchor();
+
+       
+        yield return new WaitForSeconds(1f);
+        GameHUD.Instance.DisplayCenterText("Set", 1f);
+
+
+        yield return new WaitForSeconds(1f);
+
+        GameHUD.Instance.DisplayCenterText("Fight!", 1f);
+        ControlsEnabled = true;
 
 
 
@@ -188,6 +223,8 @@ public class PlayersManager : MonoBehaviour {
         //Create new player character
         PlayerController newPC = Instantiate<PlayerController>(playerCharacterPrefab);
         newPC.transform.position = SpawnPoint.GetSpawnPoint();
+        //Look at origin
+        newPC.transform.rotation = Quaternion.LookRotation(new Vector3(0, newPC.transform.position.y, 0) - newPC.transform.position);
         newPC.playerNum = Players.IndexOf(p);
         p.character = newPC;
         p.character.SetMaterial(defaultPlayerMaterials[p.playerNum]);

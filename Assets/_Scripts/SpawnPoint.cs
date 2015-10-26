@@ -52,6 +52,6 @@ public class SpawnPoint : MonoBehaviour {
 
     void OnDrawGizmos() {
         Gizmos.color = new Color(.1f, .2f, .9f, .5f);
-        Gizmos.DrawSphere(transform.position, .5f);
+        Gizmos.DrawSphere(transform.position, .3f);
     }
 } 

@@ -1,41 +1,33 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-
+using System.Collections.Generic;
 public class GameHUD : MonoBehaviour {
 
-    public static GameHUD Instance;
-    public Text WinnerText;
-    public Canvas canvas;
-    private PlayersManager pm;
+    public static GameHUD Instance; 
+    public List<PlayerHUD> playerHUDs;
+    public Text CenterText;
 
-    void Start() {
+
+    void Start () {
         Instance = this;
+	}
+	
+
+    public void DisplayCenterText(string text, float seconds) {
+        StartCoroutine(ShowText(text, seconds));
     }
 
-    public void DisplayResults() {
-        
-        pm = PlayersManager.Instance;
-        if (pm == null) return;
-
-        if (pm.winner == null)
-            WinnerText.text = "No Contest!";
-        else
-            WinnerText.text = "Player " + pm.winner.playerNum + " wins!";
-        canvas.gameObject.SetActive(true);
+    IEnumerator ShowText(string text, float seconds) {
+        Debug.Log("Center Text: " + text);
+        CenterText.text = text;
+        yield return new WaitForSeconds(seconds);
+        CenterText.text = "";
     }
 
-    public void Rematch() {
-        PlayersManager.Instance.StartGame();
-        canvas.gameObject.SetActive(false);
-    }
-
-    public void StageSelect() {
-        SceneManager.Instance.GoToScene("StageSelect");
-    }
-
-    public void BackToMenu() {
-        SceneManager.Instance.QuitToMenu();
-
+    public PlayerHUD SetPlayerHUD(Player p) {
+        playerHUDs[p.playerNum].gameObject.SetActive(true);
+        playerHUDs[p.playerNum].SetPlayer(p);
+        return playerHUDs[p.playerNum];
     }
 }
