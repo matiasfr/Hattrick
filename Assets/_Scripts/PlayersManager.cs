@@ -143,10 +143,22 @@ public class PlayersManager : MonoBehaviour {
                 CheckToAdd(devicesUnassigned[i]);
             }
 
-            if (InputManager.MenuWasPressed) {
-                Application.LoadLevel("StageSelect");
-            }
 
+
+        }
+
+
+        //Menu Button control
+        foreach (InputDevice device in InputManager.Devices) {
+            if (device.MenuWasPressed) {
+                if(setupMode) {
+                    Application.LoadLevel("StageSelect");
+                    break;
+                }
+                else {
+
+                }
+            }
         }
     }
 

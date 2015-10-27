@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour {
     public bool stunned = false;
     private float stunnedTime = 0;
     private float stunLength = 2f;
-    public float recoverLength = .25f;
+    public float recoverLength = .155f;
 
     private bool dashing = false;
     public float DashDistance = 4f;
@@ -285,6 +285,7 @@ public class PlayerController : MonoBehaviour {
                 if (transform.position.y - hit.point.y < hoverHeight) {
                     transform.Translate(0, hit.point.y - transform.position.y + hoverHeight, 0);
                     rb.isKinematic = true;
+                    //check if playing respawn animation
 
                 }
             }
@@ -496,7 +497,7 @@ public class PlayerController : MonoBehaviour {
         }
         switchParticleFX = (ParticleSystem)Instantiate(element.switchParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.switchParticleFX.transform.localRotation);
         switchParticleFX.transform.parent = transform;
-        idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.idleParticleFX.transform.localRotation);
+        idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1f, 0), element.idleParticleFX.transform.localRotation);
         idleParticleFX.transform.parent = transform;
     }
 
@@ -519,5 +520,5 @@ public class PlayerController : MonoBehaviour {
         body.GetComponent<Renderer>().material = mat;
         cape.GetComponent<Renderer>().material = mat;
 
-    }
+    } 
 }
