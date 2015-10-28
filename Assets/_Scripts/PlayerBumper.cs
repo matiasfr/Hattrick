@@ -30,7 +30,7 @@ public class PlayerBumper : MonoBehaviour {
         foreach (PlayerBumper pb in bumpers) {
             if (pb != this) {
                 if (!pb.pc.stunned && !pc.stunned) {
-                    if (Vector3.Distance(pb.transform.position, transform.position) < pb.radius + radius) {
+                    if (Vector3.Distance(pb.parentBody.position, parentBody.position) < pb.radius + radius) {
                         pb.Bump(this);
                         Bump(pb);
 
@@ -43,13 +43,13 @@ public class PlayerBumper : MonoBehaviour {
 
 
     void Bump(PlayerBumper other) {
-        parentBody.transform.Translate(  (transform.position - other.transform.position).normalized * ( .1f + other.radius + radius - (transform.position - other.transform.position).magnitude )  );
+        parentBody.MovePosition(parentBody.position  + (parentBody.position - other.parentBody.position).normalized * ( .1f + other.radius + radius - (parentBody.position - other.parentBody.position).magnitude )  );
 
         Debug.Log("bumped");
         parentBody.isKinematic = false;
 
         parentBody.velocity = Vector3.zero;
-        parentBody.AddForce((transform.position - other.transform.position).normalized * 3f * other.radius + new Vector3(0, 1, 0), ForceMode.Impulse);
+        parentBody.AddForce((parentBody.position - other.parentBody.position).normalized * 3f * other.radius + new Vector3(0, 1, 0), ForceMode.Impulse);
 
 
     }

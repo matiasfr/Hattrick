@@ -192,25 +192,33 @@ public class PlayerController : MonoBehaviour {
         if (playerInput.Device == null) playerInput.Device = PlayersManager.Players[playerNum].device;
 
         CheckGround();
-        if (!PlayersManager.Instance.ControlsEnabled) return;
 
         CheckCamera();
-        CheckElement();
+        if (PlayersManager.Instance.ControlsEnabled) CheckElement();
+
         if (energyIndicator != null) energyIndicator.SetActive(!stunned);
         if (aimingIndicator != null) aimingIndicator.SetActive(!stunned);
 
         if (!stunned) {
-            ProjectileControl();
-            ShieldControl();
             HoverAnimation();
-            DashControl();
 
-            //Movement and aiming
-            if (chargingCast) moveSpeed = chargingMoveSpeed;
-            else if (shielding) moveSpeed = shieldingMoveSpeed;
-            else moveSpeed = normalMoveSpeed;
+            if (PlayersManager.Instance.ControlsEnabled) {
 
-            transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
+                //System Controls
+                ProjectileControl();
+                ShieldControl();
+                DashControl();
+
+                //Movement and aiming
+                if (chargingCast) moveSpeed = chargingMoveSpeed;
+                else if (shielding) moveSpeed = shieldingMoveSpeed;
+                else moveSpeed = normalMoveSpeed;
+
+                transform.Translate(transform.InverseTransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
+
+            }
+
+            //Rotate Body
             float targetLean = (moveDirection != Vector3.zero) ? 12f : 0f;
             Quaternion targetBodyRot = Quaternion.AngleAxis(targetLean, Vector3.Cross(transform.up, body.transform.InverseTransformDirection(moveDirection)));
             body.transform.localRotation = Quaternion.Slerp(body.transform.localRotation, targetBodyRot, .2f);
@@ -267,6 +275,8 @@ public class PlayerController : MonoBehaviour {
         body.transform.localPosition = new Vector3(0f, hoverAmplitude * Mathf.Sin(hoverTimer * hoverSpeed), 0f);
         hoverTimer += Time.deltaTime;
     }
+
+
     RaycastHit hit;
     float fallSpeed;
     int layerMask = 1 << 8;
@@ -296,12 +306,12 @@ public class PlayerController : MonoBehaviour {
 
 
                 rb.isKinematic = false;
-                rb.AddForce(Vector3.down * .8f, ForceMode.Impulse);
+                rb.AddForce(Vector3.down * 1.8f, ForceMode.Impulse);
             }
         }
 
 
-        if (transform.position.y < -80f) {
+        if (transform.position.y < -50f) {
 
             Respawn();
         }
@@ -363,6 +373,7 @@ public class PlayerController : MonoBehaviour {
 
             float projectileScale = Mathf.Lerp(projectile.minProjectileScale, projectile.maxProjectileScale, chargePercent);
             projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
+
             projectile.transform.position = transform.position + transform.forward + projectileOffset;
 
         }
@@ -444,6 +455,7 @@ public class PlayerController : MonoBehaviour {
         Vector3 initPos = transform.position;
         Quaternion initRot = transform.rotation;
         stunned = false;
+        rb.isKinematic = true;
 
 
         while (t < recoverLength) {
@@ -455,6 +467,8 @@ public class PlayerController : MonoBehaviour {
 
         }
         rb.isKinematic = true;
+        stunned = false;
+
     }
 
 
@@ -482,6 +496,8 @@ public class PlayerController : MonoBehaviour {
         }
         else {
             gameObject.SetActive(false);
+            Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+
         }
 
     }

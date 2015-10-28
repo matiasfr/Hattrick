@@ -14,15 +14,17 @@ public class EndGameGUI : MonoBehaviour {
     }
 
     public void DisplayResults() {
-        
+
         pm = PlayersManager.Instance;
         if (pm == null) return;
 
         if (pm.winner == null)
             WinnerText.text = "No Contest!";
-        else
-            WinnerText.text = ( (pm.winner.name != null && pm.winner.name.Length > 0) ? pm.winner.name : ("Player " + (pm.winner.playerNum+1) ) )
+        else {
+            WinnerText.text = ((pm.winner.name != null && pm.winner.name.Length > 0) ? pm.winner.name : ("Player " + (pm.winner.playerNum + 1)))
                 + " wins!";
+            WinnerText.color = pm.winner.color;
+        }
         canvas.gameObject.SetActive(true);
     }
 

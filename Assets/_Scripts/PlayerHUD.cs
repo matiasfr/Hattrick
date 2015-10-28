@@ -29,6 +29,7 @@ public class PlayerHUD : MonoBehaviour {
     }
 
     public void SetPlayer(Player p) {
+        Name.color = p.color;
         player = p;
         UpdateLives(p.lives);
         if(player.name != null && player.name.Length > 0)

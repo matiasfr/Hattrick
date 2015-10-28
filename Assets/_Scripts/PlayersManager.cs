@@ -11,6 +11,7 @@ public class Player {
     public int lives;
     public int playerNum;
     public bool defeated = false;
+    public Color color;
 
     public PlayerHUD HUD;
 
@@ -20,7 +21,7 @@ public class Player {
     }
     public void OnDeath() {
         if (PlayersManager.Instance.setupMode) {
-            Debug.Log("Player " + playerNum + " died during setup mode");
+            Debug.Log("Player " + playerNum + " died during game setup");
 
             return;
         }
@@ -35,7 +36,6 @@ public class Player {
         if (lives <= 0) {
             defeated = true;
             PlayersManager.Instance.PlayerDefeated(playerNum);
-
         }
 
     }
@@ -240,7 +240,7 @@ public class PlayersManager : MonoBehaviour {
         newPC.playerNum = Players.IndexOf(p);
         p.character = newPC;
         p.character.SetMaterial(defaultPlayerMaterials[p.playerNum]);
-
+        p.color = defaultPlayerMaterials[p.playerNum].color;
         // newPC.SetInputDevice(p.device);
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
 

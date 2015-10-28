@@ -74,6 +74,7 @@ public class CameraFollow : MonoBehaviour {
 		Vector3 sum = new Vector3(0.0f, 0.0f, 0.0f);
 		foreach(Transform n in playerPositions) {
             if (n == null) continue;
+            if (n.position.y < -15f) continue;
 			sum = sum +n.position;
 		}
 		Vector3 mean = sum / (playerPositions.Count);
