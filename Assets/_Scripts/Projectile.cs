@@ -138,7 +138,6 @@ public class Projectile : MonoBehaviour {
 			Destroy(impactParticleFX.gameObject);
 		}
 		impactParticleFX = (ParticleSystem)Instantiate(element.impactParticleFX, transform.position, element.impactParticleFX.transform.localRotation);
-		//impactParticleFX.transform.parent = transform;
         Destroy(gameObject);
     }
 
