@@ -8,22 +8,26 @@ public class PlayerHUD : MonoBehaviour {
     public Text Name;
     public Text Damage;
     public List<Image> Lives = new List<Image>();
+    public Gradient damageColor;
 
     [HideInInspector]
     public Player player;
 
-	void Start () {
-	    
-	}
-	
-	void Update () {
+    void Start() {
+
+    }
+
+    void Update() {
         if (player != null) {
-            if (player.character != null) Damage.text = Mathf.RoundToInt(player.character.currentDamage) + "%";
+            if (player.character != null) {
+                Damage.text = Mathf.RoundToInt(player.character.currentDamage) + "%";
+                Damage.color = damageColor.Evaluate(player.character.currentDamage / 100f);
+            }
         }
-	}
+    }
 
     public void UpdateLives(int lives) {
-        for(int i = 0; i < Lives.Count; i++) {
+        for (int i = 0; i < Lives.Count; i++) {
             Lives[i].gameObject.SetActive(i < lives);
         }
     }
@@ -32,7 +36,7 @@ public class PlayerHUD : MonoBehaviour {
         Name.color = p.color;
         player = p;
         UpdateLives(p.lives);
-        if(player.name != null && player.name.Length > 0)
+        if (player.name != null && player.name.Length > 0)
             Name.text = player.name;
     }
 }

@@ -34,6 +34,7 @@ public class Projectile : MonoBehaviour {
 
     private Renderer ren;
 	ParticleSystem impactParticleFX;
+    ParticleSystem dissapateParticleFX;
 
 
     public ParticleSystem ChargingEffectPrefab;
@@ -120,8 +121,11 @@ public class Projectile : MonoBehaviour {
     }
 
     public void Dissipate() {
+        //TODO Add dissapate SFX
+
+        dissapateParticleFX = (ParticleSystem)Instantiate(element.projectileDissapateFX, transform.position, Quaternion.LookRotation(velocity) );
         Destroy(gameObject);
-        //TODO Add dissapate VFX + SFX
+
     }
 
     public void Impact() {

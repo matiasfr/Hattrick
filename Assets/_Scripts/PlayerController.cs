@@ -61,7 +61,6 @@ public class PlayerController : MonoBehaviour {
     public InputControlType EarthButton;
     public InputControlType FireButton;
     public InputControlType WaterButton;
-    public InputControlType DashButton;
 
     public int playerNum;
     private InputDevice controller;
@@ -176,7 +175,9 @@ public class PlayerController : MonoBehaviour {
         playerInput.AimUp.AddDefaultBinding(InputControlType.RightStickUp);
         playerInput.AimDown.AddDefaultBinding(InputControlType.RightStickDown);
 
-        playerInput.Dash.AddDefaultBinding(DashButton);
+        playerInput.Dash.AddDefaultBinding(InputControlType.LeftBumper);
+        playerInput.Dash.AddDefaultBinding(InputControlType.RightBumper);
+
     }
 
     void OnDisable() {
@@ -192,8 +193,10 @@ public class PlayerController : MonoBehaviour {
         if (playerInput.Device == null) playerInput.Device = PlayersManager.Players[playerNum].device;
 
         CheckGround();
-
         CheckCamera();
+        EnergyControl();
+
+
         if (PlayersManager.Instance.ControlsEnabled) CheckElement();
 
         if (energyIndicator != null) energyIndicator.SetActive(!stunned);
@@ -235,11 +238,6 @@ public class PlayerController : MonoBehaviour {
             stunnedTime += Time.deltaTime;
         }
 
-        //Recharge energy
-        if (recharging) {
-            currentEnergy += rechargeAmount * Time.deltaTime;
-            currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
-        }
 
 
 
@@ -319,7 +317,6 @@ public class PlayerController : MonoBehaviour {
 
     public void Stun(float chargePercent) {
 
-        recharging = true;
         dashing = false;
         if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
@@ -357,7 +354,6 @@ public class PlayerController : MonoBehaviour {
     void ProjectileControl() {
         if (playerInput.Cast.WasPressed) {
             if (!chargingCast && !shielding && currentEnergy > PROJECTILE_COST_MIN) {
-                recharging = false;
                 castChargeTime = 0;
                 chargingCast = true;
                 projectile = Instantiate<Projectile>(element.projectilePrefab);
@@ -380,7 +376,6 @@ public class PlayerController : MonoBehaviour {
         if (chargingCast && playerInput.Cast.WasReleased) {
             CastProjectile(chargePercent);
             chargingCast = false;
-            recharging = true;
             useEnergy(PROJECTILE_COST * chargePercent);
             chargePercent = 0f;
         }
@@ -419,7 +414,6 @@ public class PlayerController : MonoBehaviour {
                 if (chargingCast) {
                     projectile.Dissipate();
                     chargingCast = false;
-                    recharging = true;
                 }
             }
         }
@@ -428,6 +422,16 @@ public class PlayerController : MonoBehaviour {
             shielding = false;
             bumper.radius = PlayerBumper.PlayerRadius;
             shield.Despawn();
+        }
+    }
+
+    void EnergyControl() {
+        if (chargingCast || shielding) recharging = false;
+        else recharging = true;
+        //Recharge energy
+        if (recharging) {
+            currentEnergy += rechargeAmount * Time.deltaTime;
+            currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
         }
     }
 
