@@ -106,7 +106,8 @@ public class PlayerController : MonoBehaviour {
     public float DashCooldown = 1.5f;
     private float dashCooldownTimer = 0f;
 
-
+	private bool projectileCooling = false;
+	public float projectileCooldownAmount = 0.05f;
 
     public PlayerBumper bumper;
 
@@ -352,8 +353,8 @@ public class PlayerController : MonoBehaviour {
 
 
     void ProjectileControl() {
-        if (playerInput.Cast.WasPressed) {
-            if (!chargingCast && !shielding && currentEnergy > PROJECTILE_COST_MIN) {
+		if (playerInput.Cast.WasPressed  && !projectileCooling) {
+			if (!chargingCast && !shielding && currentEnergy > PROJECTILE_COST_MIN) {
                 castChargeTime = 0;
                 chargingCast = true;
                 projectile = Instantiate<Projectile>(element.projectilePrefab);
@@ -361,7 +362,7 @@ public class PlayerController : MonoBehaviour {
 
             }
         }
-        if (projectile != null && playerInput.Cast.IsPressed) {
+        if (projectile != null && playerInput.Cast.IsPressed ) {
             castChargeTime += Time.deltaTime;
             if (castChargeTime > MaxChargeTime) castChargeTime = MaxChargeTime;
             chargePercent = castChargeTime / MaxChargeTime;
@@ -373,13 +374,21 @@ public class PlayerController : MonoBehaviour {
             projectile.transform.position = transform.position + transform.forward + projectileOffset;
 
         }
-        if (chargingCast && playerInput.Cast.WasReleased) {
+		if (chargingCast && playerInput.Cast.WasReleased) {
             CastProjectile(chargePercent);
             chargingCast = false;
             useEnergy(PROJECTILE_COST * chargePercent);
             chargePercent = 0f;
+			StartCoroutine(ProjectileCooldownSequence(projectileCooldownAmount));
         }
+
     }
+
+	IEnumerator ProjectileCooldownSequence (float delay) {
+		projectileCooling = true;
+		yield return new WaitForSeconds(delay);
+		projectileCooling = false;
+	}
 
     void CastProjectile(float charge) {
         projectile.Cast(aimDirection.normalized, charge, playerNum);
