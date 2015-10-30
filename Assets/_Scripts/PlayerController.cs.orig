@@ -369,10 +369,22 @@ public class PlayerController : MonoBehaviour {
             projectile.transform.position = transform.position + transform.forward + projectileOffset;
 
         }
+<<<<<<< HEAD
+        if (chargingCast) {
+            if (playerInput.Cast.WasReleased) {
+                CastProjectile(chargePercent);
+                chargingCast = false;
+                useEnergy(PROJECTILE_COST * chargePercent);
+                chargePercent = 0f;
+            }
+        }
+        else {
+=======
 		if (chargingCast && playerInput.Cast.WasReleased) {
             CastProjectile(chargePercent);
             chargingCast = false;
             useEnergy(PROJECTILE_COST * chargePercent);
+>>>>>>> 25fde3a7bb97ed779c1b198524125319235e6971
             chargePercent = 0f;
 			StartCoroutine(ProjectileCooldownSequence(projectileCooldownAmount));
         }
