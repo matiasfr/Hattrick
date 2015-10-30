@@ -33,6 +33,21 @@ public class Element : MonoBehaviour {
         }
     }
 
+    public static Element RandomElement {
+        get {
+            int i = Random.Range(0, 3);
+            switch (i) {
+                case 0:
+                    return EARTH;
+                case 1:
+                    return WATER;
+                case 2:
+                default:
+                    return FIRE;
+            }
+        }
+    }
+
     //public Material projectileMaterial;
     //public Material shieldMaterial;
     public Material indicatorMaterial;
@@ -49,6 +64,7 @@ public class Element : MonoBehaviour {
                 Element.WATER = this;
                 break;
         }
+        Random.seed = System.Environment.TickCount;
     }
 
     void Start() {

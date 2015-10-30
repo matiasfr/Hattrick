@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour {
         currentDamage = 0;
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
-        ChangeElement(Element.FIRE);
+        ChangeElement(Element.RandomElement);
         hoverTimer = Random.Range(0f, 1.5f);
         indicatorStartScale = energyIndicator.transform.localScale.x;
     }
@@ -199,8 +199,6 @@ public class PlayerController : MonoBehaviour {
 
         if (PlayersManager.Instance.ControlsEnabled) CheckElement();
 
-        if (energyIndicator != null) energyIndicator.SetActive(!stunned);
-        if (aimingIndicator != null) aimingIndicator.SetActive(!stunned);
 
         if (!stunned) {
             HoverAnimation();
@@ -213,7 +211,7 @@ public class PlayerController : MonoBehaviour {
                 DashControl();
 
                 //Movement and aiming
-                if (chargingCast) moveSpeed = chargingMoveSpeed;
+                if (chargingCast) moveSpeed = Mathf.Lerp(normalMoveSpeed, chargingMoveSpeed, chargePercent);
                 else if (shielding) moveSpeed = shieldingMoveSpeed;
                 else moveSpeed = normalMoveSpeed;
 
@@ -227,11 +225,7 @@ public class PlayerController : MonoBehaviour {
             body.transform.localRotation = Quaternion.Slerp(body.transform.localRotation, targetBodyRot, .2f);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
 
-            //Resize the energy indicator
-            if (energyIndicator != null) {
-                float displayEnergy = Mathf.Clamp(currentEnergy - PROJECTILE_COST * chargePercent, MIN_ENERGY, MAX_ENERGY);
-                energyIndicator.transform.localScale = indicatorStartScale * new Vector3(displayEnergy, displayEnergy, displayEnergy);
-            }
+
 
         }
         else {
@@ -281,7 +275,7 @@ public class PlayerController : MonoBehaviour {
     float hoverHeight = 1.6f;
     void CheckGround() {
 
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, hoverHeight+.1f, layerMask)) {
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, hoverHeight + .1f, layerMask)) {
 
 
             if (stunned) {
@@ -321,6 +315,7 @@ public class PlayerController : MonoBehaviour {
         if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
             chargingCast = false;
+            chargePercent = 0f;
         }
         if (shielding) {
             shield.Collapse();
@@ -373,12 +368,18 @@ public class PlayerController : MonoBehaviour {
             projectile.transform.position = transform.position + transform.forward + projectileOffset;
 
         }
-        if (chargingCast && playerInput.Cast.WasReleased) {
-            CastProjectile(chargePercent);
-            chargingCast = false;
-            useEnergy(PROJECTILE_COST * chargePercent);
+        if (chargingCast) {
+            if (playerInput.Cast.WasReleased) {
+                CastProjectile(chargePercent);
+                chargingCast = false;
+                useEnergy(PROJECTILE_COST * chargePercent);
+                chargePercent = 0f;
+            }
+        }
+        else {
             chargePercent = 0f;
         }
+
     }
 
     void CastProjectile(float charge) {
@@ -414,6 +415,7 @@ public class PlayerController : MonoBehaviour {
                 if (chargingCast) {
                     projectile.Dissipate();
                     chargingCast = false;
+
                 }
             }
         }
@@ -432,6 +434,15 @@ public class PlayerController : MonoBehaviour {
         if (recharging) {
             currentEnergy += rechargeAmount * Time.deltaTime;
             currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
+        }
+
+
+        //Resize the energy indicator
+        if (energyIndicator != null) {
+            energyIndicator.SetActive(!stunned);
+            aimingIndicator.SetActive(!stunned);
+            float displayEnergy = Mathf.Clamp(currentEnergy - PROJECTILE_COST * chargePercent, MIN_ENERGY, MAX_ENERGY);
+            energyIndicator.transform.localScale = indicatorStartScale * new Vector3(displayEnergy, displayEnergy, displayEnergy);
         }
     }
 
@@ -454,7 +465,7 @@ public class PlayerController : MonoBehaviour {
 
         Quaternion targetRot = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
         Vector3 newPos = transform.position;
-        newPos.y =  hoverHeight + 0.5f;
+        newPos.y = hoverHeight + 0.5f;
         float t = 0;
         Vector3 initPos = transform.position;
         Quaternion initRot = transform.rotation;
@@ -511,8 +522,7 @@ public class PlayerController : MonoBehaviour {
         if (idleParticleFX != null) {
             Destroy(idleParticleFX.gameObject);
         }
-        if (switchParticleFX != null)
-        {
+        if (switchParticleFX != null) {
             Destroy(switchParticleFX.gameObject);
         }
         switchParticleFX = (ParticleSystem)Instantiate(element.switchParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.switchParticleFX.transform.localRotation);
@@ -540,5 +550,5 @@ public class PlayerController : MonoBehaviour {
         body.GetComponent<Renderer>().material = mat;
         cape.GetComponent<Renderer>().material = mat;
 
-    } 
+    }
 }

@@ -36,10 +36,10 @@ public class Tutorial : MonoBehaviour {
     }
 
     void Update() {
-        if (InputManager.ActiveDevice.RightBumper.WasPressed || InputManager.ActiveDevice.DPadRight.WasPressed) {
+        if (InputManager.ActiveDevice.DPadRight.WasPressed) {
             NextInstruction();
         }
-        else if (InputManager.ActiveDevice.LeftBumper.WasPressed || InputManager.ActiveDevice.DPadLeft.WasPressed) {
+        else if (InputManager.ActiveDevice.DPadLeft.WasPressed) {
             PrevInstruction();
         }
 
