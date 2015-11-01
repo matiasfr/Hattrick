@@ -26,6 +26,8 @@ ModelImporter:
     100036: target
     100038: forest_level_collider
     100040: water_plane
+    100042: leaf
+    100044: pCylinder5
     400000: pCube1
     400002: pCube2
     400004: pCube3
@@ -47,6 +49,8 @@ ModelImporter:
     400036: target
     400038: forest_level_collider
     400040: water_plane
+    400042: leaf
+    400044: pCylinder5
     2300000: pCube4
     2300002: pCube5
     2300004: pCube6
@@ -59,6 +63,8 @@ ModelImporter:
     2300018: target
     2300020: forest_level_collider
     2300022: water_plane
+    2300024: leaf
+    2300026: pCylinder5
     3300000: pCube4
     3300002: pCube5
     3300004: pCube6
@@ -71,6 +77,8 @@ ModelImporter:
     3300018: target
     3300020: forest_level_collider
     3300022: water_plane
+    3300024: leaf
+    3300026: pCylinder5
     4300000: pCylinder1
     4300002: pCube4
     4300004: pCube5
@@ -83,6 +91,8 @@ ModelImporter:
     4300018: pCylinder4
     4300020: forest_level_collider
     4300022: water_plane
+    4300024: pCylinder5
+    4300026: leaf
     9500000: //RootNode
   materials:
     importMaterials: 1

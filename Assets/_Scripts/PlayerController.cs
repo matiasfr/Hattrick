@@ -304,9 +304,11 @@ public class PlayerController : MonoBehaviour {
         }
 
 
-        if (transform.position.y < -50f) {
+        if (StageManager.Instance != null) {
+            if (transform.position.y < StageManager.Instance.DeathHeight) {
 
-            Respawn();
+                Respawn();
+            }
         }
     }
 
