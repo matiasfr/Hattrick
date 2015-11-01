@@ -318,8 +318,11 @@ public class PlayerController : MonoBehaviour {
         }
 
 
-        if (transform.position.y < -50f) {
-			Kill();
+        if (StageManager.Instance != null) {
+            if (transform.position.y < StageManager.Instance.DeathHeight) {
+
+                Kill();
+            }
         }
     }
 
