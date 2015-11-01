@@ -138,7 +138,17 @@ public class PlayerController : MonoBehaviour {
     ParticleSystem idleParticleFX;
     ParticleSystem switchParticleFX;
 
-    public GameObject energyIndicator;
+	//audio variables
+	private AudioSource soundSource;
+	public AudioClip dashSFX;
+	public AudioClip respawnSFX;
+	public AudioClip recoverSFX;
+	public AudioClip deathSFX;
+
+	public float lowPitchRange = 0.95f;   
+	public float highPitchRange = 1.05f;
+	
+	public GameObject energyIndicator;
     public GameObject aimingIndicator;
     private Projectile projectile = null;
 
@@ -151,6 +161,7 @@ public class PlayerController : MonoBehaviour {
         currentEnergy = 100;
         currentDamage = 0;
         rb = GetComponent<Rigidbody>();
+		soundSource = GetComponent<AudioSource>();
         startPos = transform.position;
         ChangeElement(Element.RandomElement);
         hoverTimer = Random.Range(0f, 1.5f);
@@ -241,8 +252,10 @@ public class PlayerController : MonoBehaviour {
 
     void DashControl() {
         if (playerInput.Dash.WasPressed) {
-            if (!dashing && dashCooldownTimer >= DashCooldown)
+            if (!dashing && dashCooldownTimer >= DashCooldown) {
                 StartCoroutine(DashSequence());
+				playSoundModulated(dashSFX);
+			}
         }
         if (!dashing && dashCooldownTimer < DashCooldown) {
             dashCooldownTimer += Time.deltaTime;
@@ -282,6 +295,7 @@ public class PlayerController : MonoBehaviour {
             if (stunned) {
                 if (stunnedTime >= stunLength && playerInput.Jump.WasPressed)
                     StartCoroutine(Recover());
+					playSoundNormal(recoverSFX);
             }
             else {
 
@@ -305,8 +319,7 @@ public class PlayerController : MonoBehaviour {
 
 
         if (transform.position.y < -50f) {
-
-            Respawn();
+			Kill();
         }
     }
 
@@ -362,7 +375,7 @@ public class PlayerController : MonoBehaviour {
             if (castChargeTime > MaxChargeTime) castChargeTime = MaxChargeTime;
             chargePercent = castChargeTime / MaxChargeTime;
             chargePercent = Mathf.Clamp(chargePercent, 0, currentEnergy / PROJECTILE_COST);
-
+			projectile.chargePercent = chargePercent;
             float projectileScale = Mathf.Lerp(projectile.minProjectileScale, projectile.maxProjectileScale, chargePercent);
             projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
 
@@ -388,15 +401,6 @@ public class PlayerController : MonoBehaviour {
     void CastProjectile(float charge) {
         projectile.Cast(aimDirection.normalized, charge, playerNum);
         projectile = null;
-        if (element == Element.FIRE) {
-            AudioSource.PlayClipAtPoint(AudioManager.Instance.ShootFireSFX, transform.position);
-        }
-        else if (element == Element.WATER) {
-            AudioSource.PlayClipAtPoint(AudioManager.Instance.ShootWaterSFX, transform.position);
-        }
-        else {
-            AudioSource.PlayClipAtPoint(AudioManager.Instance.ShootEarthSFX, transform.position);
-        }
     }
 
     void ShieldControl() {
@@ -404,6 +408,7 @@ public class PlayerController : MonoBehaviour {
         if (playerInput.Shield.WasPressed) {
             if (!shielding && currentEnergy > SHIELD_COST) {
                 //Start shielding
+				playSoundModulated(element.shieldSpawnSFX);
                 useEnergy(SHIELD_COST);
                 bumper.radius = PlayerBumper.ShieldRadius;
                 shielding = true;
@@ -427,6 +432,8 @@ public class PlayerController : MonoBehaviour {
             shielding = false;
             bumper.radius = PlayerBumper.PlayerRadius;
             shield.Despawn();
+			//play shield break sound
+			playSoundModulated(element.shieldBreakSFX);
         }
     }
 
@@ -489,6 +496,12 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+	void Kill() {
+		playSoundNormal(deathSFX);
+		//TODO: add delay or trigger
+		Respawn();
+	}
+
 
     void Respawn() {
         stunned = false;
@@ -517,7 +530,7 @@ public class PlayerController : MonoBehaviour {
             Camera.main.GetComponent<CameraFollow>().updatePlayerList();
 
         }
-
+		playSoundNormal(respawnSFX);
     }
 
     void ChangeElement(Element e) {
@@ -525,13 +538,13 @@ public class PlayerController : MonoBehaviour {
         if (idleParticleFX != null) {
             Destroy(idleParticleFX.gameObject);
         }
-        if (switchParticleFX != null) {
-            Destroy(switchParticleFX.gameObject);
-        }
-        switchParticleFX = (ParticleSystem)Instantiate(element.switchParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.switchParticleFX.transform.localRotation);
+		idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1f, 0), element.idleParticleFX.transform.localRotation);
+		idleParticleFX.transform.parent = transform;
+
+		switchParticleFX = (ParticleSystem)Instantiate(element.switchParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.switchParticleFX.transform.localRotation);
         switchParticleFX.transform.parent = transform;
-        idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1f, 0), element.idleParticleFX.transform.localRotation);
-        idleParticleFX.transform.parent = transform;
+		//TODO: check that the game has started
+		playSoundModulated(element.switchElementSFX);
     }
 
     public void takeDamage(float d) {
@@ -554,4 +567,16 @@ public class PlayerController : MonoBehaviour {
         cape.GetComponent<Renderer>().material = mat;
 
     }
+
+	public void playSoundNormal(AudioClip clip) {
+		soundSource.clip = clip;
+		soundSource.pitch = 1.0f;
+		soundSource.Play();
+	}
+
+	public void playSoundModulated(AudioClip clip) {
+		soundSource.clip = clip;
+		soundSource.pitch = Random.Range(lowPitchRange,highPitchRange);
+		soundSource.Play();
+	}
 }

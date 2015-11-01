@@ -16,12 +16,19 @@ public class Element : MonoBehaviour {
 
 	public ParticleSystem idleParticleFX;
     public ParticleSystem switchParticleFX;
-    public ParticleSystem impactParticleFX;
-    public ParticleSystem projectileTrailFX;
-    public ParticleSystem projectileDissapateFX;
-    public ParticleSystem projectileImpactFX;
+	public ParticleSystem impactParticleFX;
+	public ParticleSystem projectileDissapateFX;
 
-    public ParticleSystem shieldSpawnFX;
+	public AudioClip switchElementSFX;
+	public AudioClip shieldBreakSFX;
+	public AudioClip shieldSpawnSFX;
+	public AudioClip projectileChargingSFX;
+
+	public AudioClip projectileImpactSFX;
+	public AudioClip projectileDissipateSFX;
+	public AudioClip projectileCastSFX;
+
+    //public ParticleSystem shieldSpawnFX; //TODO: actually make this
 
 
     public Element weakness {

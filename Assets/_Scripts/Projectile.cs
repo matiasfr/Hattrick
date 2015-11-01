@@ -23,8 +23,11 @@ public class Projectile : MonoBehaviour {
 
     private Vector3 startPos;
     private Collider col;
-    private float chargePercent;
+    public float chargePercent;
     private int casterPlayerNum;
+	private AudioSource chargeSoundSource;
+	private float lowPitch = 0.5f;
+	private float highPitch = 2.0f;
 
     [HideInInspector]
     public Element element;
@@ -42,13 +45,20 @@ public class Projectile : MonoBehaviour {
 
     void Start() {
         col = GetComponent<Collider>();
+		chargeSoundSource = GetComponent<AudioSource>();
         col.enabled = false;
         chargingEffect = (ParticleSystem)Instantiate(ChargingEffectPrefab, transform.position, transform.localRotation);
         chargingEffect.transform.parent = transform;
+
+		chargeSoundSource.pitch = lowPitch;
+		chargeSoundSource.clip = element.projectileChargingSFX;
+		chargeSoundSource.Play();
     }
 
 
     void Update() {
+		chargeSoundSource.pitch = Mathf.Lerp(lowPitch, highPitch, chargePercent);
+		//print(Mathf.Lerp(lowPitch, highPitch, chargePercent));
 
         float distanceTraveled = Vector3.Distance(startPos, transform.position);
         if(isCast && distanceTraveled > projectileRange) {
@@ -71,8 +81,9 @@ public class Projectile : MonoBehaviour {
         projectileRange = Mathf.Lerp(projectileMinRange, projectileMaxRange, charge);
         col.enabled = true;
         isCast = true;
+		AudioSource.PlayClipAtPoint (element.projectileCastSFX, transform.position, 1.0f);
 
-
+		chargeSoundSource.Stop();
         //TODO keep track of player who cast
     }
 
@@ -98,7 +109,6 @@ public class Projectile : MonoBehaviour {
                     sp.Collapse();
                     Rigidbody rb = other.GetComponent<Rigidbody>();
                     rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
-
                 }
                 else if(sp.shield.element == element) { //If the shield is the same as this projectile type
                     Impact();
@@ -106,41 +116,23 @@ public class Projectile : MonoBehaviour {
                         sp.Collapse();
                         Rigidbody rb = other.GetComponent<Rigidbody>();
                         rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
-
                     }
-
                 }
                 else { // If the shield is strong against and blocks this projectile type
                     Impact();
-
                 }
-
-
             }
         }
     }
 
     public void Dissipate() {
-        //TODO Add dissapate SFX
-
+		AudioSource.PlayClipAtPoint (element.projectileDissipateSFX, transform.position, 1.0f);
         dissapateParticleFX = (ParticleSystem)Instantiate(element.projectileDissapateFX, transform.position, Quaternion.LookRotation(velocity) );
         Destroy(gameObject);
-
     }
 
     public void Impact() {
-		if (element == Element.FIRE) {
-			AudioSource.PlayClipAtPoint (AudioManager.Instance.ImpactFireSFX, transform.position);
-		} else if (element == Element.WATER) {
-			AudioSource.PlayClipAtPoint (AudioManager.Instance.ImpactWaterSFX, transform.position);
-		} else {
-			AudioSource.PlayClipAtPoint (AudioManager.Instance.ImpactEarthSFX, transform.position);
-		}
-		//clear impact effect
-		if (impactParticleFX != null)
-		{
-			Destroy(impactParticleFX.gameObject);
-		}
+		AudioSource.PlayClipAtPoint (element.projectileImpactSFX, transform.position, 1.0f);
 		impactParticleFX = (ParticleSystem)Instantiate(element.impactParticleFX, transform.position, element.impactParticleFX.transform.localRotation);
         Destroy(gameObject);
     }
