@@ -146,6 +146,8 @@ public class PlayerController : MonoBehaviour {
 
 	public float lowPitchRange = 0.95f;   
 	public float highPitchRange = 1.05f;
+
+	public TrailRenderer trail;
 	
 	public GameObject energyIndicator;
     public GameObject aimingIndicator;
@@ -247,6 +249,7 @@ public class PlayerController : MonoBehaviour {
             if (!dashing && dashCooldownTimer >= DashCooldown) {
                 StartCoroutine(DashSequence());
 				playSoundModulated(dashSFX);
+
 			}
         }
         if (!dashing && dashCooldownTimer < DashCooldown) {
@@ -255,6 +258,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     IEnumerator DashSequence() {
+		trail.enabled = true;
         dashing = true;
         dashCooldownTimer = 0;
         Vector3 dir = moveDirection.normalized;
@@ -267,6 +271,7 @@ public class PlayerController : MonoBehaviour {
             yield return null;
         }
         dashing = false;
+		trail.enabled = false;
     }
 
     void HoverAnimation() {
