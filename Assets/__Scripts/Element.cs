@@ -21,6 +21,7 @@ public class Element : MonoBehaviour {
 
 	public AudioClip switchElementSFX;
 	public AudioClip shieldBreakSFX;
+	public AudioClip shieldExistSFX;
 	public AudioClip shieldSpawnSFX;
 	public AudioClip projectileChargingSFX;
 

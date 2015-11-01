@@ -51,8 +51,6 @@ public class PlayerActions : PlayerActionSet {
     }
 }
 
-
-
 public class PlayerController : MonoBehaviour {
 
     public InputControlType CastButton;
@@ -139,7 +137,8 @@ public class PlayerController : MonoBehaviour {
     ParticleSystem switchParticleFX;
 
 	//audio variables
-	private AudioSource soundSource;
+	public AudioSource soundSource;
+	public AudioSource soundSourceLong;
 	public AudioClip dashSFX;
 	public AudioClip respawnSFX;
 	public AudioClip recoverSFX;
@@ -161,7 +160,6 @@ public class PlayerController : MonoBehaviour {
         currentEnergy = 100;
         currentDamage = 0;
         rb = GetComponent<Rigidbody>();
-		soundSource = GetComponent<AudioSource>();
         startPos = transform.position;
         ChangeElement(Element.RandomElement);
         hoverTimer = Random.Range(0f, 1.5f);
@@ -237,19 +235,13 @@ public class PlayerController : MonoBehaviour {
             body.transform.localRotation = Quaternion.Slerp(body.transform.localRotation, targetBodyRot, .2f);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(aimDirection), aimSlerpValue * Time.deltaTime);
 
-
-
         }
         else {
             stunnedTime += Time.deltaTime;
         }
 
-
-
-
     }
-
-
+	
     void DashControl() {
         if (playerInput.Dash.WasPressed) {
             if (!dashing && dashCooldownTimer >= DashCooldown) {
@@ -311,7 +303,6 @@ public class PlayerController : MonoBehaviour {
         else {
             if (!stunned && !dashing) {
 
-
                 rb.isKinematic = false;
                 rb.AddForce(Vector3.down * 1.8f, ForceMode.Impulse);
             }
@@ -320,7 +311,6 @@ public class PlayerController : MonoBehaviour {
 
         if (StageManager.Instance != null) {
             if (transform.position.y < StageManager.Instance.DeathHeight) {
-
                 Kill();
             }
         }
@@ -412,6 +402,8 @@ public class PlayerController : MonoBehaviour {
             if (!shielding && currentEnergy > SHIELD_COST) {
                 //Start shielding
 				playSoundModulated(element.shieldSpawnSFX);
+					soundSourceLong.clip = element.shieldExistSFX;
+					soundSourceLong.Play();
                 useEnergy(SHIELD_COST);
                 bumper.radius = PlayerBumper.ShieldRadius;
                 shielding = true;
@@ -436,6 +428,7 @@ public class PlayerController : MonoBehaviour {
             bumper.radius = PlayerBumper.PlayerRadius;
             shield.Despawn();
 			//play shield break sound
+				soundSourceLong.Stop ();
 			playSoundModulated(element.shieldBreakSFX);
         }
     }
