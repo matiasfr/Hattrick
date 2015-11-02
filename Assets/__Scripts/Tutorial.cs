@@ -8,40 +8,50 @@ public class Tutorial : MonoBehaviour {
 
     public Text instructionText;
 
-    [Multiline]
-    public List<string> Instructions = new List<string>();
+    public List<GameObject> Instructions = new List<GameObject>();
     private int currentInstruction;
 
 	void Start () {
-        instructionText.text = Instructions[0];
-	}
+        Instructions[0].SetActive(true);
+        for (int i = 1; i < Instructions.Count; i++) {
+            Instructions[i].SetActive(false);
+
+        }
+        currentInstruction = 0;
+    }
 
     public void NextInstruction() {
         if (currentInstruction < Instructions.Count - 1) { //Not on last instruction
+            Instructions[currentInstruction].SetActive(false);
+
             currentInstruction++;
-            UpdateText();
+            Instructions[currentInstruction].SetActive(true);
+
         }
 
     }
     public void PrevInstruction() {
         if (currentInstruction != 0) { //Not on first instruction
+            Instructions[currentInstruction].SetActive(false);
+
             currentInstruction--;
-            UpdateText();
+
+            Instructions[currentInstruction].SetActive(true);
+
         }
 
-    }
-
-    private void UpdateText () {
-        instructionText.text = Instructions[currentInstruction];
     }
 
     void Update() {
-        if (InputManager.ActiveDevice.DPadRight.WasPressed) {
-            NextInstruction();
+        foreach(InputDevice device in InputManager.Devices) {
+            if (device.DPadRight.WasPressed) {
+                NextInstruction();
+            }
+            else if (device.DPadLeft.WasPressed) {
+                PrevInstruction();
+            }
         }
-        else if (InputManager.ActiveDevice.DPadLeft.WasPressed) {
-            PrevInstruction();
-        }
+       
 
     }
 }

@@ -42,9 +42,14 @@ public class PlayerHUD : MonoBehaviour {
         Name.color = p.color;
         player = p;
         Damage.gameObject.SetActive(true);
+        Damage.color = damageColor.Evaluate(0f);
+
         strikethrough.gameObject.SetActive(false);
 
         UpdateLives(p.lives);
+        for (int i = 0; i < Lives.Count; i++) {
+            Lives[i].color = damageColor.Evaluate(0f);
+        }
         if (player.name != null && player.name.Length > 0)
             Name.text = player.name;
 

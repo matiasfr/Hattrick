@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour {
     public InputControlType FireButton;
     public InputControlType WaterButton;
 
+
     public int playerNum;
     private InputDevice controller;
     private PlayerActions playerInput;
@@ -201,7 +202,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Update() {
-
+        if (playerNum >= PlayersManager.Players.Count) return;
         if (playerInput.Device == null) playerInput.Device = PlayersManager.Players[playerNum].device;
 
         CheckGround();
@@ -247,6 +248,7 @@ public class PlayerController : MonoBehaviour {
     void DashControl() {
         if (playerInput.Dash.WasPressed) {
             if (!dashing && dashCooldownTimer >= DashCooldown) {
+                PlayersManager.Players[playerNum].Dashes++;
                 StartCoroutine(DashSequence());
 				playSoundModulated(dashSFX);
 
@@ -381,6 +383,7 @@ public class PlayerController : MonoBehaviour {
 
         }
 		if (chargingCast && playerInput.Cast.WasReleased) {
+
             CastProjectile(chargePercent);
             chargingCast = false;
             useEnergy(PROJECTILE_COST * chargePercent);
@@ -405,8 +408,20 @@ public class PlayerController : MonoBehaviour {
 
         if (playerInput.Shield.WasPressed) {
             if (!shielding && currentEnergy > SHIELD_COST) {
+                if (element == Element.EARTH) {
+                    PlayersManager.Players[playerNum].EarthShield++;
+                }
+                else if (element == Element.FIRE) {
+                    PlayersManager.Players[playerNum].FireShield++;
+                }
+                else if (element == Element.WATER) {
+                    PlayersManager.Players[playerNum].WaterShield++;
+                }
+
+
+
                 //Start shielding
-				playSoundModulated(element.shieldSpawnSFX);
+                playSoundModulated(element.shieldSpawnSFX);
 					soundSourceLong.clip = element.shieldExistSFX;
 					soundSourceLong.Play();
                 useEnergy(SHIELD_COST);
@@ -423,6 +438,7 @@ public class PlayerController : MonoBehaviour {
                 if (chargingCast) {
                     projectile.Dissipate();
                     chargingCast = false;
+                    chargePercent = 0f;
 
                 }
             }
@@ -510,6 +526,7 @@ public class PlayerController : MonoBehaviour {
         if (chargingCast && !projectile.isCast) {
             Destroy(projectile.gameObject);
             chargingCast = false;
+            chargePercent = 0f;
         }
 
         if (shielding) {

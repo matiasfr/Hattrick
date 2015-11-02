@@ -13,6 +13,9 @@ public class Player {
     public bool defeated = false;
     public Color color;
 
+    //Metrics
+    public int EarthProj, FireProj, WaterProj, EarthShield, FireShield, WaterShield, Dashes;
+
     public PlayerHUD HUD;
 
     public Player(int num, InputDevice d) {
@@ -38,6 +41,10 @@ public class Player {
             PlayersManager.Instance.PlayerDefeated(playerNum);
         }
 
+    }
+
+    public void ResetMetrics() {
+        EarthProj = FireProj = WaterProj = EarthShield = FireShield = WaterShield = Dashes = 0;
     }
 
 }
@@ -168,6 +175,7 @@ public class PlayersManager : MonoBehaviour {
         ControlsEnabled = false;
 
         foreach (Player p in Players) {
+            p.ResetMetrics();
             p.lives = numLives;
             p.defeated = false;
         }
@@ -262,6 +270,7 @@ public class PlayersManager : MonoBehaviour {
             gameOver = true;
             Debug.Log("GAME OVER");
             EndGameGUI.Instance.DisplayResults();
+            MetricsManager.SaveMetrics();
         }
     }
 }

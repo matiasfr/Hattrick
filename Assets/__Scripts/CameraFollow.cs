@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
-	private ArrayList playerPositions;
+    private ArrayList playerPositions = new ArrayList();
 	private Camera cam;
 	public Vector3 anchor;
 

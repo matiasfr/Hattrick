@@ -72,6 +72,17 @@ public class Projectile : MonoBehaviour {
     }
 
     public void Cast(Vector3 direction, float charge, int playerNum) {
+        if(element == Element.EARTH) {
+            PlayersManager.Players[playerNum].EarthProj++;
+        }
+        else if (element == Element.FIRE) {
+            PlayersManager.Players[playerNum].FireProj++;
+        }
+        else if (element == Element.WATER) {
+            PlayersManager.Players[playerNum].WaterProj++;
+        }
+
+
         Destroy(chargingEffect.gameObject);
         startPos = transform.position;
         casterPlayerNum = playerNum;
