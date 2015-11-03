@@ -198,9 +198,10 @@ public class PlayersManager : MonoBehaviour {
         foreach (Player player in Players) {
             if (player.character == null) CreatePlayerCharacter(player);
             player.character.gameObject.SetActive(true);
+            player.HUD = GameHUD.Instance.SetPlayerHUD(player);
+
             float theta = 2*Mathf.PI / Players.Count * player.playerNum;
             player.character.transform.position = new Vector3(Mathf.Cos(theta) * 5f, 10f, Mathf.Sin(theta) * 5f);// SpawnPoint.GetSpawnPoint();
-            player.HUD = GameHUD.Instance.SetPlayerHUD(player);
         }
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
         yield return new WaitForSeconds(5f);
@@ -249,6 +250,8 @@ public class PlayersManager : MonoBehaviour {
         p.character = newPC;
         p.character.SetMaterial(defaultPlayerMaterials[p.playerNum]);
         p.color = defaultPlayerMaterials[p.playerNum].color;
+        p.lives = 3;
+
         // newPC.SetInputDevice(p.device);
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
 

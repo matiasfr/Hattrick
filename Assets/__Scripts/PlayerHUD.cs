@@ -50,8 +50,12 @@ public class PlayerHUD : MonoBehaviour {
         for (int i = 0; i < Lives.Count; i++) {
             Lives[i].color = damageColor.Evaluate(0f);
         }
-        if (player.name != null && player.name.Length > 0)
+        if (player.name != null && player.name.Length > 0) {
             Name.text = player.name;
+        }
+        else {
+            Name.text = "PLAYER " + (player.playerNum+1);
+        }
 
 
     }

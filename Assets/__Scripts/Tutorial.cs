@@ -7,9 +7,10 @@ using InControl;
 public class Tutorial : MonoBehaviour {
 
     public Text instructionText;
-
+    public PlayerHUD tutorialHUD;
     public List<GameObject> Instructions = new List<GameObject>();
     private int currentInstruction;
+    public GameObject EnergyIndicatorText;
 
 	void Start () {
         Instructions[0].SetActive(true);
@@ -18,6 +19,7 @@ public class Tutorial : MonoBehaviour {
 
         }
         currentInstruction = 0;
+        StartCoroutine(CycleHUD());
     }
 
     public void NextInstruction() {
@@ -33,9 +35,7 @@ public class Tutorial : MonoBehaviour {
     public void PrevInstruction() {
         if (currentInstruction != 0) { //Not on first instruction
             Instructions[currentInstruction].SetActive(false);
-
             currentInstruction--;
-
             Instructions[currentInstruction].SetActive(true);
 
         }
@@ -51,7 +51,27 @@ public class Tutorial : MonoBehaviour {
                 PrevInstruction();
             }
         }
-       
+        if (currentInstruction >= 2 && currentInstruction <= 3 && PlayersManager.Players[index] != null && PlayersManager.Players[index].character != null && !PlayersManager.Players[index].character.stunned) {
+            EnergyIndicatorText.SetActive(true);
+            EnergyIndicatorText.transform.position = PlayersManager.Players[index].character.transform.position;
+        }
+        else {
+            EnergyIndicatorText.SetActive(false);
+        }
 
+
+
+    }
+    int index = 0;
+
+    IEnumerator CycleHUD() {
+        while (true) {
+            if (tutorialHUD.gameObject.activeInHierarchy && index < PlayersManager.Players.Count) {
+                tutorialHUD.SetPlayer(PlayersManager.Players[index]);
+            }
+            yield return new WaitForSeconds(4f);
+            index = (index + 1) % PlayersManager.Players.Count;
+
+        }
     }
 }

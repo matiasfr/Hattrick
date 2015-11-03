@@ -482,9 +482,12 @@ public class PlayerController : MonoBehaviour {
             right.y = 0;
             right = right.normalized;
             moveDirection = (playerInput.Move.Value.x * right + playerInput.Move.Value.y * forward);
-            if (playerInput.Aim.Value != Vector2.zero)
+            if (playerInput.Aim.Value != Vector2.zero) {
                 aimDirection = (playerInput.Aim.Value.x * right + playerInput.Aim.Value.y * forward);
-
+            }
+            else if(moveDirection != Vector3.zero) {
+                aimDirection = moveDirection;
+            }
         }
     }
 
