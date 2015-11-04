@@ -51,7 +51,7 @@ public class Tutorial : MonoBehaviour {
                 PrevInstruction();
             }
         }
-        if (currentInstruction >= 2 && currentInstruction <= 3 && PlayersManager.Players[index] != null && PlayersManager.Players[index].character != null && !PlayersManager.Players[index].character.stunned) {
+        if (index < PlayersManager.Players.Count && currentInstruction >= 2 && currentInstruction <= 3 && PlayersManager.Players[index] != null && PlayersManager.Players[index].character != null && !PlayersManager.Players[index].character.stunned) {
             EnergyIndicatorText.SetActive(true);
             EnergyIndicatorText.transform.position = PlayersManager.Players[index].character.transform.position;
         }
@@ -70,7 +70,7 @@ public class Tutorial : MonoBehaviour {
                 tutorialHUD.SetPlayer(PlayersManager.Players[index]);
             }
             yield return new WaitForSeconds(4f);
-            index = (index + 1) % PlayersManager.Players.Count;
+            if(PlayersManager.Players.Count > 0) index = (index + 1) % PlayersManager.Players.Count;
 
         }
     }
