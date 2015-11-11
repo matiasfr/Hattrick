@@ -92,7 +92,7 @@ public class PlayerController : MonoBehaviour {
 
 
     // Stun
-    public float minStunTime = .5f;
+    public float minStunTime = .25f;
     public float maxStunTime = 1f;
     [HideInInspector]
     public bool stunned = false;
@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour {
     private bool dashing = false;
     public float DashDistance = 4f;
     public float DashSpeed = 20f;
-    public float DashCooldown = 1.5f;
+    public float DashCooldown = 1f;
     private float dashCooldownTimer = 0f;
 
 	private bool projectileCooling = false;
@@ -213,7 +213,8 @@ public class PlayerController : MonoBehaviour {
 
         CheckGround();
         CheckCamera();
-        EnergyControl();
+        CooldownIndicatorControl();
+        //EnergyControl();
 
 
         if (PlayersManager.Instance.ControlsEnabled) CheckElement();
@@ -232,7 +233,7 @@ public class PlayerController : MonoBehaviour {
                 ShieldControl();
                 DashControl();
 
-                //Movement and aiming
+                //Movement
                 if (chargingCast) moveSpeed = Mathf.Lerp(normalMoveSpeed, chargingMoveSpeed, chargePercent);
                 else if (shielding) moveSpeed = shieldingMoveSpeed;
                 else moveSpeed = normalMoveSpeed;
@@ -270,6 +271,20 @@ public class PlayerController : MonoBehaviour {
         if (!dashing && dashCooldownTimer < DashCooldown) {
             dashCooldownTimer += Time.deltaTime;
         }
+
+        
+    }
+
+    void CooldownIndicatorControl() {
+        //Resize the energy indicator
+        if (energyIndicator != null) {
+            energyIndicator.SetActive(!stunned);
+            aimingIndicator.SetActive(!stunned);
+            float displayEnergy = dashCooldownTimer / DashCooldown;
+            displayEnergy *= displayEnergy;
+            energyIndicator.transform.localScale = indicatorStartScale * new Vector3(displayEnergy, displayEnergy, displayEnergy);
+        }
+
     }
 
     IEnumerator DashSequence() {
@@ -367,15 +382,12 @@ public class PlayerController : MonoBehaviour {
 
     void CheckElement() {
         if (playerInput.Earth.WasPressed) {
-            useEnergy(CHANGE_ELEMENT_COST);
             ChangeElement(Element.EARTH);
         }
         else if (playerInput.Fire.WasPressed) {
-            useEnergy(CHANGE_ELEMENT_COST);
             ChangeElement(Element.FIRE);
         }
         else if (playerInput.Water.WasPressed) {
-            useEnergy(CHANGE_ELEMENT_COST);
             ChangeElement(Element.WATER);
         }
     }
@@ -383,8 +395,18 @@ public class PlayerController : MonoBehaviour {
 
 
     void ProjectileControl() {
-		if (playerInput.Cast.WasPressed  && !projectileCooling) {
-			if (!chargingCast && !shielding && currentEnergy > PROJECTILE_COST_MIN) {
+        if (chargingCast && playerInput.Cast.WasReleased) {
+
+            CastProjectile(chargePercent);
+            chargingCast = false;
+            //useEnergy(PROJECTILE_COST * chargePercent);
+            chargePercent = 0f;
+        }
+
+        if (playerInput.Cast.WasPressed  && !projectileCooling) {
+			if (!chargingCast && !shielding /* && currentEnergy > PROJECTILE_COST_MIN*/) {
+                StartCoroutine(ProjectileCooldownSequence(projectileCooldownAmount));
+
                 castChargeTime = 0;
                 chargingCast = true;
                 projectile = Instantiate<Projectile>(element.projectilePrefab);
@@ -396,22 +418,14 @@ public class PlayerController : MonoBehaviour {
             castChargeTime += Time.deltaTime;
             if (castChargeTime > MaxChargeTime) castChargeTime = MaxChargeTime;
             chargePercent = castChargeTime / MaxChargeTime;
-            chargePercent = Mathf.Clamp(chargePercent, 0, currentEnergy / PROJECTILE_COST);
+            //chargePercent = Mathf.Clamp(chargePercent, 0, currentEnergy / PROJECTILE_COST);
 			projectile.chargePercent = chargePercent;
             float projectileScale = Mathf.Lerp(projectile.minProjectileScale, projectile.maxProjectileScale, chargePercent);
             projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
-
             projectile.transform.position = transform.position + transform.forward + projectileOffset;
 
         }
-		if (chargingCast && playerInput.Cast.WasReleased) {
 
-            CastProjectile(chargePercent);
-            chargingCast = false;
-            useEnergy(PROJECTILE_COST * chargePercent);
-            chargePercent = 0f;
-			StartCoroutine(ProjectileCooldownSequence(projectileCooldownAmount));
-        }
 
     }
 
@@ -429,7 +443,7 @@ public class PlayerController : MonoBehaviour {
     void ShieldControl() {
 
         if (playerInput.Shield.WasPressed) {
-            if (!shielding && currentEnergy > SHIELD_COST) {
+            if (!shielding/* && currentEnergy > SHIELD_COST*/) {
                 if (element == Element.EARTH) {
                     PlayersManager.Players[playerNum].EarthShield++;
                 }
@@ -446,7 +460,7 @@ public class PlayerController : MonoBehaviour {
                 playSoundModulated(element.shieldSpawnSFX);
 					soundSourceLong.clip = element.shieldExistSFX;
 					soundSourceLong.Play();
-                useEnergy(SHIELD_COST);
+                //useEnergy(SHIELD_COST);
                 bumper.radius = PlayerBumper.ShieldRadius;
                 shielding = true;
                 shield = Instantiate<Shield>(element.shieldPrefab);
@@ -476,24 +490,24 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    void EnergyControl() {
-        if (chargingCast || shielding) recharging = false;
-        else recharging = true;
-        //Recharge energy
-        if (recharging) {
-            currentEnergy += rechargeAmount * Time.deltaTime;
-            currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
-        }
+    //void EnergyControl() {
+    //    if (chargingCast || shielding) recharging = false;
+    //    else recharging = true;
+    //    //Recharge energy
+    //    if (recharging) {
+    //        currentEnergy += rechargeAmount * Time.deltaTime;
+    //        currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
+    //    }
 
 
-        //Resize the energy indicator
-        if (energyIndicator != null) {
-            energyIndicator.SetActive(!stunned);
-            aimingIndicator.SetActive(!stunned);
-            float displayEnergy = Mathf.Clamp(currentEnergy - PROJECTILE_COST * chargePercent, MIN_ENERGY, MAX_ENERGY);
-            energyIndicator.transform.localScale = indicatorStartScale * new Vector3(displayEnergy, displayEnergy, displayEnergy);
-        }
-    }
+    //    //Resize the energy indicator
+    //    if (energyIndicator != null) {
+    //        energyIndicator.SetActive(!stunned);
+    //        aimingIndicator.SetActive(!stunned);
+    //        float displayEnergy = Mathf.Clamp(currentEnergy - PROJECTILE_COST * chargePercent, MIN_ENERGY, MAX_ENERGY);
+    //        energyIndicator.transform.localScale = indicatorStartScale * new Vector3(displayEnergy, displayEnergy, displayEnergy);
+    //    }
+    //}
 
     void CheckCamera() {
         if (Camera.current != null) {
@@ -506,9 +520,6 @@ public class PlayerController : MonoBehaviour {
             moveDirection = (playerInput.Move.Value.x * right + playerInput.Move.Value.y * forward);
             if (playerInput.Aim.Value != Vector2.zero) {
                 aimDirection = (playerInput.Aim.Value.x * right + playerInput.Aim.Value.y * forward);
-            }
-            else if(moveDirection != Vector3.zero) {
-                aimDirection = moveDirection;
             }
         }
     }
@@ -600,10 +611,10 @@ public class PlayerController : MonoBehaviour {
         rb.mass = StartMass / (1.0f + 0.05f * currentDamage);
 
     }
-    void useEnergy(float cost) {
-        currentEnergy -= cost;
-        currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
-    }
+    //void useEnergy(float cost) {
+    //    currentEnergy -= cost;
+    //    currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);
+    //}
 
     public void SetMaterial(Material mat) {
         body.GetComponent<Renderer>().material = mat;

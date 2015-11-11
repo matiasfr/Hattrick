@@ -201,7 +201,8 @@ public class PlayersManager : MonoBehaviour {
             player.HUD = GameHUD.Instance.SetPlayerHUD(player);
 
             float theta = 2*Mathf.PI / Players.Count * player.playerNum;
-            player.character.transform.position = new Vector3(Mathf.Cos(theta) * 5f, 10f, Mathf.Sin(theta) * 5f);// SpawnPoint.GetSpawnPoint();
+            player.character.setDamage(0);
+            player.character.transform.position = new Vector3(Mathf.Cos(theta) * 5f, 10f, Mathf.Sin(theta) * 5f);
         }
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
         yield return new WaitForSeconds(5f);

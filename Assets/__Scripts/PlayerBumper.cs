@@ -44,8 +44,6 @@ public class PlayerBumper : MonoBehaviour {
 
     void Bump(PlayerBumper other) {
         parentBody.MovePosition(parentBody.position  + (parentBody.position - other.parentBody.position).normalized * ( .1f + other.radius + radius - (parentBody.position - other.parentBody.position).magnitude )  );
-
-        Debug.Log("bumped");
         parentBody.isKinematic = false;
 
         parentBody.velocity = Vector3.zero;
