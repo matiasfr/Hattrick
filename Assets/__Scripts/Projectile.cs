@@ -25,9 +25,9 @@ public class Projectile : MonoBehaviour {
     private Collider col;
     public float chargePercent;
     private int casterPlayerNum;
-	private AudioSource chargeSoundSource;
-	private float lowPitch = 0.5f;
-	private float highPitch = 2.0f;
+    private AudioSource chargeSoundSource;
+    private float lowPitch = 0.5f;
+    private float highPitch = 2.0f;
 
     [HideInInspector]
     public Element element;
@@ -36,7 +36,7 @@ public class Projectile : MonoBehaviour {
     public bool isCast = false;
 
     private Renderer ren;
-	ParticleSystem impactParticleFX;
+    ParticleSystem impactParticleFX;
     ParticleSystem dissapateParticleFX;
 
 
@@ -45,23 +45,23 @@ public class Projectile : MonoBehaviour {
 
     void Start() {
         col = GetComponent<Collider>();
-		chargeSoundSource = GetComponent<AudioSource>();
+        chargeSoundSource = GetComponent<AudioSource>();
         col.enabled = false;
         chargingEffect = (ParticleSystem)Instantiate(ChargingEffectPrefab, transform.position, transform.localRotation);
         chargingEffect.transform.parent = transform;
 
-		chargeSoundSource.pitch = lowPitch;
-		chargeSoundSource.clip = element.projectileChargingSFX;
-		chargeSoundSource.Play();
+        chargeSoundSource.pitch = lowPitch;
+        chargeSoundSource.clip = element.projectileChargingSFX;
+        chargeSoundSource.Play();
     }
 
 
     void Update() {
-		chargeSoundSource.pitch = Mathf.Lerp(lowPitch, highPitch, chargePercent);
-		//print(Mathf.Lerp(lowPitch, highPitch, chargePercent));
+        chargeSoundSource.pitch = Mathf.Lerp(lowPitch, highPitch, chargePercent);
+        //print(Mathf.Lerp(lowPitch, highPitch, chargePercent));
 
         float distanceTraveled = Vector3.Distance(startPos, transform.position);
-        if(isCast && distanceTraveled > projectileRange) {
+        if (isCast && distanceTraveled > projectileRange) {
             Dissipate();
         }
     }
@@ -72,7 +72,7 @@ public class Projectile : MonoBehaviour {
     }
 
     public void Cast(Vector3 direction, float charge, int playerNum) {
-        if(element == Element.EARTH) {
+        if (element == Element.EARTH) {
             PlayersManager.Players[playerNum].EarthProj++;
         }
         else if (element == Element.FIRE) {
@@ -92,15 +92,16 @@ public class Projectile : MonoBehaviour {
         projectileRange = Mathf.Lerp(projectileMinRange, projectileMaxRange, charge);
         col.enabled = true;
         isCast = true;
-		AudioSource.PlayClipAtPoint (element.projectileCastSFX, transform.position, 1.0f);
+        AudioSource.PlayClipAtPoint(element.projectileCastSFX, transform.position, 1.0f);
 
-		chargeSoundSource.Stop();
+        chargeSoundSource.Stop();
         //TODO keep track of player who cast
     }
 
     void OnCollisionEnter(Collision collision) {
         GameObject other = collision.collider.gameObject;
 
+        //Check if player
         PlayerController pc = other.GetComponent<PlayerController>(); //Check if projectile hit a player
         if (pc != null) {
             if (pc.playerNum != casterPlayerNum) {
@@ -110,41 +111,55 @@ public class Projectile : MonoBehaviour {
                 pc.Stun(chargePercent);
                 rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
                 Impact();
+                
             }
+            return;
         }
-        else {
-            ShieldPiece sp = other.GetComponent<ShieldPiece>();
-            if (sp != null) { //Check if projectile hit a shield piece
 
-                if(sp.shield.element.weakness == element) { //If the shield is weak to this projectile type
+        ShieldPiece sp = other.GetComponent<ShieldPiece>();
+        if (sp != null) { //Check if projectile hit a shield piece
+
+            if (sp.shield.element.weakness == element) { //If the shield is weak to this projectile type
+                sp.Collapse();
+                Rigidbody rb = other.GetComponent<Rigidbody>();
+                rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
+            }
+            else if (sp.shield.element == element) { //If the shield is the same as this projectile type
+                Impact();
+
+                if (chargePercent > sp.shield.Power) {
+
                     sp.Collapse();
                     Rigidbody rb = other.GetComponent<Rigidbody>();
                     rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
                 }
-                else if(sp.shield.element == element) { //If the shield is the same as this projectile type
-                    Impact();
-                    if (chargePercent > sp.shield.Power) {
-                        sp.Collapse();
-                        Rigidbody rb = other.GetComponent<Rigidbody>();
-                        rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
-                    }
-                }
-                else { // If the shield is strong against and blocks this projectile type
-                    Impact();
-                }
+              
             }
+            else { // If the shield is strong against and blocks this projectile type
+                Impact();
+
+            }
+            return;
         }
+
+        Projectile p = other.GetComponent<Projectile>();
+        if(p != null) {
+            p.Impact();
+            Impact();
+            return;
+        }
+
     }
 
     public void Dissipate() {
-		AudioSource.PlayClipAtPoint (element.projectileDissipateSFX, transform.position, 1.0f);
-        dissapateParticleFX = (ParticleSystem)Instantiate(element.projectileDissapateFX, transform.position, Quaternion.LookRotation(velocity) );
+        AudioSource.PlayClipAtPoint(element.projectileDissipateSFX, transform.position, 1.0f);
+        dissapateParticleFX = (ParticleSystem)Instantiate(element.projectileDissapateFX, transform.position, Quaternion.LookRotation(velocity));
         Destroy(gameObject);
     }
 
     public void Impact() {
-		AudioSource.PlayClipAtPoint (element.projectileImpactSFX, transform.position, 1.0f);
-		impactParticleFX = (ParticleSystem)Instantiate(element.impactParticleFX, transform.position, element.impactParticleFX.transform.localRotation);
+        AudioSource.PlayClipAtPoint(element.projectileImpactSFX, transform.position, 1.0f);
+        impactParticleFX = (ParticleSystem)Instantiate(element.impactParticleFX, transform.position, element.impactParticleFX.transform.localRotation);
         Destroy(gameObject);
     }
 

@@ -43,4 +43,8 @@ public class SceneManager : MonoBehaviour {
         PlayersManager.Instance.StartGame();
     }
 
+    public void QuitGame() {
+        Application.Quit();
+    }
+
 }
