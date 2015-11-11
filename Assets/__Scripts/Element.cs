@@ -34,9 +34,9 @@ public class Element : MonoBehaviour {
 
     public Element weakness {
         get {
-            if (this == Element.EARTH) return Element.WATER;
-            else if (this == Element.FIRE) return Element.EARTH;
-            else if (this == Element.WATER) return Element.FIRE;
+            if (this == Element.EARTH) return Element.FIRE;
+            else if (this == Element.FIRE) return Element.WATER;
+            else if (this == Element.WATER) return Element.EARTH;
             else return Element.FIRE;
         }
     }

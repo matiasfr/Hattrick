@@ -91,6 +91,7 @@ public class PlayerController : MonoBehaviour {
     private Vector3 shieldOffset = new Vector3(0f, -1.1f, 0f);
 
 
+    // Stun
     public float minStunTime = .5f;
     public float maxStunTime = 1f;
     [HideInInspector]
@@ -99,6 +100,11 @@ public class PlayerController : MonoBehaviour {
     private float stunLength = 2f;
     public float recoverLength = .155f;
 
+    public GameObject RecoverTipPrefab;
+    private GameObject recoverTip;
+
+
+    //Dashing
     private bool dashing = false;
     public float DashDistance = 4f;
     public float DashSpeed = 20f;
@@ -215,7 +221,10 @@ public class PlayerController : MonoBehaviour {
 
         if (!stunned) {
             HoverAnimation();
-
+            if(recoverTip != null) {
+                Destroy(recoverTip);
+                recoverTip = null;
+            }
             if (PlayersManager.Instance.ControlsEnabled) {
 
                 //System Controls
@@ -240,6 +249,10 @@ public class PlayerController : MonoBehaviour {
 
         }
         else {
+            if (recoverTip != null) {
+                recoverTip.transform.position = transform.position + Vector3.up * 2.5f;
+                recoverTip.transform.LookAt(Camera.main.transform);
+            }
             stunnedTime += Time.deltaTime;
         }
 
@@ -292,9 +305,14 @@ public class PlayerController : MonoBehaviour {
 
 
             if (stunned) {
-                if (stunnedTime >= stunLength && playerInput.Jump.WasPressed)
-                    StartCoroutine(Recover());
-					playSoundNormal(recoverSFX);
+                if (stunnedTime >= stunLength)
+                    if(recoverTip == null) {
+                        recoverTip = Instantiate<GameObject>(RecoverTipPrefab);
+                    }
+                    if (playerInput.Jump.WasPressed) {
+                        StartCoroutine(Recover());
+                        playSoundNormal(recoverSFX);
+                    }
             }
             else {
 
@@ -308,6 +326,10 @@ public class PlayerController : MonoBehaviour {
 
         }
         else {
+            if (recoverTip != null) {
+                Destroy(recoverTip);
+                recoverTip = null;
+            }
             if (!stunned && !dashing) {
 
                 rb.isKinematic = false;
