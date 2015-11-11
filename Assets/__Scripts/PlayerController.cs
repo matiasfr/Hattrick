@@ -111,8 +111,8 @@ public class PlayerController : MonoBehaviour {
     public float DashCooldown = 1f;
     private float dashCooldownTimer = 0f;
 
-	private bool projectileCooling = false;
-	public float projectileCooldownAmount = 0.05f;
+    private bool projectileCooling = false;
+    public float projectileCooldownAmount = 0.05f;
 
     public PlayerBumper bumper;
 
@@ -143,20 +143,20 @@ public class PlayerController : MonoBehaviour {
     ParticleSystem idleParticleFX;
     ParticleSystem switchParticleFX;
 
-	//audio variables
-	public AudioSource soundSource;
-	public AudioSource soundSourceLong;
-	public AudioClip dashSFX;
-	public AudioClip respawnSFX;
-	public AudioClip recoverSFX;
-	public AudioClip deathSFX;
+    //audio variables
+    public AudioSource soundSource;
+    public AudioSource soundSourceLong;
+    public AudioClip dashSFX;
+    public AudioClip respawnSFX;
+    public AudioClip recoverSFX;
+    public AudioClip deathSFX;
 
-	public float lowPitchRange = 0.95f;   
-	public float highPitchRange = 1.05f;
+    public float lowPitchRange = 0.95f;
+    public float highPitchRange = 1.05f;
 
-	public TrailRenderer trail;
-	
-	public GameObject energyIndicator;
+    public TrailRenderer trail;
+
+    public GameObject energyIndicator;
     public GameObject aimingIndicator;
     private Projectile projectile = null;
 
@@ -222,10 +222,12 @@ public class PlayerController : MonoBehaviour {
 
         if (!stunned) {
             HoverAnimation();
-            if(recoverTip != null) {
+
+            if (recoverTip != null) {
                 Destroy(recoverTip);
                 recoverTip = null;
             }
+
             if (PlayersManager.Instance.ControlsEnabled) {
 
                 //System Controls
@@ -258,21 +260,21 @@ public class PlayerController : MonoBehaviour {
         }
 
     }
-	
+
     void DashControl() {
         if (playerInput.Dash.WasPressed) {
             if (!dashing && dashCooldownTimer >= DashCooldown) {
                 PlayersManager.Players[playerNum].Dashes++;
                 StartCoroutine(DashSequence());
-				playSoundModulated(dashSFX);
+                playSoundModulated(dashSFX);
 
-			}
+            }
         }
         if (!dashing && dashCooldownTimer < DashCooldown) {
             dashCooldownTimer += Time.deltaTime;
         }
 
-        
+
     }
 
     void CooldownIndicatorControl() {
@@ -288,7 +290,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     IEnumerator DashSequence() {
-		trail.enabled = true;
+        trail.enabled = true;
         dashing = true;
         dashCooldownTimer = 0;
         Vector3 dir = moveDirection.normalized;
@@ -301,7 +303,7 @@ public class PlayerController : MonoBehaviour {
             yield return null;
         }
         dashing = false;
-		trail.enabled = false;
+        trail.enabled = false;
     }
 
     void HoverAnimation() {
@@ -320,14 +322,15 @@ public class PlayerController : MonoBehaviour {
 
 
             if (stunned) {
-                if (stunnedTime >= stunLength)
-                    if(recoverTip == null) {
+                if (stunnedTime >= stunLength) {
+                    if (recoverTip == null) {
                         recoverTip = Instantiate<GameObject>(RecoverTipPrefab);
                     }
                     if (playerInput.Jump.WasPressed) {
                         StartCoroutine(Recover());
                         playSoundNormal(recoverSFX);
                     }
+                }
             }
             else {
 
@@ -403,8 +406,8 @@ public class PlayerController : MonoBehaviour {
             chargePercent = 0f;
         }
 
-        if (playerInput.Cast.WasPressed  && !projectileCooling) {
-			if (!chargingCast && !shielding /* && currentEnergy > PROJECTILE_COST_MIN*/) {
+        if (playerInput.Cast.WasPressed && !projectileCooling) {
+            if (!chargingCast && !shielding /* && currentEnergy > PROJECTILE_COST_MIN*/) {
                 StartCoroutine(ProjectileCooldownSequence(projectileCooldownAmount));
 
                 castChargeTime = 0;
@@ -414,12 +417,12 @@ public class PlayerController : MonoBehaviour {
 
             }
         }
-        if (projectile != null && playerInput.Cast.IsPressed ) {
+        if (projectile != null && playerInput.Cast.IsPressed) {
             castChargeTime += Time.deltaTime;
             if (castChargeTime > MaxChargeTime) castChargeTime = MaxChargeTime;
             chargePercent = castChargeTime / MaxChargeTime;
             //chargePercent = Mathf.Clamp(chargePercent, 0, currentEnergy / PROJECTILE_COST);
-			projectile.chargePercent = chargePercent;
+            projectile.chargePercent = chargePercent;
             float projectileScale = Mathf.Lerp(projectile.minProjectileScale, projectile.maxProjectileScale, chargePercent);
             projectile.transform.localScale = new Vector3(projectileScale, projectileScale, projectileScale);
             projectile.transform.position = transform.position + transform.forward + projectileOffset;
@@ -429,11 +432,11 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-	IEnumerator ProjectileCooldownSequence (float delay) {
-		projectileCooling = true;
-		yield return new WaitForSeconds(delay);
-		projectileCooling = false;
-	}
+    IEnumerator ProjectileCooldownSequence(float delay) {
+        projectileCooling = true;
+        yield return new WaitForSeconds(delay);
+        projectileCooling = false;
+    }
 
     void CastProjectile(float charge) {
         projectile.Cast(aimDirection.normalized, charge, playerNum);
@@ -458,8 +461,8 @@ public class PlayerController : MonoBehaviour {
 
                 //Start shielding
                 playSoundModulated(element.shieldSpawnSFX);
-					soundSourceLong.clip = element.shieldExistSFX;
-					soundSourceLong.Play();
+                soundSourceLong.clip = element.shieldExistSFX;
+                soundSourceLong.Play();
                 //useEnergy(SHIELD_COST);
                 bumper.radius = PlayerBumper.ShieldRadius;
                 shielding = true;
@@ -484,9 +487,9 @@ public class PlayerController : MonoBehaviour {
             shielding = false;
             bumper.radius = PlayerBumper.PlayerRadius;
             shield.Despawn();
-			//play shield break sound
-				soundSourceLong.Stop ();
-			playSoundModulated(element.shieldBreakSFX);
+            //play shield break sound
+            soundSourceLong.Stop();
+            playSoundModulated(element.shieldBreakSFX);
         }
     }
 
@@ -549,11 +552,11 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-	void Kill() {
-		playSoundNormal(deathSFX);
-		//TODO: add delay or trigger
-		Respawn();
-	}
+    void Kill() {
+        playSoundNormal(deathSFX);
+        //TODO: add delay or trigger
+        Respawn();
+    }
 
 
     void Respawn() {
@@ -584,7 +587,7 @@ public class PlayerController : MonoBehaviour {
             Camera.main.GetComponent<CameraFollow>().updatePlayerList();
 
         }
-		playSoundNormal(respawnSFX);
+        playSoundNormal(respawnSFX);
     }
 
     void ChangeElement(Element e) {
@@ -592,13 +595,13 @@ public class PlayerController : MonoBehaviour {
         if (idleParticleFX != null) {
             Destroy(idleParticleFX.gameObject);
         }
-		idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1f, 0), element.idleParticleFX.transform.localRotation);
-		idleParticleFX.transform.parent = transform;
+        idleParticleFX = (ParticleSystem)Instantiate(element.idleParticleFX, transform.position + new Vector3(0, -1f, 0), element.idleParticleFX.transform.localRotation);
+        idleParticleFX.transform.parent = transform;
 
-		switchParticleFX = (ParticleSystem)Instantiate(element.switchParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.switchParticleFX.transform.localRotation);
+        switchParticleFX = (ParticleSystem)Instantiate(element.switchParticleFX, transform.position + new Vector3(0, -1.5f, 0), element.switchParticleFX.transform.localRotation);
         switchParticleFX.transform.parent = transform;
-		//TODO: check that the game has started
-		playSoundModulated(element.switchElementSFX);
+        //TODO: check that the game has started
+        playSoundModulated(element.switchElementSFX);
     }
 
     public void takeDamage(float d) {
@@ -622,15 +625,15 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-	public void playSoundNormal(AudioClip clip) {
-		soundSource.clip = clip;
-		soundSource.pitch = 1.0f;
-		soundSource.Play();
-	}
+    public void playSoundNormal(AudioClip clip) {
+        soundSource.clip = clip;
+        soundSource.pitch = 1.0f;
+        soundSource.Play();
+    }
 
-	public void playSoundModulated(AudioClip clip) {
-		soundSource.clip = clip;
-		soundSource.pitch = Random.Range(lowPitchRange,highPitchRange);
-		soundSource.Play();
-	}
+    public void playSoundModulated(AudioClip clip) {
+        soundSource.clip = clip;
+        soundSource.pitch = Random.Range(lowPitchRange, highPitchRange);
+        soundSource.Play();
+    }
 }
