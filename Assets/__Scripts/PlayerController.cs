@@ -143,6 +143,9 @@ public class PlayerController : MonoBehaviour {
     ParticleSystem idleParticleFX;
     ParticleSystem switchParticleFX;
 
+	public ParticleSystem recoverParticleFX;
+	public ParticleSystem respawnParticleFX;
+
 	//audio variables
 	public AudioSource soundSource;
 	public AudioSource soundSourceLong;
@@ -535,6 +538,9 @@ public class PlayerController : MonoBehaviour {
         stunned = false;
         rb.isKinematic = true;
 
+		ParticleSystem tempRecoverParticleFX = (ParticleSystem)Instantiate(recoverParticleFX, transform.position + new Vector3(0, -1.5f, 0), recoverParticleFX.transform.localRotation);
+		tempRecoverParticleFX.transform.parent = transform;
+
 
         while (t < recoverLength) {
             targetRot = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
@@ -585,6 +591,9 @@ public class PlayerController : MonoBehaviour {
 
         }
 		playSoundNormal(respawnSFX);
+
+		ParticleSystem tempRespawnParticleFX = (ParticleSystem)Instantiate(respawnParticleFX, transform.position + new Vector3(0, 1.5f, 0), respawnParticleFX.transform.localRotation);
+		tempRespawnParticleFX.transform.parent = transform;
     }
 
     void ChangeElement(Element e) {
