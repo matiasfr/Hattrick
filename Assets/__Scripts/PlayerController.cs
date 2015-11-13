@@ -623,6 +623,9 @@ public class PlayerController : MonoBehaviour {
     }
     public void setDamage(float d) {
         currentDamage = d;
+        if (rb == null) {
+            rb = GetComponent<Rigidbody>();
+        }
         rb.mass = StartMass / (1.0f + 0.05f * currentDamage);
 
     }

@@ -35,7 +35,7 @@ public class Player {
 
         Debug.Log("Player " + playerNum + " lost a life");
         lives--;
-        if(HUD != null) HUD.UpdateLives(lives);
+        if (HUD != null) HUD.UpdateLives(lives);
         if (lives <= 0) {
             defeated = true;
             PlayersManager.Instance.PlayerDefeated(playerNum);
@@ -65,7 +65,7 @@ public class PlayersManager : MonoBehaviour {
     public bool ControlsEnabled = true;
     public bool Paused {
         set {
-            if(value == true) {
+            if (value == true) {
                 Time.timeScale = 0;
             }
             else {
@@ -143,8 +143,6 @@ public class PlayersManager : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-
-
         if (setupMode) {
             for (int i = 0; i < devicesUnassigned.Count; i++) {
                 CheckToAdd(devicesUnassigned[i]);
@@ -156,21 +154,20 @@ public class PlayersManager : MonoBehaviour {
 
 
         //Menu Button control
-        foreach (InputDevice device in InputManager.Devices) {
-            if (device.MenuWasPressed) {
-                if(setupMode) {
+
+        if (setupMode && Players.Count > 1) {
+            foreach (InputDevice device in InputManager.Devices) {
+                if (device.LeftTrigger.WasPressed && device.RightTrigger.WasPressed) {
+                    setupMode = false;
                     Application.LoadLevel("StageSelect");
                     break;
                 }
-                else {
-
-                }
             }
         }
+
     }
 
     public void StartGame() {
-        setupMode = false;
         gameOver = false;
         ControlsEnabled = false;
 
@@ -193,27 +190,32 @@ public class PlayersManager : MonoBehaviour {
 
     private IEnumerator StartSequence() {
         yield return null;
-
         //Spawn in new players
         foreach (Player player in Players) {
-            if (player.character == null) CreatePlayerCharacter(player);
+            Debug.Log("player " + player.playerNum + " : " + player.character);
+            if (player.character == null) {
+
+                CreatePlayerCharacter(player);
+            }
             player.character.gameObject.SetActive(true);
             player.HUD = GameHUD.Instance.SetPlayerHUD(player);
 
-            float theta = 2*Mathf.PI / Players.Count * player.playerNum;
+            float theta = 2 * Mathf.PI / Players.Count * player.playerNum;
             player.character.setDamage(0);
             player.character.transform.position = new Vector3(Mathf.Cos(theta) * 5f, 10f, Mathf.Sin(theta) * 5f);
         }
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+
         yield return new WaitForSeconds(5f);
 
 
         GameHUD.Instance.DisplayCenterText("Ready", 1f);
-        Camera.main.GetComponent<CameraFollow>().SetAnchor();
-
        
+
+
         yield return new WaitForSeconds(1f);
         GameHUD.Instance.DisplayCenterText("Set", 1f);
+        Camera.main.GetComponent<CameraFollow>().SetAnchor();
 
 
         yield return new WaitForSeconds(1f);

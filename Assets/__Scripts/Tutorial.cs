@@ -10,6 +10,7 @@ public class Tutorial : MonoBehaviour {
     public PlayerHUD tutorialHUD;
     public List<GameObject> Instructions = new List<GameObject>();
     private int currentInstruction;
+    public GameObject canvas;
     public GameObject EnergyIndicatorText;
 
 	void Start () {
@@ -43,20 +44,23 @@ public class Tutorial : MonoBehaviour {
     }
 
     void Update() {
-        foreach(InputDevice device in InputManager.Devices) {
-            if (device.DPadRight.WasPressed) {
-                NextInstruction();
+        canvas.SetActive(!PauseMenu.Paused);
+        if (!PauseMenu.Paused) {
+            foreach (InputDevice device in InputManager.Devices) {
+                if (device.DPadRight.WasPressed) {
+                    NextInstruction();
+                }
+                else if (device.DPadLeft.WasPressed) {
+                    PrevInstruction();
+                }
             }
-            else if (device.DPadLeft.WasPressed) {
-                PrevInstruction();
+            if (index < PlayersManager.Players.Count && currentInstruction >= 2 && currentInstruction <= 3 && PlayersManager.Players[index] != null && PlayersManager.Players[index].character != null && !PlayersManager.Players[index].character.stunned) {
+                EnergyIndicatorText.SetActive(true);
+                EnergyIndicatorText.transform.position = PlayersManager.Players[index].character.transform.position;
             }
-        }
-        if (index < PlayersManager.Players.Count && currentInstruction >= 2 && currentInstruction <= 3 && PlayersManager.Players[index] != null && PlayersManager.Players[index].character != null && !PlayersManager.Players[index].character.stunned) {
-            EnergyIndicatorText.SetActive(true);
-            EnergyIndicatorText.transform.position = PlayersManager.Players[index].character.transform.position;
-        }
-        else {
-            EnergyIndicatorText.SetActive(false);
+            else {
+                EnergyIndicatorText.SetActive(false);
+            }
         }
 
 

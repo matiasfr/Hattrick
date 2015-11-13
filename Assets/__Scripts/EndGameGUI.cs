@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public class EndGameGUI : MonoBehaviour {
@@ -7,6 +8,7 @@ public class EndGameGUI : MonoBehaviour {
     public static EndGameGUI Instance;
     public Text WinnerText;
     public Canvas canvas;
+    public Button RematchButton;
     private PlayersManager pm;
 
     void Start() {
@@ -26,6 +28,8 @@ public class EndGameGUI : MonoBehaviour {
             WinnerText.color = pm.winner.color;
         }
         canvas.gameObject.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(RematchButton.gameObject);
+        RematchButton.OnSelect(null);
     }
 
     public void Rematch() {

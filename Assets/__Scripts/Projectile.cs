@@ -43,8 +43,11 @@ public class Projectile : MonoBehaviour {
     public ParticleSystem ChargingEffectPrefab;
     private ParticleSystem chargingEffect = null;
 
+    private TrailRenderer tr;
+
     void Start() {
         col = GetComponent<Collider>();
+        tr = GetComponent<TrailRenderer>();
         chargeSoundSource = GetComponent<AudioSource>();
         col.enabled = false;
         chargingEffect = (ParticleSystem)Instantiate(ChargingEffectPrefab, transform.position, transform.localRotation);
@@ -64,6 +67,7 @@ public class Projectile : MonoBehaviour {
         if (isCast && distanceTraveled > projectileRange) {
             Dissipate();
         }
+        
     }
 
     void FixedUpdate() {
@@ -81,7 +85,8 @@ public class Projectile : MonoBehaviour {
         else if (element == Element.WATER) {
             PlayersManager.Players[playerNum].WaterProj++;
         }
-
+        tr.startWidth = (1+chargePercent) * tr.startWidth;
+        tr.time = (1 + chargePercent) * tr.time;
 
         Destroy(chargingEffect.gameObject);
         startPos = transform.position;
@@ -153,6 +158,7 @@ public class Projectile : MonoBehaviour {
 
     public void Dissipate() {
         AudioSource.PlayClipAtPoint(element.projectileDissipateSFX, transform.position, 1.0f);
+        if (velocity != Vector3.zero)
         dissapateParticleFX = (ParticleSystem)Instantiate(element.projectileDissapateFX, transform.position, Quaternion.LookRotation(velocity));
         Destroy(gameObject);
     }
