@@ -9,6 +9,10 @@ public class PauseMenu : MonoBehaviour {
     public Canvas canvas;
     public Button ResumeButton;
     public static bool Paused = false;
+    public static PauseMenu Instance;
+    void Awake() {
+        Instance = this;
+    }
 	void Start () {
 	
 	}
@@ -60,6 +64,7 @@ public class PauseMenu : MonoBehaviour {
 
 
     public void QuitToMenu() {
+        Resume();
         Application.LoadLevel("MainMenu");
     }
 }

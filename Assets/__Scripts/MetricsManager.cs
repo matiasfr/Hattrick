@@ -27,10 +27,10 @@ public class MetricsManager : MonoBehaviour {
 
     static string GenerateMetricsString() {
         string text =
-            "Player Num,EarthProj,FireProj,WaterProj,EarthShield,FireShield,WaterShield,Dashes,Lives" + Environment.NewLine;
+            "PlayerNum,EarthProj,FireProj,WaterProj,EarthShield,FireShield,WaterShield,Dashes,Lives,KillsEarth,KillsFire, KillsWater" + Environment.NewLine;
 
         foreach (Player p in PlayersManager.Players) {
-            text += p.playerNum + "," + p.EarthProj + "," + p.FireProj + "," + p.WaterProj + "," + p.EarthShield + "," + p.FireShield + "," + p.WaterShield + "," + p.Dashes + "," + p.lives + Environment.NewLine;
+            text += p.PrintMetrics();
         }
         Debug.Log(text);
         return text;

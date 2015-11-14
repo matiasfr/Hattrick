@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using InControl;
+using System.IO;
+using System;
 
 //Represents the player abstractly carrying data such s their controller, and pl
 public class Player {
@@ -15,6 +17,8 @@ public class Player {
 
     //Metrics
     public int EarthProj, FireProj, WaterProj, EarthShield, FireShield, WaterShield, Dashes;
+
+    int KillsEarth, KillsFire, KillsWater;
 
     public PlayerHUD HUD;
 
@@ -45,6 +49,11 @@ public class Player {
 
     public void ResetMetrics() {
         EarthProj = FireProj = WaterProj = EarthShield = FireShield = WaterShield = Dashes = 0;
+        KillsEarth = KillsFire = KillsWater = 0;
+    }
+
+    public string PrintMetrics() {
+        return playerNum + "," + EarthProj + "," + FireProj + "," + WaterProj + "," + EarthShield + "," + FireShield + "," + WaterShield + "," + Dashes + "," + lives + "," + KillsEarth + "," + KillsFire + "," + KillsWater + Environment.NewLine;     
     }
 
 }

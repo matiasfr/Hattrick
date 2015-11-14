@@ -9,14 +9,18 @@ public class EndGameGUI : MonoBehaviour {
     public Text WinnerText;
     public Canvas canvas;
     public Button RematchButton;
+    public GameObject Celebration;
     private PlayersManager pm;
 
     void Start() {
         Instance = this;
     }
 
-    public void DisplayResults() {
+    void Update() {
+        
+    }
 
+    public void DisplayResults() {
         pm = PlayersManager.Instance;
         if (pm == null) return;
 
@@ -27,14 +31,28 @@ public class EndGameGUI : MonoBehaviour {
                 + " wins!";
             WinnerText.color = pm.winner.color;
         }
+
+        Celebration.SetActive(true);
+
+        PauseMenu.Instance.gameObject.SetActive(false);
+       
+    }
+
+
+    public void EndRound() {
         canvas.gameObject.SetActive(true);
         EventSystem.current.SetSelectedGameObject(RematchButton.gameObject);
         RematchButton.OnSelect(null);
+        PauseMenu.Instance.gameObject.SetActive(true);
+
+
+
     }
 
     public void Rematch() {
         PlayersManager.Instance.StartGame();
         canvas.gameObject.SetActive(false);
+        Celebration.SetActive(false);
     }
 
     public void StageSelect() {

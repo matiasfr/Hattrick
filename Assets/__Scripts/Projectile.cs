@@ -110,12 +110,17 @@ public class Projectile : MonoBehaviour {
         PlayerController pc = other.GetComponent<PlayerController>(); //Check if projectile hit a player
         if (pc != null) {
             if (pc.playerNum != casterPlayerNum) {
+
+                //PlayersManager.Players[pc.playerNum].TrackHit(this);
+
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 pc.takeDamage(Mathf.Lerp(MIN_DAMAGE, MAX_DAMAGE, chargePercent));
-
+                
                 pc.Stun(chargePercent);
                 rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
                 Impact();
+
+
                 
             }
             return;

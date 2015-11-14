@@ -321,10 +321,10 @@ public class PlayerController : MonoBehaviour {
     float fallSpeed;
     int layerMask = 1 << 8;
     float hoverHeight = 1.6f;
-    void CheckGround() {
+    void CheckGround() {    
 
         if (Physics.Raycast(transform.position, Vector3.down, out hit, hoverHeight + .1f, layerMask)) {
-
+            hit.collider.gameObject.SendMessage("PlayerOnPlatform", this, SendMessageOptions.DontRequireReceiver);
 
             if (stunned) {
                 if (stunnedTime >= stunLength) {
