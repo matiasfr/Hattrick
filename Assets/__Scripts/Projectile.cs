@@ -123,7 +123,7 @@ public class Projectile : MonoBehaviour {
 
         ShieldPiece sp = other.GetComponent<ShieldPiece>();
         if (sp != null) { //Check if projectile hit a shield piece
-
+            if (sp.shield == null) return;
             if (sp.shield.element.weakness == element) { //If the shield is weak to this projectile type
                 sp.Collapse();
                 Rigidbody rb = other.GetComponent<Rigidbody>();
@@ -131,14 +131,11 @@ public class Projectile : MonoBehaviour {
             }
             else if (sp.shield.element == element) { //If the shield is the same as this projectile type
                 Impact();
-
                 if (chargePercent > sp.shield.Power) {
-
                     sp.Collapse();
                     Rigidbody rb = other.GetComponent<Rigidbody>();
                     rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
-                }
-              
+                }            
             }
             else { // If the shield is strong against and blocks this projectile type
                 Impact();

@@ -25,6 +25,7 @@ public class ShieldPiece : MonoBehaviour {
     public void Collapse() {
         transform.parent = null;
         rb.isKinematic = false;
+        
         Destroy(gameObject, Random.Range(1f, 3f));
     }
 

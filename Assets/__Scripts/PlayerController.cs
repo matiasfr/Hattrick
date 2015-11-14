@@ -379,6 +379,8 @@ public class PlayerController : MonoBehaviour {
         if (shielding) {
             shield.Collapse();
             shielding = false;
+            soundSourceLong.Stop();
+            playSoundModulated(element.shieldBreakSFX);
         }
         if (!stunned) {
             rb.isKinematic = false;
@@ -474,9 +476,9 @@ public class PlayerController : MonoBehaviour {
                 shield = Instantiate<Shield>(element.shieldPrefab);
                 shield.element = element;
 
-                shield.transform.parent = transform;
-                shield.transform.localPosition = shieldOffset;
-                //shield.transform.position = transform.position + shieldOffset;
+                //shield.transform.parent = transform;
+                //hield.transform.localPosition = shieldOffset;
+                shield.transform.position = transform.position + shieldOffset;
                 shield.transform.rotation = transform.rotation;
 
                 if (chargingCast) {
@@ -486,6 +488,12 @@ public class PlayerController : MonoBehaviour {
 
                 }
             }
+        }
+
+        if (shielding) {
+            shield.transform.position = Vector3.Lerp(shield.transform.position, transform.position + shieldOffset, .8f);
+            shield.transform.rotation = Quaternion.Slerp(shield.transform.rotation, transform.rotation, .2f);
+
         }
 
         if (shielding && playerInput.Shield.WasReleased) {

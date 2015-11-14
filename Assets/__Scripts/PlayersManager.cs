@@ -157,7 +157,7 @@ public class PlayersManager : MonoBehaviour {
 
         if (setupMode && Players.Count > 1) {
             foreach (InputDevice device in InputManager.Devices) {
-                if (device.LeftTrigger.WasPressed && device.RightTrigger.WasPressed) {
+                if (device.LeftBumper.WasPressed && device.RightBumper.WasPressed) {
                     setupMode = false;
                     Application.LoadLevel("StageSelect");
                     break;

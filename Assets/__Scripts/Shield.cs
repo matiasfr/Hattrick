@@ -31,20 +31,33 @@ public class Shield : MonoBehaviour {
 
     public void Despawn() {
         transform.parent = null;
-        //TODO add shield despawn effect
-        Destroy(gameObject);
+
+        ShieldAnimation anim = GetComponent<ShieldAnimation>();
+        if (anim != null) {
+            anim.animatingOut = true;
+            anim.animatingIn = false;
+        }
+        else {
+            Destroy(gameObject);
+        }
+
+
     }
 
     public void Collapse() {
-
-        foreach (ShieldPiece sp in GetComponentsInChildren<ShieldPiece>()) {
-            sp.Collapse();
-            sp.rigidbody.AddExplosionForce(5f, transform.position, 6f, 1f, ForceMode.Impulse);
-        }
-        Destroy(gameObject, 3f);
-
+        //ShieldAnimation anim = GetComponent<ShieldAnimation>();
+        //if (anim != null) {
+        //    anim.animatingOut = false;
+        //    anim.animatingIn = false;
+        //}
+        //foreach (ShieldPiece sp in GetComponentsInChildren<ShieldPiece>()) {
+        //    sp.Collapse();
+        //    sp.rigidbody.AddExplosionForce(5f, transform.position, 6f, 1f, ForceMode.Impulse);
+        //}
+        //Destroy(gameObject, 3f);
+        Despawn();
 
     }
 
 
-}
+    }
