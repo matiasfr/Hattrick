@@ -149,6 +149,8 @@ public class Projectile : MonoBehaviour {
                     }
                 }
                 else { // If the shield is strong against and blocks this projectile type
+					//velocity = velocity*-1;
+					//TODO: make caster now vulnerable to this projectile
                 }
 
                 Impact();
