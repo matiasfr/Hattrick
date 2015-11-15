@@ -26,8 +26,7 @@ public class MetricsManager : MonoBehaviour {
     }
 
     static string GenerateMetricsString() {
-        string text =
-            "PlayerNum,EarthProj,FireProj,WaterProj,EarthShield,FireShield,WaterShield,Dashes,Lives,KillsEarth,KillsFire, KillsWater" + Environment.NewLine;
+        string text = "PlayerNum,EarthProj,FireProj,WaterProj,EarthShield,FireShield,WaterShield,EarthKOs,FireKOs,WaterKOs,Dashes,Lives" + Environment.NewLine;
 
         foreach (Player p in PlayersManager.Players) {
             text += p.PrintMetrics();

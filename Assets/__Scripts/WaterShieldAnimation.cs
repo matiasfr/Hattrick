@@ -18,15 +18,17 @@ public class WaterShieldAnimation : ShieldAnimation {
     void Update() {
         if (animatingIn) {
             foreach (ShieldPiece sp in s.pieces) {
-                
-                    sp.transform.localScale = Vector3.Lerp(sp.transform.localScale, Vector3.one, 10f * Time.deltaTime);
-                    if (Vector3.Distance(sp.transform.localScale, Vector3.one) < .01f) animatingIn = false;
-                
+                if (sp == null) continue;
+
+                sp.transform.localScale = Vector3.Lerp(sp.transform.localScale, Vector3.one, 10f * Time.deltaTime);
+                if (Vector3.Distance(sp.transform.localScale, Vector3.one) < .01f) animatingIn = false;
+
             }
         }
         else if (animatingOut) {
             if (s == null) return;
             foreach (ShieldPiece sp in s.pieces) {
+                if (sp == null) continue;
 
                 sp.transform.localScale = Vector3.Lerp(sp.transform.localScale, Vector3.zero, 10f * Time.deltaTime);
                 if (Vector3.Distance(sp.transform.localScale, Vector3.zero) < .01f) {

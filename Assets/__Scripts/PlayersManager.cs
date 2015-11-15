@@ -16,17 +16,45 @@ public class Player {
     public Color color;
 
     //Metrics
-    public int EarthProj, FireProj, WaterProj, EarthShield, FireShield, WaterShield, Dashes;
+    public int Dashes;
 
-    int KillsEarth, KillsFire, KillsWater;
+    public Dictionary<Element, int> KOsByElement = new Dictionary<Element, int>();
+    public Dictionary<Element, int> FallsByElement = new Dictionary<Element, int>();
+    public Dictionary<Element, int> HitsByElement = new Dictionary<Element, int>();
+    public Dictionary<Element, int> BlocksByElement = new Dictionary<Element, int>();
+    public Dictionary<Element, int> ShotsByElement = new Dictionary<Element, int>();
+    public Dictionary<Element, int> ShieldsByElement = new Dictionary<Element, int>();
 
     public PlayerHUD HUD;
 
     public Player(int num, InputDevice d) {
         playerNum = num;
         device = d;
+        ResetElementStats(Element.EARTH);
+        ResetElementStats(Element.FIRE);
+        ResetElementStats(Element.WATER);
     }
     public void OnDeath() {
+
+        if (lastHitByPlayer != -1) {
+            if (!PlayersManager.Players[lastHitByPlayer].KOsByElement.ContainsKey(lastHitByElem)) {
+                PlayersManager.Players[lastHitByPlayer].KOsByElement.Add(lastHitByElem, 1);
+            }
+            else {
+                PlayersManager.Players[lastHitByPlayer].KOsByElement[lastHitByElem]++;
+            }
+
+            if (!FallsByElement.ContainsKey(lastHitByElem)) {
+                FallsByElement.Add(lastHitByElem, 1);
+            }
+            else {
+                FallsByElement[lastHitByElem]++;
+            }
+
+            lastHitByPlayer = -1;
+            lastHitByElem = null;
+        }
+
         if (PlayersManager.Instance.setupMode) {
             Debug.Log("Player " + playerNum + " died during game setup");
 
@@ -48,12 +76,65 @@ public class Player {
     }
 
     public void ResetMetrics() {
-        EarthProj = FireProj = WaterProj = EarthShield = FireShield = WaterShield = Dashes = 0;
-        KillsEarth = KillsFire = KillsWater = 0;
+        Dashes = 0;
+        ResetElementStats(Element.EARTH);
+        ResetElementStats(Element.FIRE);
+        ResetElementStats(Element.WATER);
+    }
+
+    public void ResetElementStats(Element e) {
+        if (KOsByElement.ContainsKey(e))
+            KOsByElement[e] = 0;
+        else
+            KOsByElement.Add(e, 0);
+
+        if (FallsByElement.ContainsKey(e))
+            FallsByElement[e] = 0;
+        else
+            FallsByElement.Add(e, 0);
+
+        if (HitsByElement.ContainsKey(e))
+            HitsByElement[e] = 0;
+        else
+            HitsByElement.Add(e, 0);
+
+        if (BlocksByElement.ContainsKey(e))
+            BlocksByElement[e] = 0;
+        else
+            BlocksByElement.Add(e, 0);
+
+        if (ShotsByElement.ContainsKey(e))
+            ShotsByElement[e] = 0;
+        else
+            ShotsByElement.Add(e, 0);
+
+        if (ShieldsByElement.ContainsKey(e))
+            ShieldsByElement[e] = 0;
+        else
+            ShieldsByElement.Add(e, 0);
+
+
+
     }
 
     public string PrintMetrics() {
-        return playerNum + "," + EarthProj + "," + FireProj + "," + WaterProj + "," + EarthShield + "," + FireShield + "," + WaterShield + "," + Dashes + "," + lives + "," + KillsEarth + "," + KillsFire + "," + KillsWater + Environment.NewLine;     
+        return playerNum + "," 
+            + printDic(ShotsByElement) + printDic(ShieldsByElement) + printDic(KOsByElement) +
+            + Dashes + "," + lives + ","  + Environment.NewLine;
+    }
+
+    string printDic(Dictionary<Element, int> dict) {
+        return (dict.ContainsKey(Element.EARTH) ? dict[Element.EARTH] : 0) + "," 
+            + (dict.ContainsKey(Element.FIRE) ? dict[Element.FIRE] : 0) + "," 
+            + (dict.ContainsKey(Element.WATER) ? dict[Element.WATER] : 0) + ",";
+    }
+
+    private int lastHitByPlayer = -1;
+    private Element lastHitByElem = null;
+
+    public void TrackHit(Projectile p) {
+        lastHitByElem = p.element;
+        lastHitByPlayer = p.casterPlayerNum;
     }
 
 }
@@ -71,6 +152,7 @@ public class PlayersManager : MonoBehaviour {
     public int numLives = 3;
     public bool setupMode = false;
     public bool gameOver = false;
+    public bool startDelay = false;
     public bool ControlsEnabled = true;
     public bool Paused {
         set {
@@ -215,11 +297,14 @@ public class PlayersManager : MonoBehaviour {
         }
         Camera.main.GetComponent<CameraFollow>().updatePlayerList();
 
-        yield return new WaitForSeconds(5f);
+        if (startDelay) {
+            yield return new WaitForSeconds(5f);
+            startDelay = false;
+        }
 
 
         GameHUD.Instance.DisplayCenterText("Ready", 1f);
-       
+
 
 
         yield return new WaitForSeconds(1f);
@@ -230,6 +315,7 @@ public class PlayersManager : MonoBehaviour {
         yield return new WaitForSeconds(1f);
 
         GameHUD.Instance.DisplayCenterText("Fight!", 1f);
+
         ControlsEnabled = true;
 
 

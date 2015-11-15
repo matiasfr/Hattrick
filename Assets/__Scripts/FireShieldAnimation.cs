@@ -34,6 +34,8 @@ public class FireShieldAnimation : ShieldAnimation {
     void Update() {
         if (animatingIn) {
             foreach (ShieldPiece sp in s.pieces) {
+                if (sp == null) continue;
+
                 if (targetPos[sp.transform].y > 1f) {
                     sp.transform.localPosition = Vector3.Lerp(sp.transform.localPosition, targetPos[sp.transform], 10f * Time.deltaTime);
                     if (Vector3.Distance(sp.transform.localPosition, targetPos[sp.transform]) < .01f) animatingIn = false;
@@ -51,10 +53,12 @@ public class FireShieldAnimation : ShieldAnimation {
         }
         else if (animatingOut) {
             foreach (ShieldPiece sp in s.pieces) {
+                if (sp == null) continue ;
+
                 if (t == 0f) {
                     sp.transform.parent = null;
                     sp.GetComponent<Collider>().enabled = false;
-                    endPos.Add(sp.transform, sp.transform.position + new Vector3(0, 1f + Random.Range(0f, 4f), 0f));
+                    endPos[sp.transform] = sp.transform.position + new Vector3(0, 1f + Random.Range(0f, 4f), 0f);
                 }
                 mat = ren[sp].material;
                 mat.SetFloat("EmissionColor", 1 - 2 * (t / len));

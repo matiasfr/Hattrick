@@ -12,10 +12,12 @@ public class PlayerHUD : MonoBehaviour {
     public Gradient damageColor;
 
     [HideInInspector]
-    public Player player;
+    public Player player = null;
+
+    public PlayerStatsGUI statsGUI;
 
     void Start() {
-
+        
     }
 
     void Update() {
@@ -43,7 +45,7 @@ public class PlayerHUD : MonoBehaviour {
         player = p;
         Damage.gameObject.SetActive(true);
         Damage.color = damageColor.Evaluate(0f);
-
+        statsGUI.gameObject.SetActive(false);
         strikethrough.gameObject.SetActive(false);
 
         UpdateLives(p.lives);
@@ -56,7 +58,5 @@ public class PlayerHUD : MonoBehaviour {
         else {
             Name.text = "PLAYER " + (player.playerNum+1);
         }
-
-
     }
 }

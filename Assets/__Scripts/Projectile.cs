@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour {
     private Vector3 startPos;
     private Collider col;
     public float chargePercent;
-    private int casterPlayerNum;
+    public int casterPlayerNum;
     private AudioSource chargeSoundSource;
     private float lowPitch = 0.5f;
     private float highPitch = 2.0f;
@@ -67,7 +67,7 @@ public class Projectile : MonoBehaviour {
         if (isCast && distanceTraveled > projectileRange) {
             Dissipate();
         }
-        
+
     }
 
     void FixedUpdate() {
@@ -76,16 +76,9 @@ public class Projectile : MonoBehaviour {
     }
 
     public void Cast(Vector3 direction, float charge, int playerNum) {
-        if (element == Element.EARTH) {
-            PlayersManager.Players[playerNum].EarthProj++;
-        }
-        else if (element == Element.FIRE) {
-            PlayersManager.Players[playerNum].FireProj++;
-        }
-        else if (element == Element.WATER) {
-            PlayersManager.Players[playerNum].WaterProj++;
-        }
-        tr.startWidth = (1+chargePercent) * tr.startWidth;
+
+
+        tr.startWidth = (1 + chargePercent) * tr.startWidth;
         tr.time = (1 + chargePercent) * tr.time;
 
         Destroy(chargingEffect.gameObject);
@@ -100,7 +93,13 @@ public class Projectile : MonoBehaviour {
         AudioSource.PlayClipAtPoint(element.projectileCastSFX, transform.position, 1.0f);
 
         chargeSoundSource.Stop();
-        //TODO keep track of player who cast
+
+        if (!PlayersManager.Players[casterPlayerNum].ShotsByElement.ContainsKey(element)) {
+            PlayersManager.Players[casterPlayerNum].ShotsByElement.Add(element, 1);
+        }
+        else {
+            PlayersManager.Players[casterPlayerNum].ShotsByElement[element]++;
+        }
     }
 
     void OnCollisionEnter(Collision collision) {
@@ -111,17 +110,24 @@ public class Projectile : MonoBehaviour {
         if (pc != null) {
             if (pc.playerNum != casterPlayerNum) {
 
-                //PlayersManager.Players[pc.playerNum].TrackHit(this);
+                if (!PlayersManager.Players[casterPlayerNum].HitsByElement.ContainsKey(element)) {
+                    PlayersManager.Players[casterPlayerNum].HitsByElement.Add(element, 1);
+                }
+                else {
+                    PlayersManager.Players[casterPlayerNum].HitsByElement[element]++;
+                }
+
+                PlayersManager.Players[pc.playerNum].TrackHit(this);
 
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 pc.takeDamage(Mathf.Lerp(MIN_DAMAGE, MAX_DAMAGE, chargePercent));
-                
+
                 pc.Stun(chargePercent);
                 rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
                 Impact();
+ 
 
 
-                
             }
             return;
         }
@@ -134,23 +140,30 @@ public class Projectile : MonoBehaviour {
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
             }
-            else if (sp.shield.element == element) { //If the shield is the same as this projectile type
-                Impact();
-                if (chargePercent > sp.shield.Power) {
-                    sp.Collapse();
-                    Rigidbody rb = other.GetComponent<Rigidbody>();
-                    rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
-                }            
-            }
-            else { // If the shield is strong against and blocks this projectile type
-                Impact();
+            else {
+                if (sp.shield.element == element) { //If the shield is the same as this projectile type
+                    if (chargePercent > sp.shield.Power) {
+                        sp.Collapse();
+                        Rigidbody rb = other.GetComponent<Rigidbody>();
+                        rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
+                    }
+                }
+                else { // If the shield is strong against and blocks this projectile type
+                }
 
+                Impact();
+                if (!PlayersManager.Players[sp.shield.playerNum].BlocksByElement.ContainsKey(element)) {
+                    PlayersManager.Players[sp.shield.playerNum].BlocksByElement.Add(element, 1);
+                }
+                else {
+                    PlayersManager.Players[sp.shield.playerNum].BlocksByElement[element]++;
+                }
             }
             return;
         }
 
         Projectile p = other.GetComponent<Projectile>();
-        if(p != null) {
+        if (p != null) {
             p.Impact();
             Impact();
             return;
@@ -161,7 +174,7 @@ public class Projectile : MonoBehaviour {
     public void Dissipate() {
         AudioSource.PlayClipAtPoint(element.projectileDissipateSFX, transform.position, 1.0f);
         if (velocity != Vector3.zero)
-        dissapateParticleFX = (ParticleSystem)Instantiate(element.projectileDissapateFX, transform.position, Quaternion.LookRotation(velocity));
+            dissapateParticleFX = (ParticleSystem)Instantiate(element.projectileDissapateFX, transform.position, Quaternion.LookRotation(velocity));
         Destroy(gameObject);
     }
 

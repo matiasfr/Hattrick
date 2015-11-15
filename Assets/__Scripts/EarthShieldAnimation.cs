@@ -34,6 +34,8 @@ public class EarthShieldAnimation : ShieldAnimation {
 	void Update () {
         if (animatingIn) {
             foreach (ShieldPiece sp in s.pieces) {
+                if (sp == null) continue;
+
                 if (targetPos[sp.transform].y > 1f) {
                     sp.transform.position = Vector3.Lerp(sp.transform.position, sp.transform.parent.TransformPoint(targetPos[sp.transform]), t / len);
                     sp.transform.localRotation = Quaternion.Slerp(sp.transform.localRotation, targetRot[sp.transform], t/len -.2f);
@@ -61,6 +63,8 @@ public class EarthShieldAnimation : ShieldAnimation {
         }
         else if (animatingOut) {
             foreach (ShieldPiece sp in s.pieces) {
+                if (sp == null) continue;
+
                 Rigidbody rb = sp.GetComponent<Rigidbody>();
                 rb.isKinematic = false;
                 rb.useGravity = true;

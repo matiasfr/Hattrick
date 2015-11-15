@@ -40,6 +40,7 @@ public class SceneManager : MonoBehaviour {
 
     public void GoToStage(string stageName) {
         Application.LoadLevel(stageName);
+        PlayersManager.Instance.startDelay = true;
         PlayersManager.Instance.StartGame();
     }
 

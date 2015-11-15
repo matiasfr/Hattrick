@@ -8,6 +8,7 @@ public class Shield : MonoBehaviour {
     public bool CollapseOnDespawn = false;
     public List<ShieldPiece> pieces = new List<ShieldPiece>();
     private PlayerBumper pb;
+    public int playerNum;
     [HideInInspector]
     public Element element;
 

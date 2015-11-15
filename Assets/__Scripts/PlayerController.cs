@@ -454,18 +454,6 @@ public class PlayerController : MonoBehaviour {
 
         if (playerInput.Shield.WasPressed) {
             if (!shielding/* && currentEnergy > SHIELD_COST*/) {
-                if (element == Element.EARTH) {
-                    PlayersManager.Players[playerNum].EarthShield++;
-                }
-                else if (element == Element.FIRE) {
-                    PlayersManager.Players[playerNum].FireShield++;
-                }
-                else if (element == Element.WATER) {
-                    PlayersManager.Players[playerNum].WaterShield++;
-                }
-
-
-
                 //Start shielding
                 playSoundModulated(element.shieldSpawnSFX);
                 soundSourceLong.clip = element.shieldExistSFX;
@@ -474,7 +462,15 @@ public class PlayerController : MonoBehaviour {
                 bumper.radius = PlayerBumper.ShieldRadius;
                 shielding = true;
                 shield = Instantiate<Shield>(element.shieldPrefab);
+                shield.playerNum = playerNum;
                 shield.element = element;
+
+                if (!PlayersManager.Players[playerNum].ShieldsByElement.ContainsKey(element)) {
+                    PlayersManager.Players[playerNum].ShieldsByElement.Add(element, 1);
+                }
+                else {
+                    PlayersManager.Players[playerNum].ShieldsByElement[element]++;
+                }
 
                 //shield.transform.parent = transform;
                 //hield.transform.localPosition = shieldOffset;
