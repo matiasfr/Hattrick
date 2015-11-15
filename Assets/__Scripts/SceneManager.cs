@@ -25,6 +25,9 @@ public class SceneManager : MonoBehaviour {
     public void GoToGameSetup() {
         PlayersManager.Instance.ClearPlayers();
         PlayersManager.Instance.setupMode = true;
+
+		//GameObject g = GameObject.FindWithTag("Fader");
+		//g.GetComponent<SceneFadeInOut>().EndScene("GameSetup");
         Application.LoadLevel("GameSetup");
     }
 
