@@ -52,7 +52,7 @@ public class PillarController : MonoBehaviour {
 
 		if(active) {
 			heat -= cooldownRate*Time.deltaTime;
-			heat = Mathf.Clamp(heat, 0, 110);
+			heat = Mathf.Clamp(heat, 0, 100);
 			mat.color = pillarGradient.Evaluate(heat / 100.0f);
 			if(heat >= 100.0f) {
 				sinking = true;
@@ -93,7 +93,7 @@ public class PillarController : MonoBehaviour {
 	void PlayerOnPlatform(PlayerController p) {
         Debug.Log("PlayerOnPlatform");
 		heat += heatRate*Time.deltaTime;
-		heat = Mathf.Clamp(heat, 0, 110);
+		//heat = Mathf.Clamp(heat, 0, 100);
 	}
 
 
