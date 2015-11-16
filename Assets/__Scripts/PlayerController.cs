@@ -210,11 +210,18 @@ public class PlayerController : MonoBehaviour {
 
     private void SetInputDevice() {
         playerInput.Device = PlayersManager.Players[playerNum].device;
+        Debug.Log("Player " + playerNum + " trying to reconnect... " + playerInput.Device);
+        if (playerInput.Device == null) return;
     }
 
     void Update() {
         if (playerNum >= PlayersManager.Players.Count) return;
-        if (playerInput.Device == null) playerInput.Device = PlayersManager.Players[playerNum].device;
+        if (PlayersManager.Players[playerNum].device == null) {
+            return;
+            
+        }else {
+            playerInput.Device = PlayersManager.Players[playerNum].device;
+        }
 
         CheckGround();
         CheckCamera();
