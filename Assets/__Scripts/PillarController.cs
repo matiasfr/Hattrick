@@ -5,6 +5,7 @@ public class PillarController : MonoBehaviour {
 
 	public float sinkDepth;
 	public float sinkRate;
+	public float riseRate;
 	private Material mat;
 	private Renderer ren;
 	private bool sinking = false;
@@ -59,11 +60,7 @@ public class PillarController : MonoBehaviour {
 			}
 		}
 
-	}
-
-	void fixedUpdate() {
 		if(sinking) {
-			//TODO: play some partile effect as it sinks
 			active  = false;
 			if(transform.position.y > (initialPos.y - sinkDepth)  ) {
 				transform.position = transform.position + new Vector3(0.0f,(-sinkRate*Time.deltaTime),0.0f);
@@ -74,15 +71,19 @@ public class PillarController : MonoBehaviour {
 		}
 		
 		if(rising) {
-			//TODO: some visual change between rising and risen
 			if(transform.position.y < initialPos.y  ) {
-				transform.position = transform.position + new Vector3(0.0f, (sinkRate*Time.deltaTime), 0.0f);
+				transform.position = transform.position + new Vector3(0.0f, (riseRate*Time.deltaTime), 0.0f);
 			} else {
 				transform.position = initialPos; //insure alignment
 				rising = false;
 				active = true;
 			}
 		}
+
+	}
+
+	void fixedUpdate() {
+
 	}
 
 	IEnumerator pillarWait() {
@@ -95,7 +96,6 @@ public class PillarController : MonoBehaviour {
 	void PlayerOnPlatform(PlayerController p) {
         Debug.Log("PlayerOnPlatform");
 		heat += heatRate*Time.deltaTime;
-		//heat = Mathf.Clamp(heat, 0, 100);
 	}
 
 

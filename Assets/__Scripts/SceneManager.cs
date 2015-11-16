@@ -14,35 +14,46 @@ public class SceneManager : MonoBehaviour {
 	void Update () {
 
         if (Input.GetKeyUp(KeyCode.Escape)) {
-            GoToScene("MainMenu");
+			GameObject g = GameObject.FindWithTag("Fader");
+			g.GetComponent<SceneFadeInOut>().EndScene("MainMenu");
+            //GoToScene("MainMenu");
         }
     }
 
     public void QuitToMenu() {
-        Application.LoadLevel("MainMenu");
+		GameObject g = GameObject.FindWithTag("Fader");
+		g.GetComponent<SceneFadeInOut>().EndScene("MainMenu");
+       // Application.LoadLevel("MainMenu");
     }
 
     public void GoToGameSetup() {
         PlayersManager.Instance.ClearPlayers();
         PlayersManager.Instance.setupMode = true;
 
-		//GameObject g = GameObject.FindWithTag("Fader");
-		//g.GetComponent<SceneFadeInOut>().EndScene("GameSetup");
-        Application.LoadLevel("GameSetup");
+		GameObject g = GameObject.FindWithTag("Fader");
+		g.GetComponent<SceneFadeInOut>().EndScene("GameSetup");
+        //Application.LoadLevel("GameSetup");
     }
 
     public void GoToTutorial() {
         PlayersManager.Instance.ClearPlayers();
         PlayersManager.Instance.setupMode = true;
-        Application.LoadLevel("Tutorial");
+
+		GameObject g = GameObject.FindWithTag("Fader");
+		g.GetComponent<SceneFadeInOut>().EndScene("Tutorial");
+        //Application.LoadLevel("Tutorial");
     }
 
     public void GoToScene(string sceneName) {
-        Application.LoadLevel(sceneName);
+		GameObject g = GameObject.FindWithTag("Fader");
+		g.GetComponent<SceneFadeInOut>().EndScene(sceneName);
+        //Application.LoadLevel(sceneName);
     }
 
     public void GoToStage(string stageName) {
-        Application.LoadLevel(stageName);
+		GameObject g = GameObject.FindWithTag("Fader");
+		g.GetComponent<SceneFadeInOut>().EndScene(stageName);
+       // Application.LoadLevel(stageName);
         PlayersManager.Instance.startDelay = true;
         PlayersManager.Instance.StartGame();
     }

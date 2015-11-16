@@ -239,7 +239,9 @@ public class PlayersManager : MonoBehaviour {
             foreach (InputDevice device in InputManager.Devices) {
                 if (device.LeftBumper.WasPressed && device.RightBumper.WasPressed) {
                     setupMode = false;
-                    Application.LoadLevel("StageSelect");
+					GameObject g = GameObject.FindWithTag("Fader");
+					g.GetComponent<SceneFadeInOut>().EndScene("StageSelect");
+                    //Application.LoadLevel("StageSelect");
                     break;
                 }
             }
