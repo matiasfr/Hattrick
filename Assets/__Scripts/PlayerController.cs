@@ -376,7 +376,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void Stun(float chargePercent) {
-
+		soundSourceLong.Stop();//should fix bug where shield sound keeps playing if hit from behind
         dashing = false;
         if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
