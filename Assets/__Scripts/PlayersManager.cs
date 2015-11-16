@@ -118,14 +118,14 @@ public class Player {
     }
 
     public string PrintMetrics() {
-        return playerNum + "," 
+        return playerNum + ","
             + printDic(ShotsByElement) + printDic(ShieldsByElement) + printDic(KOsByElement) +
-            + Dashes + "," + lives + ","  + Environment.NewLine;
+            +Dashes + "," + lives + "," + Environment.NewLine;
     }
 
     string printDic(Dictionary<Element, int> dict) {
-        return (dict.ContainsKey(Element.EARTH) ? dict[Element.EARTH] : 0) + "," 
-            + (dict.ContainsKey(Element.FIRE) ? dict[Element.FIRE] : 0) + "," 
+        return (dict.ContainsKey(Element.EARTH) ? dict[Element.EARTH] : 0) + ","
+            + (dict.ContainsKey(Element.FIRE) ? dict[Element.FIRE] : 0) + ","
             + (dict.ContainsKey(Element.WATER) ? dict[Element.WATER] : 0) + ",";
     }
 
@@ -195,14 +195,13 @@ public class PlayersManager : MonoBehaviour {
     void ControllerAttached(InputDevice device) {
         Debug.Log("Controller attached");
 
-        if (!setupMode) {
-            //Try to reattach to existing player
-            foreach (Player p in Players) {
-                if (p.device == null) {
-                    p.device = device;
-                    //if (p.character != null) p.character.SetInputDevice(device);
-                    return;
-                }
+        //Try to reattach to existing player
+        foreach (Player p in Players) {
+            if (p.device == null) {
+                Debug.Log("Controller assigned to player " + p.playerNum);
+
+                p.device = device;
+                return;
             }
         }
         devicesUnassigned.Add(device);
@@ -215,19 +214,9 @@ public class PlayersManager : MonoBehaviour {
         }
         Player p = Players.Find(x => x.device == device);
         if (p != null) {
-            if (setupMode) {
-                //Remove player
-                Destroy(p.character.gameObject);
-                Players.Remove(p);
-                Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+            p.device = null;
+            Debug.Log("Controller for player" + Players.IndexOf(p) + " detached");
 
-
-            }
-            else {
-                p.device = null;
-                Debug.Log("Controller for player" + Players.IndexOf(p) + " detached");
-
-            }
 
         }
     }
