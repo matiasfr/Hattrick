@@ -13,16 +13,12 @@ public class SceneManager : MonoBehaviour {
 	
 	void Update () {
 
-        if (Input.GetKeyUp(KeyCode.Escape)) {
-			GameObject g = GameObject.FindWithTag("Fader");
-			g.GetComponent<SceneFadeInOut>().EndScene("MainMenu");
-            //GoToScene("MainMenu");
-        }
     }
 
     public void QuitToMenu() {
 		GameObject g = GameObject.FindWithTag("Fader");
-		g.GetComponent<SceneFadeInOut>().EndScene("MainMenu");
+        if (g == null) Application.LoadLevel("MainMenu");
+        else g.GetComponent<SceneFadeInOut>().EndScene("MainMenu");
        // Application.LoadLevel("MainMenu");
     }
 
@@ -31,7 +27,8 @@ public class SceneManager : MonoBehaviour {
         PlayersManager.Instance.setupMode = true;
 
 		GameObject g = GameObject.FindWithTag("Fader");
-		g.GetComponent<SceneFadeInOut>().EndScene("GameSetup");
+        if (g == null) Application.LoadLevel("GameSetup");
+        else g.GetComponent<SceneFadeInOut>().EndScene("GameSetup");
         //Application.LoadLevel("GameSetup");
     }
 
@@ -40,19 +37,22 @@ public class SceneManager : MonoBehaviour {
         PlayersManager.Instance.setupMode = true;
 
 		GameObject g = GameObject.FindWithTag("Fader");
-		g.GetComponent<SceneFadeInOut>().EndScene("Tutorial");
+        if (g == null) Application.LoadLevel("Tutorial");
+        else g.GetComponent<SceneFadeInOut>().EndScene("Tutorial");
         //Application.LoadLevel("Tutorial");
     }
 
     public void GoToScene(string sceneName) {
 		GameObject g = GameObject.FindWithTag("Fader");
-		g.GetComponent<SceneFadeInOut>().EndScene(sceneName);
+        if (g == null) Application.LoadLevel(sceneName);
+        else g.GetComponent<SceneFadeInOut>().EndScene(sceneName);
         //Application.LoadLevel(sceneName);
     }
 
     public void GoToStage(string stageName) {
 		GameObject g = GameObject.FindWithTag("Fader");
-		g.GetComponent<SceneFadeInOut>().EndScene(stageName);
+        if (g == null) Application.LoadLevel(stageName);
+        else g.GetComponent<SceneFadeInOut>().EndScene(stageName);
        // Application.LoadLevel(stageName);
         PlayersManager.Instance.startDelay = true;
         PlayersManager.Instance.StartGame();

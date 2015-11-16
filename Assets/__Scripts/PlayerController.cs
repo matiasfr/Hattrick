@@ -331,8 +331,8 @@ public class PlayerController : MonoBehaviour {
     void CheckGround() {    
 
         if (Physics.Raycast(transform.position, Vector3.down, out hit, hoverHeight + .1f, layerMask)) {
-            hit.collider.gameObject.SendMessageUpwards("PlayerOnPlatform", this, SendMessageOptions.DontRequireReceiver);
-
+            if(PlayersManager.Instance.ControlsEnabled) hit.collider.gameObject.SendMessageUpwards("PlayerOnPlatform", this, SendMessageOptions.DontRequireReceiver);
+            transform.parent = hit.collider.gameObject.transform;
             if (stunned) {
                 if (stunnedTime >= stunLength) {
                     if (recoverTip == null) {

@@ -41,7 +41,7 @@ public class PauseMenu : MonoBehaviour {
     }
 
     public void Pause() {
-        Paused = true;
+        PlayersManager.Instance.Paused = true;
         Time.timeScale = 0f;
         PlayersManager.Instance.ControlsEnabled = false;
         canvas.gameObject.SetActive(true);
@@ -51,7 +51,7 @@ public class PauseMenu : MonoBehaviour {
 
 
     public void Resume() {
-        Paused = false;
+        PlayersManager.Instance.Paused = false;
         Time.timeScale = 1f;
         PlayersManager.Instance.ControlsEnabled = true;
         canvas.gameObject.SetActive(false);

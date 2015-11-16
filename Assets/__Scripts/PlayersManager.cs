@@ -240,8 +240,9 @@ public class PlayersManager : MonoBehaviour {
                 if (device.LeftBumper.WasPressed && device.RightBumper.WasPressed) {
                     setupMode = false;
 					GameObject g = GameObject.FindWithTag("Fader");
-					g.GetComponent<SceneFadeInOut>().EndScene("StageSelect");
-                    //Application.LoadLevel("StageSelect");
+                    if(g == null) Application.LoadLevel("StageSelect");
+                    else g.GetComponent<SceneFadeInOut>().EndScene("StageSelect");
+
                     break;
                 }
             }

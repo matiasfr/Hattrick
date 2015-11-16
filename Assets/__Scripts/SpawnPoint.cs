@@ -33,20 +33,28 @@ public class SpawnPoint : MonoBehaviour {
         }
         return closestDist;
     }
-
+    static int layerMask = 1 << 8;
     public static Vector3 GetSpawnPoint() {
 
         float maxDist = 0;
         SpawnPoint sp = null;
         //Find the spawn point with the largest closest player distance
         foreach(SpawnPoint p in allPoints) {
+
+            float hoverHeight = 1.6f;
+            RaycastHit hit;
+
+            if (!Physics.Raycast(p.transform.position, Vector3.down, out hit, p.transform.position.y + 1f, layerMask)) {
+                continue;
+            }
+
             float dist = p.DistToClosestPlayer();
             if(dist > maxDist) {
                 sp = p;
                 maxDist = dist;
             }
         }
-        if (sp == null) return new Vector3(0, 1.5f, 0);
+        if (sp == null) return new Vector3(0, 15f, 0);
         return sp.transform.position;
     }
 

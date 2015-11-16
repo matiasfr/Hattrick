@@ -3,7 +3,9 @@ using System.Collections;
 
 public class SceneFadeInOut : MonoBehaviour
 {
-	public float fadeOutSpeed = 3.0f; 
+    public static SceneFadeInOut instance = null;
+
+    public float fadeOutSpeed = 3.0f; 
 	public float fadeInSpeed = 2.0f;// Speed that the screen fades to and from black.
 	
 	
@@ -12,7 +14,12 @@ public class SceneFadeInOut : MonoBehaviour
 	
 	void Awake ()
 	{
-		DontDestroyOnLoad(transform.gameObject);
+        if (instance == null)
+            instance = this;
+        else if (instance != this)
+            Destroy(gameObject);
+        DontDestroyOnLoad(transform.gameObject);
+
 		// Set the texture so that it is the the size of the screen and covers it.
 		GetComponent<GUITexture>().pixelInset = new Rect(0f, 0f, Screen.width, Screen.height);
 	}
@@ -48,9 +55,10 @@ public class SceneFadeInOut : MonoBehaviour
 			// The scene is no longer starting.
 			sceneStarting = false;
 		}
-	}
 
-	IEnumerator FadeToBlack(string levelName)
+    }
+
+    IEnumerator FadeToBlack(string levelName)
 	{
 		// Lerp the colour of the texture between itself and black.
 		while(GetComponent<GUITexture>().color.a < 0.7) {
