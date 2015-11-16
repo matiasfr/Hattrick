@@ -7,8 +7,8 @@ public class PillarController : MonoBehaviour {
 	public float sinkRate;
 	private Material mat;
 	private Renderer ren;
-	public bool sinking = false;
-	public bool rising = false;
+	private bool sinking = false;
+	private bool rising = false;
 	Vector3 initialPos;
 	public Gradient pillarGradient;
 	public Color hotColor;
@@ -17,9 +17,8 @@ public class PillarController : MonoBehaviour {
 	private float heat = 0;
 	public float heatRate;
 	public float downTime;
-	private bool active;
 	public float cooldownRate;
-
+	private bool active;
 
 	// Use this for initialization
 	void Start () {
@@ -43,11 +42,12 @@ public class PillarController : MonoBehaviour {
 
 		pillarGradient.SetKeys(gck, gak);
 
-		active  = true;//TODO: make sureplayers only casting message when game starts and stop when the game ends
-	}
+		}
 	
 	// Update is called once per frame
 	void Update () {
+
+		active = PlayersManager.Instance.ControlsEnabled;
 
 
 		if(active) {
@@ -59,7 +59,9 @@ public class PillarController : MonoBehaviour {
 			}
 		}
 
+	}
 
+	void fixedUpdate() {
 		if(sinking) {
 			//TODO: play some partile effect as it sinks
 			active  = false;
@@ -70,7 +72,7 @@ public class PillarController : MonoBehaviour {
 				StartCoroutine(pillarWait());
 			}
 		}
-
+		
 		if(rising) {
 			//TODO: some visual change between rising and risen
 			if(transform.position.y < initialPos.y  ) {
