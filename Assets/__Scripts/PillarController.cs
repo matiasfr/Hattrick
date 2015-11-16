@@ -94,7 +94,7 @@ public class PillarController : MonoBehaviour {
 	}
 
 	void PlayerOnPlatform(PlayerController p) {
-        Debug.Log("PlayerOnPlatform");
+        //Debug.Log("PlayerOnPlatform");
 		heat += heatRate*Time.deltaTime;
 	}
 

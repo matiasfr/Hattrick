@@ -272,7 +272,7 @@ public class PlayersManager : MonoBehaviour {
     }
 
     private IEnumerator StartSequence() {
-        yield return null;
+        yield return new WaitForSeconds(.5f);
         //Spawn in new players
         foreach (Player player in Players) {
             Debug.Log("player " + player.playerNum + " : " + player.character);
@@ -343,7 +343,8 @@ public class PlayersManager : MonoBehaviour {
         p.lives = 3;
 
         // newPC.SetInputDevice(p.device);
-        Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+        CameraFollow cf = Camera.main.GetComponent<CameraFollow>();
+        if(cf != null) cf.updatePlayerList();
 
 
     }
