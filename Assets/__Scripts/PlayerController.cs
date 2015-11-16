@@ -331,7 +331,7 @@ public class PlayerController : MonoBehaviour {
     void CheckGround() {    
 
         if (Physics.Raycast(transform.position, Vector3.down, out hit, hoverHeight + .1f, layerMask)) {
-            hit.collider.gameObject.SendMessage("PlayerOnPlatform", this, SendMessageOptions.DontRequireReceiver);
+            hit.collider.gameObject.SendMessageUpwards("PlayerOnPlatform", this, SendMessageOptions.DontRequireReceiver);
 
             if (stunned) {
                 if (stunnedTime >= stunLength) {
@@ -551,7 +551,6 @@ public class PlayerController : MonoBehaviour {
         float t = 0;
         Vector3 initPos = transform.position;
         Quaternion initRot = transform.rotation;
-        stunned = false;
         rb.isKinematic = true;
 
 		ParticleSystem tempRecoverParticleFX = (ParticleSystem)Instantiate(recoverParticleFX, transform.position + new Vector3(0, -1.5f, 0), recoverParticleFX.transform.localRotation);
