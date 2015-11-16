@@ -1,25 +1,15 @@
 fileFormatVersion: 2
-guid: 69712f4fa38edb443b4c491855fc8cfb
-timeCreated: 1447636698
+guid: 2105a116c46c01546852519356f589b4
+timeCreated: 1447642296
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
     100000: //RootNode
-    100002: volcano_floor_piece
-    100004: volcano_floor_piece1
     400000: //RootNode
-    400002: volcano_floor_piece
-    400004: volcano_floor_piece1
     2300000: //RootNode
-    2300002: volcano_floor_piece
-    2300004: volcano_floor_piece1
     3300000: //RootNode
-    3300002: volcano_floor_piece
-    3300004: volcano_floor_piece1
-    4300000: pCylinder1
-    4300002: volcano_floor_piece
-    4300004: volcano_floor_piece1
+    4300000: volcano_floor_piece1
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -44,7 +34,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 50
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1
