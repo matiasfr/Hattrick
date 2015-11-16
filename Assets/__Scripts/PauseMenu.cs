@@ -41,9 +41,13 @@ public class PauseMenu : MonoBehaviour {
     }
 
     public void Pause() {
-        PlayersManager.Instance.Paused = true;
+        Paused = true;
         Time.timeScale = 0f;
-        PlayersManager.Instance.ControlsEnabled = false;
+
+        if (PlayersManager.Instance != null) {
+            PlayersManager.Instance.ControlsEnabled = false;
+            PlayersManager.Instance.Paused = true;
+        }
         canvas.gameObject.SetActive(true);
         EventSystem.current.SetSelectedGameObject(ResumeButton.gameObject);
         ResumeButton.OnSelect(null);
@@ -51,9 +55,13 @@ public class PauseMenu : MonoBehaviour {
 
 
     public void Resume() {
-        PlayersManager.Instance.Paused = false;
         Time.timeScale = 1f;
-        PlayersManager.Instance.ControlsEnabled = true;
+        if (PlayersManager.Instance != null) {
+
+            PlayersManager.Instance.Paused = false;
+
+            PlayersManager.Instance.ControlsEnabled = true;
+        }
         canvas.gameObject.SetActive(false);
 
     }
