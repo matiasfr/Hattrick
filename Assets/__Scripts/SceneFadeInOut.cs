@@ -60,9 +60,11 @@ public class SceneFadeInOut : MonoBehaviour
 		}
 		//TODO: fade in/out sounds
 		//TODO: loading screen
-		//call when loadin ginto new scene: 
-		sceneStarting = true; timer = 0.0f;
-
+		//call when loading into new scene: 
+		//sceneStarting = true; 
+		//timer = 0.0f;
+		//GameObject g = GameObject.FindWithTag("LoadingScreen");
+		//g.GetComponent<LoadingScreen>().LoadLevel(levelName);
 		Application.LoadLevel(levelName);
 	}
 	
