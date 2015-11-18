@@ -56,9 +56,10 @@ public class FireShieldAnimation : ShieldAnimation {
                 if (sp == null) continue ;
 
                 if (t == 0f) {
-                    sp.transform.parent = null;
+                    sp.shield.transform.parent = null;
                     sp.GetComponent<Collider>().enabled = false;
                     endPos[sp.transform] = sp.transform.position + new Vector3(0, 1f + Random.Range(0f, 4f), 0f);
+                    //Destroy(sp.gameObject, len);
                 }
                 mat = ren[sp].material;
                 mat.SetFloat("EmissionColor", 1 - 2 * (t / len));
@@ -78,7 +79,7 @@ public class FireShieldAnimation : ShieldAnimation {
 
                 }
             }
-            if (t / len > 1f) {
+            if (t  > len) {
                 animatingOut = false;
 
                 Destroy(s.gameObject);

@@ -122,6 +122,7 @@ public class PlayerController : MonoBehaviour {
     public GameObject body;
 
     public GameObject cape;
+    public GameObject hat;
 
     public float damageModifier = 1.0f;
 
@@ -308,10 +309,13 @@ public class PlayerController : MonoBehaviour {
         Vector3 dir = moveDirection.normalized;
         if (dir == Vector3.zero) dir = aimDirection.normalized;
         float dist = 0;
+        float s = DashSpeed;
 
         while (dashing && dist < DashDistance) {
-            transform.Translate(transform.InverseTransformDirection(dir) * DashSpeed * Time.deltaTime);
-            dist += DashSpeed * Time.deltaTime;
+
+            //s = (-Mathf.Sin(dist / DashDistance * 1.57f) + 1f) * DashSpeed + .5f;
+            transform.Translate(transform.InverseTransformDirection(dir) * s * Time.deltaTime);
+            dist += s * Time.deltaTime;
             yield return null;
         }
         dashing = false;
@@ -645,7 +649,8 @@ public class PlayerController : MonoBehaviour {
     //}
 
     public void SetMaterial(Material mat) {
-        body.GetComponent<Renderer>().material = mat;
+        hat.GetComponent<Renderer>().material = mat;
+
         cape.GetComponent<Renderer>().material = mat;
 
     }
