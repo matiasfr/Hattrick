@@ -287,7 +287,8 @@ public class PlayersManager : MonoBehaviour {
             player.character.setDamage(0);
             player.character.transform.position = new Vector3(Mathf.Cos(theta) * 5f, 10f, Mathf.Sin(theta) * 5f);
         }
-        Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+        if (CameraFollow.Instance != null) CameraFollow.Instance.updatePlayerList();
+
 
         if (startDelay) {
             yield return new WaitForSeconds(5f);
@@ -343,8 +344,7 @@ public class PlayersManager : MonoBehaviour {
         p.lives = 3;
 
         // newPC.SetInputDevice(p.device);
-        CameraFollow cf = Camera.main.GetComponent<CameraFollow>();
-        if(cf != null) cf.updatePlayerList();
+        if(CameraFollow.Instance != null) CameraFollow.Instance.updatePlayerList();
 
 
     }

@@ -29,15 +29,18 @@ public class FacetedWater : MonoBehaviour {
 
 
     void Update() {
+
         Vector3[] vertices = mesh.vertices;
         Vector3[] normals = mesh.normals;
         int i = 0;
         while (i < vertices.Length) {
+          
             vertices[i].y = 1 * Mathf.PingPong(Time.time * speed, randomTimes[i]);
-
+            normals[i] = Vector3.up;
             i++;
         }
         mesh.vertices = vertices;
-        mesh.RecalculateNormals();
+        //mesh.RecalculateNormals();
+       
    }
 }

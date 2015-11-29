@@ -123,6 +123,8 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject cape;
     public GameObject hat;
+    public Vector3 hatStartPos;
+    public Quaternion hatStartRot;
 
     public float damageModifier = 1.0f;
 
@@ -179,6 +181,8 @@ public class PlayerController : MonoBehaviour {
         ChangeElement(Element.RandomElement);
         hoverTimer = Random.Range(0f, 1.5f);
         indicatorStartScale = energyIndicator.transform.localScale.x;
+        hatStartPos = hat.transform.localPosition;
+        hatStartRot = hat.transform.localRotation;
     }
 
     void OnEnable() {
@@ -267,7 +271,7 @@ public class PlayerController : MonoBehaviour {
         else {
             if (recoverTip != null) {
                 recoverTip.transform.position = transform.position + Vector3.up * 2.5f;
-                recoverTip.transform.LookAt(Camera.main.transform);
+                recoverTip.transform.LookAt(Camera.current.transform);
             }
             stunnedTime += Time.deltaTime;
         }
@@ -353,7 +357,7 @@ public class PlayerController : MonoBehaviour {
                 if (transform.position.y - hit.point.y < hoverHeight) {
                     transform.Translate(0, hit.point.y - transform.position.y + hoverHeight, 0);
                     rb.isKinematic = true;
-                    //check if playing respawn animation
+                    //check if playing awnawn animation
 
                 }
             }
@@ -396,6 +400,8 @@ public class PlayerController : MonoBehaviour {
         if (!stunned) {
             rb.isKinematic = false;
             stunned = true;
+            hat.transform.parent = null;
+            hat.GetComponent<Rigidbody>().isKinematic = false;
             stunLength = Mathf.Lerp(minStunTime, maxStunTime, chargePercent);
             stunnedTime = 0;
         }
@@ -534,10 +540,10 @@ public class PlayerController : MonoBehaviour {
 
     void CheckCamera() {
         if (Camera.current != null) {
-            forward = Camera.main.transform.forward;
+            forward = Camera.current.transform.forward;
             forward.y = 0;
             forward = forward.normalized;
-            right = Camera.main.transform.right;
+            right = Camera.current.transform.right;
             right.y = 0;
             right = right.normalized;
             moveDirection = (playerInput.Move.Value.x * right + playerInput.Move.Value.y * forward);
@@ -583,7 +589,13 @@ public class PlayerController : MonoBehaviour {
 
     void Respawn() {
         stunned = false;
+        hat.transform.parent = body.transform;
+        hat.transform.localPosition = hatStartPos;
+        hat.transform.localRotation = hatStartRot;
+        hat.GetComponent<Rigidbody>().isKinematic = true;
         rb.isKinematic = true;
+
+
         if (chargingCast && !projectile.isCast) {
             Destroy(projectile.gameObject);
             chargingCast = false;
@@ -606,10 +618,11 @@ public class PlayerController : MonoBehaviour {
         }
         else {
             gameObject.SetActive(false);
-            Camera.main.GetComponent<CameraFollow>().updatePlayerList();
+            if (CameraFollow.Instance != null) CameraFollow.Instance.updatePlayerList();
+
 
         }
-		playSoundNormal(respawnSFX);
+        playSoundNormal(respawnSFX);
 
 		ParticleSystem tempRespawnParticleFX = (ParticleSystem)Instantiate(respawnParticleFX, transform.position + new Vector3(0, 1.5f, 0), respawnParticleFX.transform.localRotation);
 		tempRespawnParticleFX.transform.parent = transform;
@@ -643,6 +656,7 @@ public class PlayerController : MonoBehaviour {
         rb.mass = StartMass / (1.0f + 0.05f * currentDamage);
 
     }
+
     //void useEnergy(float cost) {
     //    currentEnergy -= cost;
     //    currentEnergy = Mathf.Clamp(currentEnergy, MIN_ENERGY, MAX_ENERGY);

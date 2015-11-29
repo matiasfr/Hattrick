@@ -81,6 +81,12 @@ ModelImporter:
     100146: bubble
     100148: icosahedron
     100150: rock
+    100152: cone_hat
+    100154: octahedron
+    100156: poly_tophat
+    100158: wizard_hat
+    100160: wizard_hat1
+    100162: wizard_hat2
     400000: //RootNode
     400002: BasicStage
     400004: body
@@ -157,6 +163,12 @@ ModelImporter:
     400146: bubble
     400148: icosahedron
     400150: rock
+    400152: cone_hat
+    400154: octahedron
+    400156: poly_tophat
+    400158: wizard_hat
+    400160: wizard_hat1
+    400162: wizard_hat2
     2300000: BasicStage
     2300002: body
     2300004: cape
@@ -228,6 +240,12 @@ ModelImporter:
     2300136: bubble
     2300138: icosahedron
     2300140: rock
+    2300142: cone_hat
+    2300144: octahedron
+    2300146: poly_tophat
+    2300148: wizard_hat
+    2300150: wizard_hat1
+    2300152: wizard_hat2
     3300000: BasicStage
     3300002: body
     3300004: cape
@@ -299,6 +317,12 @@ ModelImporter:
     3300136: bubble
     3300138: icosahedron
     3300140: rock
+    3300142: cone_hat
+    3300144: octahedron
+    3300146: poly_tophat
+    3300148: wizard_hat
+    3300150: wizard_hat1
+    3300152: wizard_hat2
     4300000: BasicStage
     4300002: shieldPiece1
     4300004: shieldPiece2
@@ -370,6 +394,12 @@ ModelImporter:
     4300136: rock
     4300138: icosahedron
     4300140: bubble
+    4300142: wizard_hat
+    4300144: cone_hat
+    4300146: wizard_hat1
+    4300148: wizard_hat2
+    4300150: octahedron
+    4300152: poly_tophat
     9500000: //RootNode
   materials:
     importMaterials: 1

@@ -55,6 +55,8 @@ public class PauseMenu : MonoBehaviour {
 
 
     public void Resume() {
+        Paused = false;
+
         Time.timeScale = 1f;
         if (PlayersManager.Instance != null) {
 

@@ -122,10 +122,14 @@ public class Projectile : MonoBehaviour {
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 pc.takeDamage(Mathf.Lerp(MIN_DAMAGE, MAX_DAMAGE, chargePercent));
 
+                bool hatOn = pc.hat.transform.parent != null;
                 pc.Stun(chargePercent);
                 rb.AddForceAtPosition(velocity.normalized * Mathf.Lerp(minForce, maxForce, chargePercent), collision.contacts[0].point, ForceMode.Impulse);
+                if (hatOn) {
+                    pc.hat.GetComponent<Rigidbody>().AddExplosionForce(velocity.magnitude * Mathf.Lerp(minForce, maxForce, chargePercent) / 10, collision.contacts[0].point, 2f, 0f, ForceMode.Impulse);
+                }
                 Impact();
- 
+
 
 
             }
@@ -149,9 +153,9 @@ public class Projectile : MonoBehaviour {
                     }
                 }
                 else { // If the shield is strong against and blocks this projectile type
-                   // casterPlayerNum = pc.playerNum;
-					//velocity = velocity*-1;
-					//TODO: make caster now vulnerable to this projectile
+                       // casterPlayerNum = pc.playerNum;
+                       //velocity = velocity*-1;
+                       //TODO: make caster now vulnerable to this projectile
                 }
 
                 Impact();
@@ -167,8 +171,21 @@ public class Projectile : MonoBehaviour {
 
         Projectile p = other.GetComponent<Projectile>();
         if (p != null) {
-            p.Impact();
-            Impact();
+            if (p.element.weakness == element) { //If the projectile is weak to this projectile type
+                p.Impact();
+            }
+            else {
+                if (p.element == element) { //If the projectile is the same as this projectile type
+                    p.Impact();
+                    Impact();
+
+                }
+                else { // If the projetile is strong against this projectile type
+                    Impact();
+
+                }
+
+            }
             return;
         }
 

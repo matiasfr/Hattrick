@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
+    public static CameraFollow Instance;
     private ArrayList playerPositions = new ArrayList();
 	private Camera cam;
 	public Vector3 anchor;
@@ -14,6 +15,9 @@ public class CameraFollow : MonoBehaviour {
 	public float DISTANCE_MAX = 30;//distance values that fov scales on
     public float DISTANCE_MIN = 10;
 
+    void Awake() {
+        Instance = this;
+    }
 
 	void Start () {
 		cam = Camera.main;
@@ -65,8 +69,6 @@ public class CameraFollow : MonoBehaviour {
 		float percent = maxDistance / DISTANCE_MAX;
         float targetFOV = Mathf.Lerp(FOV_MIN, FOV_MAX, percent);
         cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
-		//print ("FOV: " + cam.fieldOfView);
-		//print ("percent: "+percent);
 
 	}
 
@@ -79,7 +81,7 @@ public class CameraFollow : MonoBehaviour {
 		}
 		Vector3 mean = sum / (playerPositions.Count);
 		mean.y = 0;
-        //print("center point: " + mean);
+
         Vector3 des = mean + transform.parent.TransformPoint(Vector3.zero);
 		transform.position = Vector3.Lerp(transform.position, des, panSpeed * Time.deltaTime);
 	}
@@ -90,7 +92,7 @@ public class CameraFollow : MonoBehaviour {
 		GameObject[] players;
 		players = GameObject.FindGameObjectsWithTag ("Player");
 		foreach (GameObject n in players) {
-				playerPositions.Add(n.transform);
+			playerPositions.Add(n.transform);
 		}
 	}
 }
