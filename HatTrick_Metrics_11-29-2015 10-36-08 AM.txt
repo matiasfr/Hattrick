@@ -1,0 +1,3 @@
+PlayerNum,EarthProj,FireProj,WaterProj,EarthShield,FireShield,WaterShield,EarthKOs,FireKOs,WaterKOs,Dashes,Lives
+0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,

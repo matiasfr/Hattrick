@@ -25,7 +25,6 @@ public class PlayerHUD : MonoBehaviour {
             if (player.character != null && player.lives > 0) {
                 Damage.text = Mathf.RoundToInt(player.character.currentDamage) + "%";
                 Damage.color = damageColor.Evaluate(player.character.currentDamage / 100f);
-                Lives[player.lives - 1].color = damageColor.Evaluate(player.character.currentDamage / 100f);
             }
         }
     }
@@ -50,7 +49,7 @@ public class PlayerHUD : MonoBehaviour {
 
         UpdateLives(p.lives);
         for (int i = 0; i < Lives.Count; i++) {
-            Lives[i].color = damageColor.Evaluate(0f);
+            Lives[i].color = player.color;
         }
         if (player.name != null && player.name.Length > 0) {
             Name.text = player.name;

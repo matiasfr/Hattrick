@@ -103,6 +103,9 @@ public class PlayerController : MonoBehaviour {
     public GameObject RecoverTipPrefab;
     private GameObject recoverTip;
 
+    private bool invincible = false;
+    private float invincibleTime = 1.5f;
+
 
     //Dashing
     private bool dashing = false;
@@ -385,7 +388,10 @@ public class PlayerController : MonoBehaviour {
 
     public void Stun(float chargePercent) {
 		soundSourceLong.Stop();//should fix bug where shield sound keeps playing if hit from behind
+        if (invincible) return;
+
         dashing = false;
+
         if (chargingCast && !projectile.isCast) {
             projectile.Dissipate();
             chargingCast = false;
@@ -553,6 +559,12 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    IEnumerator InvincibleTemp() {
+        invincible = true;
+        yield return new WaitForSeconds(invincibleTime);
+        invincible = false;
+    }
+
     IEnumerator Recover() {
 
         Quaternion targetRot = Quaternion.Euler(0f, transform.localEulerAngles.y, 0f);
@@ -564,7 +576,7 @@ public class PlayerController : MonoBehaviour {
         rb.isKinematic = true;
 
 		ParticleSystem tempRecoverParticleFX = (ParticleSystem)Instantiate(recoverParticleFX, transform.position + new Vector3(0, -1.5f, 0), recoverParticleFX.transform.localRotation);
-		//tempRecoverParticleFX.transform.parent = transform;
+		tempRecoverParticleFX.transform.parent = transform;
 
 
         while (t < recoverLength) {
@@ -577,7 +589,7 @@ public class PlayerController : MonoBehaviour {
         }
         rb.isKinematic = true;
         stunned = false;
-
+        StartCoroutine(InvincibleTemp());
     }
 
     void Kill() {
@@ -626,6 +638,7 @@ public class PlayerController : MonoBehaviour {
 
 		ParticleSystem tempRespawnParticleFX = (ParticleSystem)Instantiate(respawnParticleFX, transform.position + new Vector3(0, 1.5f, 0), respawnParticleFX.transform.localRotation);
 		tempRespawnParticleFX.transform.parent = transform;
+        StartCoroutine(InvincibleTemp());
 
     }
 

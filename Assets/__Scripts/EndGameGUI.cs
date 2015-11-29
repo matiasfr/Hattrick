@@ -78,6 +78,7 @@ public class EndGameGUI : MonoBehaviour {
         PlayersManager.Instance.StartGame();
         canvas.gameObject.SetActive(false);
         Celebration.SetActive(false);
+        PillarController.ResetAll();
 
     }
 

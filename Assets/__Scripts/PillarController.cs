@@ -86,7 +86,27 @@ public class PillarController : MonoBehaviour {
 
 	}
 
-	IEnumerator pillarWait() {
+    public static void ResetAll() {
+        PillarController[] pillars = FindObjectsOfType<PillarController>();
+        foreach(PillarController pc in pillars) {
+            pc.ResetPillar();
+        }
+    }
+
+    public void ResetPillar() {
+        heat = 0;
+        transform.position = initialPos;
+        active = true;
+        rising = false;
+        sinking = false;
+        mat.color = pillarGradient.Evaluate(heat / 100.0f);
+
+
+
+
+    }
+
+    IEnumerator pillarWait() {
 		yield return new WaitForSeconds(downTime);
 		heat = 0;
 		mat.color = pillarGradient.Evaluate(heat / 100.0f);

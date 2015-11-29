@@ -281,7 +281,7 @@ public class PlayersManager : MonoBehaviour {
                 CreatePlayerCharacter(player);
             }
             player.character.gameObject.SetActive(true);
-            player.HUD = GameHUD.Instance.SetPlayerHUD(player);
+            
 
             float theta = 2 * Mathf.PI / Players.Count * player.playerNum;
             player.character.setDamage(0);
@@ -291,13 +291,14 @@ public class PlayersManager : MonoBehaviour {
 
 
         if (startDelay) {
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(6f);
             startDelay = false;
         }
 
 
         GameHUD.Instance.DisplayCenterText("Ready", 1f);
-
+        foreach (Player player in Players)
+            player.HUD = GameHUD.Instance.SetPlayerHUD(player);
 
 
         yield return new WaitForSeconds(1f);
