@@ -6,7 +6,10 @@ public class AudioManager : MonoBehaviour {
 
 	public AudioSource ambientSource;
 	public AudioSource SFXSource;
-	public AudioSource musicSource; 
+	public AudioSource musicIntroSource;
+	public AudioSource musicPrimarySource; 
+	public AudioSource musicSecondarySource;
+	public AudioSource musicTertiarySource;
 
 	void Awake ()
 	{
@@ -33,10 +36,47 @@ public class AudioManager : MonoBehaviour {
 		SFXSource.Play ();
 	}
 
-	public void PlayMusic(AudioClip clip)
-	{
-		musicSource.clip = clip;
-		musicSource.Play ();
+	public void PlayMusic(AudioClip[] clips) {
+		clearMusicSources();
+		if(!clips[0]) {
+			//skip intro
+			if(clips[1]) {
+				musicPrimarySource.clip = clips[1];
+				musicPrimarySource.Play();
+			}
+			if(clips[2]) {
+				musicSecondarySource.clip = clips[2];
+				musicSecondarySource.Play();
+			}
+			if(clips[3]) {
+				musicTertiarySource.clip = clips[3];
+				musicTertiarySource.Play();
+			}
+		} else {
+			float introLength = clips[0].length;
+			musicIntroSource.clip = clips[0];
+			musicIntroSource.Play();
+
+			if(clips[1]) {
+				musicPrimarySource.clip = clips[1];
+				musicPrimarySource.PlayDelayed(introLength);
+			}
+			if(clips[2]) {
+				musicSecondarySource.clip = clips[2];
+				musicSecondarySource.PlayDelayed(introLength);
+			}
+			if(clips[3]) {
+				musicTertiarySource.clip = clips[3];
+				musicTertiarySource.PlayDelayed(introLength);
+			}
+		}
+	}
+
+	private void clearMusicSources() {
+		musicIntroSource.Stop();
+		musicPrimarySource.Stop();
+		musicSecondarySource.Stop();
+		musicTertiarySource.Stop();
 	}
 
 	public void PlayAmbient(AudioClip clip)

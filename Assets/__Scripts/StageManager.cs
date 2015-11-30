@@ -7,7 +7,7 @@ public class StageManager : MonoBehaviour {
     public float DeathHeight = -15f;
 	// Use this for initialization
 	public AudioClip AmbientSFX;
-	public AudioClip MusicSFX;
+	public AudioClip[] MusicSFX;
 
     void Awake() {
         Instance = this;

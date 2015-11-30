@@ -574,9 +574,10 @@ public class PlayerController : MonoBehaviour {
         Vector3 initPos = transform.position;
         Quaternion initRot = transform.rotation;
         rb.isKinematic = true;
-
-		ParticleSystem tempRecoverParticleFX = (ParticleSystem)Instantiate(recoverParticleFX, transform.position + new Vector3(0, -1.5f, 0), recoverParticleFX.transform.localRotation);
-		tempRecoverParticleFX.transform.parent = transform;
+		if(recoverParticleFX) {
+			ParticleSystem tempRecoverParticleFX = (ParticleSystem)Instantiate(recoverParticleFX, transform.position + new Vector3(0, -1.5f, 0), recoverParticleFX.transform.localRotation);
+			tempRecoverParticleFX.transform.parent = transform;
+		}
 
 
         while (t < recoverLength) {
