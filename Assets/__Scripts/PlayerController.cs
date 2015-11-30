@@ -576,7 +576,8 @@ public class PlayerController : MonoBehaviour {
         rb.isKinematic = true;
 		if(recoverParticleFX) {
 			ParticleSystem tempRecoverParticleFX = (ParticleSystem)Instantiate(recoverParticleFX, transform.position + new Vector3(0, -1.5f, 0), recoverParticleFX.transform.localRotation);
-			tempRecoverParticleFX.transform.parent = transform;
+			tempRecoverParticleFX.GetComponent<FollowPosition>().setFollow(transform);
+			//tempRecoverParticleFX.transform.parent = transform;
 		}
 
 
